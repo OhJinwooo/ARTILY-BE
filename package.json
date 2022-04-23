@@ -1,5 +1,12 @@
 {
   "dependencies": {
-    "express": "^4.17.3"
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "node-fecth": "^0.0.1-security",
+    "passport": "^0.5.2",
+    "passport-github": "^1.1.0",
+    "passport-kakao": "^1.0.1"
   }
 }
