@@ -1,11 +1,11 @@
-const passport = require("passport");
-const KakaoStrategy = require("passport-kakao").Strategy;
-const User = require('../../schemas/user')
+import passport from 'passport';
+import { Strategy } from "passport-kakao";
+import  User  from '../../schemas/User'
 require("dotenv").config();
 // const Users = require("../models/users");
 module.exports = () => {
   passport.use(
-    new KakaoStrategy(
+    new Strategy(
       {
         clientID: process.env.clientID, // 카카오 로그인에서 발급받은 REST API 키
         callbackURL: "http://localhost:3000/oauth/kakao/callback", // 카카오 로그인 Redirect URI 경로
