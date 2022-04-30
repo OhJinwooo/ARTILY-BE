@@ -9,6 +9,7 @@ const { swaggerUi, specs } = require("./swagger/swagger");
 
 const connect = require("./schemas/index.schemas");
 const testRouter = require("./routes/post.router");
+const ReviewRouter = require("./routes/review.router");
 
 const cors = require("cors");
 
@@ -20,6 +21,7 @@ app.use(cors());
 app.use("/oauth", authRouter);
 app.use(express.json());
 app.use("/api", [testRouter]);
+app.use("/api", ReviewRouter);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 https: app.listen(port, () => {
