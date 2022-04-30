@@ -1,11 +1,6 @@
 const mongoose = require("mongoose");
 
 const ReviewSchema = new mongoose.Schema({
- // reviewId: {
-  //  type: String,
-    //required: true,
-    //unique: true,
-  //},
   category: {
     type: String,
     // required: true,
@@ -39,13 +34,12 @@ const ReviewSchema = new mongoose.Schema({
     //   required: true,
   },
 });
-
 ReviewSchema.virtual("reviewId").get(function () {
- return this._id.toHexString();
- }); 
+  return this._id.toHexString();
+});
 
- ReviewSchema.set("toJSON", {
+ReviewSchema.set("toJSON", {
   virtuals: true,
- });
+});
 
 module.exports = mongoose.model("Review", ReviewSchema);
