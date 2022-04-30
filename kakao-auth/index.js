@@ -37,6 +37,7 @@ module.exports = () => {
             }
 
             const user = {
+              accessToken: accessToken,
               refreshToken: refreshToken,
               nickname: profile.username,
               userId: profile.id,
