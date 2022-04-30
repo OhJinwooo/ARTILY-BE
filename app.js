@@ -21,8 +21,8 @@ app.use("/oauth", authRouter);
 app.use("/api", [testRouter]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 https: app.listen(port, () => {
   console.log(port, "서버가 연결되었습니다.");
