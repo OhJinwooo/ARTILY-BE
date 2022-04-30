@@ -9,5 +9,9 @@
     "node-fecth": "^0.0.1-security",
     "passport": "^0.5.2",
     "passport-kakao": "^1.0.1"
+  },
+  "devDependencies": {
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.3.0"
   }
 }
