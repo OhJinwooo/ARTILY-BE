@@ -8,8 +8,7 @@ router.get("/kakao", passport.authenticate("kakao"));
 const kakaoCallback = (req, res, next) => {
   passport.authenticate("kakao", { failureRedirect: "/" }, (err, user) => {
     if (err) return next(err);
-    const { userId, nickname, provider, profileUrl } = user;
-    // console.log(123, userId, nickname, provider, profileUrl);
+    const { userId, nickname, provider, profileUrl, accessToken } = user;
     const token = jwt.sign({ userId: userId }, "kakao-secret-key");
 
     result = {
@@ -18,9 +17,10 @@ const kakaoCallback = (req, res, next) => {
       userId: userId,
       nickname: nickname,
       provider: provider,
+      accessToken,
       // refreshToken: refreshToken,
     };
-    console.log(1, result); // 배포하자마자 연경님 정보 찍힘
+    console.log(1, result);
     res.send({ user: result });
   })(req, res, next);
 };
