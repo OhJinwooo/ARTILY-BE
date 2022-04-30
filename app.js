@@ -14,7 +14,6 @@ const cors = require("cors");
 
 passportKakao();
 connect();
-//가나다라
 
 app.use(cors());
 app.use(express.json());
