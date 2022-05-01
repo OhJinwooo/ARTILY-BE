@@ -1,56 +1,68 @@
-// // const passport = require("passport"); //passport 추가
-// // const NaverStrategy = require("passport-naver").Strategy;
+const passport = require("passport"); //passport 추가
+const NaverStrategy = require("passport-naver").Strategy;
+const User = require("../schemas/user.schemas");
+require("dotenv").config();
 
-// // router.get("/naver", passport.authenticate("naver", null), function (req, res) {
-// //   console.log("/main/naver");
-// // });
+//별도 config 파일에 '네아로'에 신청한 정보 입력
+passport.use(
+  new NaverStrategy(
+    {
+      clientID: config.authLogin.naver.client_id,
+      clientSecret: config.authLogin.naver.secret_id,
+      callbackURL: config.authLogin.naver.callback_url,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const exUser = await User.findOne({
+          userId: profile.id,
+          provider: "naver",
+        });
+        // clientID에 카카오 앱 아이디 추가
+        // callbackURL: 카카오 로그인 후 카카오가 결과를 전송해줄 URL
+        // accessToken, refreshToken : 로그인 성공 후 카카오가 보내준 토큰
+        // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
-// // //처리 후 callback 처리 부분 성공/실패 시 리다이렉트 설정
-// // router.get(
-// //   "/naver/callback",
-// //   passport.authenticate("naver", {
-// //     successRedirect: "/",
-// //     failureRedirect: "/main/login",
-// //   })
-// // );
+        let profileUrl = "";
+        if (exUser) {
+          console.log("로그인", exUser);
+          done(null, exUser);
+        } else {
+          if (profile._json.profile_image) {
+            profileUrl = profile._json.profile_image;
+          }
 
-// // //별도 config 파일에 '네아로'에 신청한 정보 입력
-// // passport.use(
-// //   new NaverStrategy(
-// //     {
-// //       clientID: config.authLogin.naver.client_id,
-// //       clientSecret: config.authLogin.naver.secret_id,
-// //       callbackURL: config.authLogin.naver.callback_url,
-// //     },
-// //     function (accessToken, refreshToken, profile, done) {
-// //       process.nextTick(function () {
-// //         var user = {
-// //           name: profile.displayName,
-// //           email: profile.emails[0].value,
-// //           username: profile.displayName,
-// //           provider: "naver",
-// //           naver: profile._json,
-// //         };
-// //         console.log("user=");
-// //         console.log(user);
-// //         return done(null, user);
-// //       });
-// //     }
-// //   )
-// // );
+          const user = {
+            refreshToken: refreshToken,
+            accessToken: accessToken,
+            nickname: profile.displayName, // 이름
+            userId: profile.id,
+            provider: "naver",
+            profileUrl,
+            // email: profile.emails[0].value, // 유저 이메일
+          };
+          await User.create(user);
 
-// // //failed to serialize user into session 에러 발생 시 아래의 내용을 추가 한다.
-// // passport.serializeUser(function (user, done) {
-// //   done(null, user);
-// // });
-
-// // passport.deserializeUser(function (req, user, done) {
-// //   // passport로 로그인 처리 후 해당 정보를 session에 담는다.
-
-// //   req.session.sid = user.name;
-// //   console.log("Session Check :" + req.session.sid);
-// //   done(null, user);
-// // });
+          console.log("user=");
+          console.log(user);
+          return done(null, user);
+        }
+      } catch {
+        console.error(error);
+        done(error);
+      }
+    }
+  )
+);
+//failed to serialize user into session 에러 발생 시 아래의 내용을 추가 한다.
+// passport.serializeUser(function (user, done) {
+//   done(null, user);
+// });
+// passport.deserializeUser(function (req, user, done) {
+//   // passport로 로그인 처리 후 해당 정보를 session에 담는다.
+//   req.session.sid = user.name;
+//   console.log("Session Check :" + req.session.sid);
+//   done(null, user);
+// });
 
 // // 네이버 로그인 Node.js 예제는 1개의 파일로 로그인요청 및 콜백 처리를 모두합니다.
 // const express = require("express");
