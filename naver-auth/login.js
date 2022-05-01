@@ -74,7 +74,7 @@ const client_secret = process.env.naverSecret;
 const state = "RANDOM_STATE";
 const redirectURI = encodeURI("http://localhost:3000/oauth/naver/callback");
 const api_url = "";
-router.get("/naver", function (req, res) {
+router.get("oauth/naver", function (req, res) {
   api_url =
     "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" +
     client_id +
@@ -89,7 +89,7 @@ router.get("/naver", function (req, res) {
       "'><img height='50' src='http://static.nid.naver.com/oauth/small_g_in.PNG'/></a>"
   );
 });
-router.get("/naver/callback", function (req, res) {
+router.get("/oauth/naver/callback", function (req, res) {
   code = req.query.code;
   state = req.query.state;
   api_url =
