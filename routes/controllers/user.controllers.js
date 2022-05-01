@@ -4,8 +4,7 @@ const social = require("../../kakao-auth/kakao/kakao");
 
 //사용자 인증
 const user = async (req, res) => {
-  const { user } = res.locals.result;
-  const kakaoUser = social.reslt;
+  const kakaoUser = res.locals.result;
   res.send({
     kakaoUser,
   });
