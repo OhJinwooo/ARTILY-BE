@@ -8,7 +8,8 @@ const passport = require("passport");
 const { swaggerUi, specs } = require("./swagger/swagger");
 
 const connect = require("./schemas/index.schemas");
-const testRouter = require("./routes/post.router");
+const postRouter = require("./routes/post.router");
+const userRouter = require("./routes/user.router");
 
 const cors = require("cors");
 
@@ -18,11 +19,11 @@ connect();
 app.use(cors());
 app.use(express.json());
 app.use("/oauth", authRouter);
-app.use("/api", [testRouter]);
+app.use("/api", [postRouter, userRouter]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 https: app.listen(port, () => {
   console.log(port, "서버가 연결되었습니다.");

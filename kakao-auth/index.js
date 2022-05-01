@@ -42,6 +42,7 @@ module.exports = () => {
               nickname: profile.username,
               userId: profile.id,
               provider: "kakao",
+              accessToken: accessToken,
               profileUrl,
             };
 
