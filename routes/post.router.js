@@ -4,7 +4,7 @@ const { artPost, artStore } = require("./controllers/post.controllers");
 
 router.get("/post");
 
-router.get('/post/category', artStore);
+router.get('/post/store', artStore);
 
 router.post("/post", artPost);
 

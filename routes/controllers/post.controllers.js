@@ -1,11 +1,11 @@
 const Post = require("../../schemas/post.schemas");
-const cat = require('../controllers/psot.test')
 const Review = require('../../schemas/review.schemas');
 const moment = require('moment')
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 const { v4 } = require('uuid');
 const { create } = require("../../schemas/user.schemas");
+const { object } = require("webidl-conversions");
 const uuid = () => {
   const tokens = v4().split('-')
   return tokens[2] + tokens[1] + tokens[3] ;
@@ -31,47 +31,54 @@ const getHome = async (req, res) => {
     })
   }
 };
-
-//스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (임시적용 개선 방안 필요) )
+const cat = {
+  transaction:"art"
+}
+//스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (개선 중(시간소요)) )
 const artStore = async(req,res)=>{
   try{
     //페이지의 시작 값을 받음(테이터의 총개수)
-    const page = req.body
+    const data = req.body;
+    //태그 기능 변수
+    const category = data.category;
+    const transaction = data.transaction;
+    const changeAddress = data.changeAddress;
+    //태그기능 변수 통합
+    const artFilter = {category:category,
+      transaction:transaction,
+      changeAddress:changeAddress};
     //시작을 지정할 변수 선언
     let start = 0;
     //이미데이터가 넘어가서 있는지 확인
-    if(page.start <= 0){
+    if(data.start <= 0){
       start = 0 ;
     }else{
-      start = page.start - 1
+      start = data.start - 1
     };
     //마지막 값 지정
     let last = start + 5
     // 지정해서 보내주는 데이터
-    const artPost = await Post.find({}).limit(start,last);
-    if(page.category && !page.transaction){
-      const artPost = await Post.find({category:page.category}).limit(start,last);
+    if(data.start && !category && !transaction && !changeAddress)
+    {
+      const artPost = await Post.find({}).limit(start,last);
       res.status(200).json({
-        respons:"success",
-        msg:'스토어 조회 성공',
-        artPost
-      });
-    }else if(page.category && page.transaction){
-      const artPost = await Post.find({
-        category:page.category,
-        transaction:page.transaction
-      }).limit(start,last);
-      res.status(200).json({
-        respons:"success",
-        msg:'스토어 조회 성공',
-        artPost
-      });
-    }
-    res.status(200).json({
       respons:"success",
       msg:'스토어 조회 성공',
       artPost
     });
+  }
+    if(artFilter){
+      console.log(object.key(artFilter).length)
+      for(let i = 0 ; i<artFilter.length; i++){
+        console.log(artFilter[i])
+      if(artFilter[i] !== undefined){
+        console.log(artFilter[i])
+        const fin = cat.find(artFilter[i])
+        console.log(fin)
+      }
+    }
+    };
+ 
   }catch(error){
     res.status(400).json({
       respons:"file",
