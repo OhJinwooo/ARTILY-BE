@@ -32,7 +32,7 @@ const getHome = async (req, res) => {
   }
 };
 
-//스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 미구현 )
+//스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (임시적용 개선 방안 필요) )
 const artStore = async(req,res)=>{
   try{
     //페이지의 시작 값을 받음(테이터의 총개수)
@@ -49,6 +49,24 @@ const artStore = async(req,res)=>{
     let last = start + 5
     // 지정해서 보내주는 데이터
     const artPost = await Post.find({}).limit(start,last);
+    if(page.category && !page.transaction){
+      const artPost = await Post.find({category:page.category}).limit(start,last);
+      res.status(200).json({
+        respons:"success",
+        msg:'스토어 조회 성공',
+        artPost
+      });
+    }else if(page.category && page.transaction){
+      const artPost = await Post.find({
+        category:page.category,
+        transaction:page.transaction
+      }).limit(start,last);
+      res.status(200).json({
+        respons:"success",
+        msg:'스토어 조회 성공',
+        artPost
+      });
+    }
     res.status(200).json({
       respons:"success",
       msg:'스토어 조회 성공',
