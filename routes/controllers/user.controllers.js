@@ -1,17 +1,17 @@
-const { User } = require("../../models");
+const { User } = require("../../schemas/user.schemas");
 const jwt = require("jsonwebtoken");
-const social = require("../../kakao-auth/kakao");
+const social = require("../../kakao-auth/kakao/kakao");
 
 //사용자 인증
 const user = async (req, res) => {
-  // const { user } = res.locals;
-  const kakao = social.result;
+  const { user } = res.locals.result;
+  const kakaoUser = social.reslt;
   res.send({
-    kakao,
+    kakaoUser,
   });
 };
 
-module.exports = { signUp, login, user };
+module.exports = { user };
 
 // //회원가입
 // const signUp = async (req, res) => {
