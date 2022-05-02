@@ -13,7 +13,7 @@ router.get("/review", review);
 router.get("/review/:reviewId", review_detail);
 
 //리뷰작성
-router.post("/review", review_write);
+router.post("/review", review_write); //upload.single("imageUrl"),
 
 //리뷰수정
 router.patch("/review/:reviewId", review_modify);

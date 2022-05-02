@@ -23,12 +23,10 @@ module.exports = (req, res, next) => {
       res.locals.user = user
       next();
     });
-  
-
   } catch(error){
     res.status(401).send({
       errorMessage : "로그인 후 이용하세요."
     })
     return;
   };
-};
+}; code test

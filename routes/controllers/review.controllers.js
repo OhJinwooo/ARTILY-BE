@@ -2,9 +2,10 @@ const Review = require("../../schemas/review.schemas");
 const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
 const CryptoJS = require("crypto-js");
+
 // //multer-s3 미들웨어 연결
-// require("dotenv").config();
-// const authMiddleware = require("../middlewares/auth-middleware");
+//require("dotenv").config();
+//const authMiddleware = require("../middlewares/auth-middleware");
 
 // const path = require("path");
 // let AWS = require("aws-sdk");
@@ -15,7 +16,7 @@ const CryptoJS = require("crypto-js");
 // let upload = multer({
 //   storage: multerS3({
 //     s3: s3,
-//     bucket: "sixtagram",
+//     bucket: "mandublog",
 //     key: function (req, file, cb) {
 //       let extension = path.extname(file.originalname);
 //       cb(null, Date.now().toString() + extension);
@@ -24,20 +25,10 @@ const CryptoJS = require("crypto-js");
 //   }),
 // });
 
-// - category
-// - reviewId:
-// - userId:
-// - nickname
-// - reviewTitle: “너무 만족해요”       - reviewContent
-//reviewContent
-//
-//- likeCnt: 24
-// - imageUrl : [”asdfasdf”, “asdfasdf”, “asdfasdfasdf”]
-
 // 리뷰 조회
 const review = async (req, res) => {
   try {
-    const review = await Review.find({}).sort("-createdAt");
+    const review = await Review.find({}).sort("-createdAt").limit(4);
     res.json({ review });
   } catch (err) {
     console.error(err);
@@ -50,7 +41,9 @@ const review_detail = async (req, res) => {
   try {
     const { reviewId } = req.params;
     console.log(reviewId);
-    const review_detail = await Review.find({ _id: reviewId });
+    const review_detail = await Review.find({ _id: reviewId })
+      .sort("-createdAt")
+      .limit(4);
     res.json({ review_detail });
   } catch (err) {
     console.error(err);
@@ -61,32 +54,19 @@ const review_detail = async (req, res) => {
 //리뷰 작성
 const review_write = async (req, res) => {
   //작성한 정보 가져옴
-  const {
-    category,
-    userId,
-    nickname,
-    reviewTitle,
-    likeCnt,
-    imageUrl,
-    reviewContent,
-  } = req.body;
+  const { category, userId, nickname, reviewTitle, likeCnt, reviewContent } =
+    req.body;
 
-  console.log(
-    category,
-    userId,
-    nickname,
-    reviewTitle,
-    likeCnt,
-    imageUrl,
-    reviewContent
-  ); //ok
+  console.log(category, userId, nickname, reviewTitle, likeCnt, reviewContent); //ok
+
   //const imageUrl = req.file?.location;
-  //console.log("req.file: ", req.file); // 테스트 => req.file.location에 이미지 링크(s3-server)가 담겨있음
-  //console.log(content, imageUrl);
-  // 사용자 브라우저에서 보낸 쿠키를 인증미들웨어통해 user변수 생성
-  //const { user } = res.locals;
-  //const userId = user.userId;
+  // console.log("req.file: ", req.file); // 테스트 => req.file.location에 이미지 링크(s3-server)가 담겨있음
+  console.log(imageUrl);
+  //사용자 브라우저에서 보낸 쿠키를 인증미들웨어통해 user변수 생성
+  // const { user } = res.locals;
+  // const userId = user.userId;
   // console.log(user)  //ok
+
   // 글작성시각 생성
   require("moment-timezone");
   moment.tz.setDefault("Asia/Seoul");
