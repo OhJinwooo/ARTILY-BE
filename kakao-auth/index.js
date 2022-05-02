@@ -4,7 +4,6 @@ const User = require("../schemas/user.schemas");
 require("dotenv").config();
 
 module.exports = () => {
-  console.log(123123);
   passport.use(
     new KakaoStrategy(
       {
@@ -14,9 +13,7 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         try {
-          console.log("!!!!!!!!!!!!!!!!", process.env.KAKAOCLIENT_ID);
           console.log(profile);
-          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
           const exUser = await User.findOne({
             // 카카오 플랫폼에서 로그인 했고 & snsId필드에 카카오 아이디가 일치할경우
             userId: profile.id,

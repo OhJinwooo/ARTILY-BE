@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { user } = require("./controllers/user.controllers");
-// const middleswares = require("../middleswares/auth-middleware");
+const middleswares = require("../middleware/authMiddleWare");
 // const passport = require("passport");
 
 // //회원가입
@@ -11,7 +11,7 @@ const { user } = require("./controllers/user.controllers");
 // router.post("/login", login);
 
 //사용자 인증
-router.get("/user/getuser", user);
+router.get("/user/getuser", middleswares, user);
 
 // 카카오 로그인
 // router.get("/kakao", passport.authenticate("kakao"));
