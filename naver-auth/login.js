@@ -74,7 +74,7 @@ module.exports = () => {
 // const state = "RANDOM_STATE";
 // const redirectURI = encodeURI("http://localhost:3000/oauth/naver/callback");
 // const api_url = "";
-// router.get("oauth/naver", function (req, res) {
+// router.get("/naver", function (req, res) {
 //   console.log("naver 접근함");
 //   api_url =
 //     "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" +
@@ -90,7 +90,7 @@ module.exports = () => {
 //       "'><img height='50' src='http://static.nid.naver.com/oauth/small_g_in.PNG'/></a>"
 //   );
 // });
-// router.get("/oauth/naver/callback", function (req, res) {
+// router.get("/naver/callback", function (req, res) {
 //   console.log("callback 접근");
 //   code = req.query.code;
 //   state = req.query.state;

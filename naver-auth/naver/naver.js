@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-router.post("/naver", passport.authenticate("naver"));
+router.get("/naver", passport.authenticate("naver"));
 
 const naverCallback = (req, res, next) => {
   passport.authenticate("naver", { failureRedirect: "/" }, (err, user) => {
@@ -24,5 +24,5 @@ const naverCallback = (req, res, next) => {
     res.send({ user: result });
   })(req, res, next);
 };
-router.post("/naver/callback", naverCallback);
+router.get("/naver/callback", naverCallback);
 module.exports = router;
