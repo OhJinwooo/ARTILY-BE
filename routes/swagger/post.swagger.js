@@ -362,7 +362,7 @@ postRouter.post("/post");
  *                example: "imageUrl"
  *    responses:
  *      "200":
- *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (유저 수정)
+ *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (post 수정)
  *        content:
  *          application/json:
  *            schema:
@@ -411,7 +411,7 @@ postRouter.patch("/update/:user_id");
  *          type: string
  *    responses:
  *      "200":
- *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (유저 삭제)
+ *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (post 삭제)
  *        content:
  *          application/json:
  *            schema:
