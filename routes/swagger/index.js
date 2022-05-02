@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const user = require("./user");
-const post = require("./post");
-const review = require("./review");
+const user = require("./user.swagger");
+const post = require("./post.swagger");
+const review = require("./review.swagger");
 
 /**
  * @swagger
