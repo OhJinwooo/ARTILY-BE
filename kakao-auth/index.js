@@ -4,6 +4,7 @@ const User = require("../schemas/user.schemas");
 require("dotenv").config();
 
 module.exports = () => {
+  console.log(123123);
   passport.use(
     new KakaoStrategy(
       {
