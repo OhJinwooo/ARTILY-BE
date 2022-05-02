@@ -1,11 +1,15 @@
 const Post = require("../../schemas/post.schemas");
 const Review = require('../../schemas/review.schemas');
-const moment = require('moment')
+const sharp = require('sharp');
+const moment = require('moment');
+const fs = require('fs');
+const path = require('path')
 require('moment-timezone');
 moment.tz.setDefault("Asia/Seoul");
 const { v4 } = require('uuid');
 const { create } = require("../../schemas/user.schemas");
 const { object } = require("webidl-conversions");
+const { fstat } = require("fs");
 const uuid = () => {
   const tokens = v4().split('-')
   return tokens[2] + tokens[1] + tokens[3] ;
@@ -16,7 +20,7 @@ const uuid = () => {
 const getHome = async (req, res) => {
   try{
       //limt함수 사용 보여주는 데이터 숫자 제한
-      const artPost = await Post.find({}).sort('-Likecount').limit(4);
+      const artPost = await Post.find({}).sort('-marckupCnt').limit(4);
       const artWriter = artPost.user;
       const reviwPage = await Review.find({}).sort('-Likecount').limit(4);
       res.status(200).json({
@@ -85,30 +89,56 @@ const artStore = async(req,res)=>{
   };
 };
 
-//작성 api(이미지 및 영상 첨부 기능 (부분적 구현 중))
+//작성 api(구현 완료)
 const artPost = async (req, res) => {
  try{
-   const image = req.files
-   const imgurl = `${req.protocol}://${req.get('host')}/img/${image}`
-   console.log(imgurl)
-  /* //data라는 변수로 body를 받음
-  const {} = req.body;
-  const {} = res.locals ;
-  //uuid를 사용하여 고유 값생성
-  const postId = uuid();
+   /* // 리사이징(압축용 실험 코드(미적용))
+   const img = sharp(req.files)
+   .withMetadata()
+   .toBuffer((err,buffer)=>
+   {
+     if(err) throw err;
+     fs.withMetadata(req.files,buffer, (err)=>{
+      if (err) throw err;
+     });
+   }); */
+   
+
+  //req.body를 받음
+  const {postTitle,
+        postContent,
+        category,
+        transaction,
+        changeAddress
+      } = req.body;
+  //파일 저장
+  const img = req.files
+  const imageUrl = `${req.protocol}://${req.get('host')}/img/${img}`
   //moment를 이용하여 한국시간으로 날짜생성
   const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
+  //uuid를 사용하여 고유 값생성
+  const postId = uuid();
   //검증 고유값중복 검증
   const artPostId = await Post.find({postId}).exec();
   //조건 postId
   if(artPostId.postId !== postId){
-    const artBrod = new Post({});
+    const artBrod = new Post({
+        postTitle,
+        postContent,
+        category,
+        transaction,
+        changeAddress,
+        imageUrl,
+        postId,
+        createdAt,
+        done:false,
+    });
     await artBrod.save();
     res.status(200).json({
       respons:"success",
       msg:'판매글 생성 완료'
     });
-  } */
+  }
   }catch(error){
     res.status(400).json({
       respons:"file",
