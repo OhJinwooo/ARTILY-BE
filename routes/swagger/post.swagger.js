@@ -316,76 +316,50 @@ postRouter.post("/post");
 
 /**
  * @swagger
- * /api/post/{postId}:
+ * /api/post/update/{postId}:
  *   patch:
  *    summary: "post 수정"
- *    description: "PUT 방식을 통해 유저 수정(전체 데이터를 수정할 때 사용함)"
- *    tags: [Post]
- *    parameters:
- *      - in: query
- *        name: postId
- *        required: true
- *        description: postId
- *    requestBody:
- *      description: 유저 수정
- *      required: true
- *      content:
- *        application/x-www-form-urlencoded:
- *          schema:
- *            type: object
- *            properties:
- *              id:
- *                type: int
- *                description: "유저 고유아이디"
- *              name:
- *                type: string
- *                description: "유저 이름"
- *    responses:
- *      "200":
- *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다.(유저 수정)
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                ok:
- *                  type: boolean
- *                data:
- *                  type: string
- *                  example:
- *                    [
- *                      { "id": 1, "name": "유저1" },
- *                      { "id": 2, "name": "유저2" },
- *                      { "id": 3, "name": "유저3" },
- *                    ]
- */
-postRouter.put("/update");
-
-/**
- * @swagger
- * /api/user/update/{user_id}:
- *   patch:
- *    summary: "유저 수정"
- *    description: "Patch 방식을 통해 특정 유저 수정(단일 데이터를 수정할 때 사용함)"
+ *    description: "Patch 방식을 통해 특정 post 수정(단일 데이터를 수정할 때 사용함)"
  *    tags: [Post]
  *    parameters:
  *      - in: path
- *        name: user_id
+ *        name: postId
  *        required: true
- *        description: 유저 아이디
+ *        description: post 아이디
  *        schema:
  *          type: string
  *    requestBody:
- *      description: 유저 수정
+ *      description: post 수정
  *      required: true
  *      content:
  *        application/x-www-form-urlencoded:
  *          schema:
  *            type: object
  *            properties:
- *              name:
+ *              postId:
  *                type: string
- *                description: "유저 이름"
+ *                example: "1242143"
+ *              postTitle:
+ *                type: string
+ *                example: "이 제품 좋아요"
+ *              postContent:
+ *                type: string
+ *                example: "42"
+ *              price:
+ *                type: number
+ *                example: "9900"
+ *              category:
+ *                type: string
+ *                example: "그림"
+ *              transaction:
+ *                type: string
+ *                example: "직거래"
+ *              changeAddress:
+ *                type: string
+ *                example: "강서구"
+ *              imageUrl:
+ *                type: string
+ *                example: "imageUrl"
  *    responses:
  *      "200":
  *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (유저 수정)
@@ -394,31 +368,45 @@ postRouter.put("/update");
  *            schema:
  *              type: object
  *              properties:
- *                ok:
- *                  type: boolean
- *                data:
+ *                postId:
  *                  type: string
- *                  example:
- *                    [
- *                      { "id": 1, "name": "유저1" },
- *                      { "id": 2, "name": "유저2" },
- *                      { "id": 3, "name": "유저3" },
- *                    ]
+ *                  example: "1242143"
+ *                postTitle:
+ *                  type: string
+ *                  example: "이 제품 좋아요"
+ *                postContent:
+ *                  type: string
+ *                  example: "42"
+ *                price:
+ *                  type: number
+ *                  example: "9900"
+ *                category:
+ *                  type: string
+ *                  example: "그림"
+ *                transaction:
+ *                  type: string
+ *                  example: "직거래"
+ *                changeAddress:
+ *                  type: string
+ *                  example: "강서구"
+ *                imageUrl:
+ *                  type: string
+ *                  example: "imageUrl"
  */
 postRouter.patch("/update/:user_id");
 
 /**
  * @swagger
- * /api/user/delete:
+ * /api/post/delete/{postId}:
  *   delete:
- *    summary: "특정 유저 삭제"
+ *    summary: "특정 post 삭제"
  *    description: "요청 경로에 값을 담아 서버에 보낸다."
  *    tags: [Post]
  *    parameters:
  *      - in: query
- *        name: user_id
+ *        name: postId
  *        required: true
- *        description: 유저 아이디
+ *        description: post 아이디
  *        schema:
  *          type: string
  *    responses:
@@ -429,16 +417,9 @@ postRouter.patch("/update/:user_id");
  *            schema:
  *              type: object
  *              properties:
- *                ok:
- *                  type: boolean
- *                users:
- *                  type: object
- *                  example:
- *                    [
- *                      { "id": 1, "name": "유저1" },
- *                      { "id": 2, "name": "유저2" },
- *                      { "id": 3, "name": "유저3" },
- *                    ]
+ *                postId:
+ *                  type: string
+ *                  example: "5133"
  */
 postRouter.delete("/delete");
 
