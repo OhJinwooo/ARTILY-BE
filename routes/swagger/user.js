@@ -39,6 +39,41 @@ const userController = require("../controllers/user.controllers");
  */
 userRouter.post("/oauth/kakao/callback");
 
+/**
+ * @swagger
+ * paths:
+ *  /api/user/getuser:
+ *    get:
+ *      summary: "사용자 정보"
+ *      description: "kakao social"
+ *      tags: [Users]
+ *      responses:
+ *        "200":
+ *          description: 사용자 정보
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  userId:
+ *                    type: string
+ *                    example: "861156"
+ *                  profileUrl:
+ *                    type: string
+ *                    example: "http://dfsafdxcv"
+ *                  nickname:
+ *                    type: string
+ *                    example: "가나다"
+ *                  provider:
+ *                    type: string
+ *                    example: "kakao"
+ *                  accessToken:
+ *                    type: string
+ *                    example: "safjkcxvnakldsnj"
+ *
+ */
+userRouter.post("/user/getuser");
+
 // /**
 //  * @swagger
 //  * /api/user/user?user_id={user_id}:

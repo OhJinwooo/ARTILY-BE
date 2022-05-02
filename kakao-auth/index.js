@@ -7,13 +7,9 @@ module.exports = () => {
   passport.use(
     new KakaoStrategy(
       {
-        clientID: process.env.clientID, // 카카오 로그인에서 발급받은 REST API 키
+        clientID: process.env.kakaoClientID, // 카카오 로그인에서 발급받은 REST API 키
         callbackURL: "http://localhost:3000/oauth/kakao/callback", // 카카오 로그인 Redirect URI 경로
       },
-      // clientID에 카카오 앱 아이디 추가
-      // callbackURL: 카카오 로그인 후 카카오가 결과를 전송해줄 URL
-      // accessToken, refreshToken : 로그인 성공 후 카카오가 보내준 토큰
-      // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -24,9 +20,11 @@ module.exports = () => {
             userId: profile.id,
             provider: "kakao",
           });
+          // clientID에 카카오 앱 아이디 추가
+          // callbackURL: 카카오 로그인 후 카카오가 결과를 전송해줄 URL
+          // accessToken, refreshToken : 로그인 성공 후 카카오가 보내준 토큰
+          // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
-          // console.log("newUser", exUser);
-          // 이미 가입된 카카오 프로필이면 성공
           let profileUrl = "";
           if (exUser) {
             console.log(99999999999, exUser);
