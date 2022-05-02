@@ -13,6 +13,7 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         try {
+          console.log("!!!!!!!!!!!!!!!!", process.env.KAKAOCLIENT_ID);
           console.log(profile);
           console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
           const exUser = await User.findOne({
@@ -34,6 +35,7 @@ module.exports = () => {
               profileUrl = profile._json.properties?.profile_image;
             }
 
+            console.log("@@@@@@@@@@@@@@@@", process.env.KAKAOCLIENT_ID);
             const user = {
               accessToken: accessToken,
               refreshToken: refreshToken,

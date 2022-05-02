@@ -11,6 +11,8 @@ const kakaoCallback = (req, res, next) => {
     const { userId, nickname, provider, profileUrl, accessToken } = user;
     const token = jwt.sign({ userId: userId }, "kakao-secret-key");
 
+    console.log("###############", process.env.KAKAOCLIENT_ID);
+
     result = {
       token,
       profileUrl: profileUrl,
