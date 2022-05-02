@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("./multer/uploads");
 const { review } = require("./controllers/review.controllers");
 const { review_detail } = require("./controllers/review.controllers");
 const { review_write } = require("./controllers/review.controllers");
@@ -13,10 +14,10 @@ router.get("/review", review);
 router.get("/review/:reviewId", review_detail);
 
 //리뷰작성
-router.post("/review", review_write); //upload.single("imageUrl"),
+router.post("/review", upload.single("imageUrl"), review_write);
 
 //리뷰수정
-router.patch("/review/:reviewId", review_modify);
+router.patch("/review/:reviewId", upload.single("imageUrl"), review_modify);
 
 //리뷰삭제
 router.delete("/review/:reviewId", review_delete);
