@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const port = 3000;
+require("dotenv").config();
 
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
