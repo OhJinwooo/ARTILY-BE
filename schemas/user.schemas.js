@@ -15,33 +15,36 @@ const UserSchema = new mongoose.Schema({
   profileUrl: {
     type: String,
   },
+  profile: {
+    type: String,
+  },
   refreshToken: {
     type: String,
   },
-  // role: {
-  //   type: Boolean,
-  // },
-  // refreshToken: {
-  //   type: String,
-  // },
-  // profileUrl: {
-  //   type: String,
-  // },
-  // address: {
-  //   type: String,
-  // },
-  // blacklist: {
-  //   type: Array,
-  // },
-  // profile: {
-  //   type: String,
-  // },
-  // follow: {
-  //   type: Array,
-  // },
-  // follower: {
-  //   type: Array,
-  // },
+  role: {
+    type: Boolean,
+  },
+  address: {
+    type: String,
+  },
+  blacklist: {
+    type: Array,
+  },
+  follow: {
+    type: Array,
+  },
+  follower: {
+    type: Array,
+  },
+  myPost: {
+    type: Array,
+  },
+  myReview: {
+    type: Array,
+  },
+  myMarkup: {
+    type: Array,
+  },
 });
 // UserSchema.virtual("userId").get(function () {
 //   return this._id.toHexString();
