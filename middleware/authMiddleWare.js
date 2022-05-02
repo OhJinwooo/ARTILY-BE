@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
     const { userId } = jwt.verify(tokenValue, "ARTILY-secret-key");
     console.log("userId-->", userId);
     //error발생 StringToObjectID
-    User.find({ userId })
+    User.findOne({ userId })
       .exec()
       .then((user) => {
         res.locals.user = user;
