@@ -3,9 +3,9 @@
 
 //사용자 인증
 const user = async (req, res) => {
-  const kakaoUser = res.locals.user;
+  const user = res.locals.user;
   res.send({
-    kakaoUser,
+    user,
   });
 };
 
