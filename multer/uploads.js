@@ -1,4 +1,4 @@
-const multer = require('multer');
+/* const multer = require('multer');
 const path = require('path') 
 const fs =require('fs');
 
@@ -21,14 +21,11 @@ const fs =require('fs');
     }); 
     // upload를 변수 선언 multer(옵션지정)
      const upload = multer({ storage: storage }); 
-     module.exports = upload 
+     module.exports = upload  */
 
- /* const multer = require('multer'); 
+const multer = require('multer'); 
 const multerS3 = require('multer-s3'); 
-const aws = require('aws-sdk'); 
-//s3 key 파일
-aws.config.loadFromPath(__dirname + '../../awsconfig.json'); 
-const s3 = new aws.S3(); 
+const s3 = require('../multer/s3')
 const upload = multer({ 
 storage: multerS3({ 
   s3: s3,
@@ -45,5 +42,5 @@ storage: multerS3({
   }),
    //사이즈 제한
   limits: { fileSize: 1000 * 1000 * 10 }  }); 
-module.exports = upload; */
+module.exports = upload;
 

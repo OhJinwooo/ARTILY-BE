@@ -1,6 +1,7 @@
 const Post = require("../../schemas/post.schemas");
 const Review = require('../../schemas/review.schemas');
 const sharp = require('sharp');
+const s3 = require('../../multer/s3');
 const moment = require('moment');
 const fs = require('fs');
 const path = require('path')
@@ -15,18 +16,20 @@ const uuid = () => {
   return tokens[2] + tokens[1] + tokens[3] ;
 }
 
+//공통 항목(user에대한 미들웨어 미적용 코드)
 
 //전체조회 페이지 (이달의 작가 추전 부분(임시적 구현 artPost 에 저장된user로 불러옴))
 const getHome = async (req, res) => {
   try{
       //limt함수 사용 보여주는 데이터 숫자 제한
-      const artPost = await Post.find({}).sort('-marckupCnt').limit(4);
-      const artWriter = artPost.user;
-      const reviwPage = await Review.find({}).sort('-Likecount').limit(4);
+      const artPost = await Post.find({})/* .sort('-marckupCnt') *//* .limit(4) */;
+     /*  const artWriter = artPost.user;
+      const reviwPage = await Review.find({}).sort('-Likecount').limit(4); */
+      console.log('console',artPost[6].imageUrl)
       res.status(200).json({
         respons:'success',
         msg:'조회 성공',
-        data:{artPost,artWriter,reviwPage}
+        data:{artPost/* ,artWriter,reviwPage */}
       })
   }catch(error){
     res.status(400).json({
@@ -63,6 +66,7 @@ const artStore = async(req,res)=>{
     if(data.start && !category && !transaction && !changeAddress)
     {
       const artPost = await Post.find({}).limit(start,last);
+      
       res.status(200).json({
       respons:"success",
       msg:'스토어 조회 성공',
@@ -134,13 +138,14 @@ const artPost = async (req, res) => {
         transaction,
         changeAddress
       } = req.body;
-  //파일 저장
-  const img = req.files
-  console.log(img)
-  const imageUrl = `${req.protocol}://${req.get('host')}/img/${req.files}`
-  console.log(imageUrl)
+  //여러장 이미지 저장 
+  let imageUrl = new Array();
+  for(let i = 0; i<req.files.length; i++){
+    /* imageUrl.push(`${req.protocol}://${req.get('host')}/img/${req.files[i].filename}`) */
+    imageUrl.push(req.files[i].location)
+  }
   //moment를 이용하여 한국시간으로 날짜생성
- /*  const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
+  const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
   //uuid를 사용하여 고유 값생성
   const postId = uuid();
   //검증 고유값중복 검증
@@ -163,7 +168,7 @@ const artPost = async (req, res) => {
       respons:"success",
       msg:'판매글 생성 완료'
     });
-  } */
+  }
   }catch(error){
     res.status(400).json({
       respons:"fail",
@@ -172,11 +177,55 @@ const artPost = async (req, res) => {
   }
 };
 
+
+//api 수정(삭제 미구현)
 const artUpdate = async (req,res) =>{
   try{
-      
-  }catch(error){
+      //수정할 파라미터 값
+      const postId = req.params.postId;
+      console.log(postId)
+      //바디로 받을 데이터
+     /*  const {
+        postTitle,
+        postContent,
+        category,
+        transaction,
+        changeAddress,
+        } = req.body; */
+      //moment를 이용하여 한국시간으로 날짜생성
+      /* const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss'); */
+      //이미지 수정
+      const artPostimg = await Post.find({postId:postId});
+      const img =  artPostimg[0].imageUrl
+      for(let i = 0; i<img.length; i++){
+        console.log(img[i].split('/')[3])
+        s3.deleteObject({
+          Bucket:'artvb',
+          key:`${img[i].split('/')[3]}`
+        },function(err, data){});
+      };
 
-  }
-}
-module.exports = { getHome, artPost, artStore , artDetail};
+      //업데이트
+      /* await Post.updateOne({postId},{
+        $set:{
+        postTitle,
+        postContent,
+        category,
+        transaction,
+        changeAddress,
+        createdAt,
+        imageUrl
+        }
+      }); */
+      res.status(200).send({
+        respons:'success',
+        msg:'수정 완료'
+      })
+  }catch(error){
+    res.status(400).send({
+      respons:'fail',
+      msg:'수정 실패'
+    })
+  };
+};
+module.exports = { getHome, artPost, artStore , artDetail, artUpdate};
