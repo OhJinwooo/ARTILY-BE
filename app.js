@@ -28,7 +28,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.session());
+app.use(express.session({ secret: process.env.naverSecret }));
 
 const client_id = process.env.naverClient_id;
 const client_secret = process.env.naverSecret;
