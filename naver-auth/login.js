@@ -8,8 +8,8 @@ module.exports = () => {
   passport.use(
     new NaverStrategy(
       {
-        clientID: process.env.naverClient_id,
-        clientSecret: process.env.naverSecret,
+        clientID: process.env.NAVERCLIENT_ID,
+        clientSecret: process.env.NAVERSECRET,
         callbackURL: "http://localhost:3000/oauth/naver/callback",
       },
       async (accessToken, refreshToken, profile, done) => {
