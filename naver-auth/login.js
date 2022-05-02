@@ -5,6 +5,7 @@ require("dotenv").config();
 
 //별도 config 파일에 '네아로'에 신청한 정보 입력
 module.exports = () => {
+  console.log("모듈");
   passport.use(
     new NaverStrategy(
       {
@@ -14,6 +15,7 @@ module.exports = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
+          console.log("try in", profile);
           const exUser = await User.findOne({
             userId: profile.id,
             provider: "naver",
@@ -41,6 +43,7 @@ module.exports = () => {
               profileUrl,
               // email: profile.emails[0].value, // 유저 이메일
             };
+            console.log("user 정보");
             await User.create(user);
 
             console.log("user=");

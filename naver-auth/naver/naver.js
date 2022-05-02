@@ -20,7 +20,7 @@ const naverCallback = (req, res, next) => {
       accessToken,
       // refreshToken: refreshToken,
     };
-    console.log(1, result);
+    console.log(13121312312312, result);
     res.send({ user: result });
   })(req, res, next);
 };
