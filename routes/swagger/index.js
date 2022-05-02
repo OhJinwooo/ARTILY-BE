@@ -19,12 +19,12 @@ router.use("/user", user);
  */
 router.use("/post", post);
 
-// /**
-//  * @swagger
-//  * tags:
-//  *   name: Reivew
-//  *   description: review
-//  */
-// router.use("/review", review);
+/**
+ * @swagger
+ * tags:
+ *   name: Reivew
+ *   description: review
+ */
+router.use("/review", review);
 
 module.exports = router;
