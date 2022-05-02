@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
     return;
   }
   try {
-    const { userId } = jwt.verify(tokenValue, "naver-secret-key");
+    const { userId } = jwt.verify(tokenValue, "ARTILY-secret-key");
     console.log("userId-->", userId);
     //error발생 StringToObjectID
     User.find({ userId })
