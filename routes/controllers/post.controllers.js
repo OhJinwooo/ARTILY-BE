@@ -31,9 +31,7 @@ const getHome = async (req, res) => {
     })
   }
 };
-const cat = {
-  transaction:"art"
-}
+
 //스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (개선 중(시간소요)) )
 const artStore = async(req,res)=>{
   try{
@@ -87,10 +85,13 @@ const artStore = async(req,res)=>{
   };
 };
 
-//작성 api(이미지 및 영상 첨부 기능 미구현)
+//작성 api(이미지 및 영상 첨부 기능 (부분적 구현 중))
 const artPost = async (req, res) => {
  try{
-  //data라는 변수로 body를 받음
+   const image = req.files
+   const imgurl = `${req.protocol}://${req.get('host')}/img/${image}`
+   console.log(imgurl)
+  /* //data라는 변수로 body를 받음
   const {} = req.body;
   const {} = res.locals ;
   //uuid를 사용하여 고유 값생성
@@ -107,7 +108,7 @@ const artPost = async (req, res) => {
       respons:"success",
       msg:'판매글 생성 완료'
     });
-  }
+  } */
   }catch(error){
     res.status(400).json({
       respons:"file",

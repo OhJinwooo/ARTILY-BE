@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { artPost, artStore } = require("./controllers/post.controllers");
-
+const upload = require('../multer/uploads');
+const { artPost } = require("./controllers/post.controllers");
 router.get("/post");
 
-router.get('/post/store', artStore);
+/* router.get('/post/store', artStore); */
 
-router.post("/post", artPost);
+router.post("/post",upload.array('img'),artPost);
 
 module.exports = router;
