@@ -26,6 +26,3 @@ const naverCallback = (req, res, next) => {
 };
 router.get("/naver/callback", naverCallback);
 module.exports = router;
-
-//test
-//test
