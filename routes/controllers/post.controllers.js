@@ -93,8 +93,11 @@ const artStore = async(req,res)=>{
 //상세조회
 const artDetail = async(req,res) => {
   try{
+      //파리미터 값받음
       const postId = req.params ;
+      //상세 페이지 데이터
       const artPost = await Post.findOne({postId}).exec();
+      // 추가 데이터(상세 페이지 작가기준)
       const artPost2 = await Post.find({uesr:artPost.user}).sort('-createdAt').limit(4)
       req.status(200).json({
         respons:"success",
@@ -171,9 +174,9 @@ const artPost = async (req, res) => {
 
 const artUpdate = async (req,res) =>{
   try{
-
+      
   }catch(error){
-    
+
   }
 }
 module.exports = { getHome, artPost, artStore , artDetail};
