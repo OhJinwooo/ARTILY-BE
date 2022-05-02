@@ -1,15 +1,15 @@
-/* const multer = require('multer');
-/* const path = require('path') */ 
-/* const fs =require('fs'); */
+const multer = require('multer');
+const path = require('path') 
+const fs =require('fs');
 
-/* try {
+ try {
     fs.readdirSync('uploads'); // 폴더 확인
     } catch(err) {
     console.error('uploads 폴더가 없습니다. 폴더를 생성합니다.');
     fs.mkdirSync('uploads'); // 폴더 생성
-    } */
+    } 
     
-   /*  const storage = multer.diskStorage({
+   const storage = multer.diskStorage({
       //파일 경로 지정
       destination:  (req, file, cb) => {
         cb(null, 'uploads/')
@@ -18,12 +18,12 @@
       filename:  (req, file, cb) => {
         cb(null, Date.now() + '-' + file.originalname.split(" ").join('_'))// 파일 원본이름 저장
       }
-    }); */
+    }); 
     // upload를 변수 선언 multer(옵션지정)
-    /* const upload = multer({ storage: storage }); */
-    /* module.exports = upload */
+     const upload = multer({ storage: storage }); 
+     module.exports = upload 
 
-const multer = require('multer'); 
+ /* const multer = require('multer'); 
 const multerS3 = require('multer-s3'); 
 const aws = require('aws-sdk'); 
 //s3 key 파일
@@ -43,7 +43,7 @@ storage: multerS3({
     file.originalname.split('.').pop()); 
     } 
   }),
- /*  //사이즈 제한
-  limits: { fileSize: 1000 * 1000 * 10 } */ }); 
-module.exports = upload;
+   //사이즈 제한
+  limits: { fileSize: 1000 * 1000 * 10 }  }); 
+module.exports = upload; */
 
