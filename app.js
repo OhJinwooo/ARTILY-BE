@@ -3,7 +3,7 @@ const http = require("http");
 const app = express();
 const port = 3000;
 const server = http.createServer(app);
-const socketIO = require("socket.io");
+const socket = require("socket.io");
 require("dotenv").config();
 
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
@@ -31,7 +31,7 @@ app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [postRouter, userRouter, reviewRouter]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-const io = socketIO(server, {
+const io = socket(server, {
   cors: {
     origin: "http://localhost:3000",
     credentials: true,
