@@ -14,10 +14,10 @@ router.get("/review", review);
 router.get("/review/:reviewId", review_detail);
 
 //리뷰작성
-router.post("/review", upload.array("imageUrl", 5), review_write);
+router.post("/review", upload.array("imageUrl", 10), review_write);
 
 //리뷰수정
-router.patch("/review/:reviewId", upload.single("imageUrl", 5), review_modify);
+router.patch("/review/:reviewId", upload.array("imageUrl", 10), review_modify);
 
 //리뷰삭제
 router.delete("/review/:reviewId", review_delete);

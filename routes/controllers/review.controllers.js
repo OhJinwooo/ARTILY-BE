@@ -39,8 +39,8 @@ const review_write = async (req, res) => {
 
   //const imageUrl = req.file?.location;
   const imageUrl = req.files;
-  console.log("req.files: ", req.files); // ok // 테스트 => req.file.location에 이미지 링크(s3-server)가 담겨있음
-  console.log("imageUrl", imageUrl); //ok
+  //console.log("req.files: ", req.files); // ok // 테스트 => req.file.location에 이미지 링크(s3-server)가 담겨있음
+  //console.log("imageUrl", imageUrl); //ok
   //사용자 브라우저에서 보낸 쿠키를 인증미들웨어통해 user변수 생성
   // const { user } = res.locals;
   // const userId = user.userId;
@@ -54,28 +54,28 @@ const review_write = async (req, res) => {
   // const reviewId = CryptoJS.SHA256(createdAt)['words'][0];
   //console.log(reviewId);
 
-  try {
-    const ReviewList = await Review.create({
-      category,
-      userId,
-      nickname,
-      reviewTitle,
-      likeCnt,
-      imageUrl,
-      reviewContent,
-      createdAt,
-    });
-    res.send({ result: "success", ReviewList });
-  } catch {
-    res.status(400).send({ msg: "게시글이 작성되지 않았습니다." });
-  }
+  //try {
+  const ReviewList = await Review.create({
+    category,
+    userId,
+    nickname,
+    reviewTitle,
+    likeCnt,
+    imageUrl,
+    reviewContent,
+    createdAt,
+  });
+  res.send({ result: "success", ReviewList });
+  //} catch {
+  //res.status(400).send({ msg: "게시글이 작성되지 않았습니다." });
+  //}
 };
 
 //리뷰 수정
 const review_modify = async (req, res) => {
   const { reviewId } = req.params;
   const { category, reviewTitle, reviewContent } = req.body;
-  const imageUrl = req.file?.location;
+  const imageUrl = req.files;
 
   console.log(category, reviewTitle, reviewContent); //ok
   console.log("imageUrl", imageUrl); //ok
