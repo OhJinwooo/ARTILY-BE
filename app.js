@@ -26,7 +26,7 @@ connect();
 
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://52.78.183.202/:3000",
     credentials: true,
   },
 });
