@@ -174,7 +174,7 @@ reviewRouter.post("/review", upload.single("imageUrl"), review_write);
 
 // /**
 //  * @swagger
-//  * /api/review/{reviewId}
+//  * /api/review/{reviewId}:
 //  *   patch:
 //  *    summary: "리뷰 수정"
 //  *    description: "Patch 방식을 통해 특정 리뷰 수정(단일 데이터를 수정할 때 사용함)"
