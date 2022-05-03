@@ -108,6 +108,18 @@ const artDetail = async(req,res) => {
         msg:'상세페이지 조회 성공',
         data:[artPost,artPost2]
       });
+      const {uesr} = res.locals;
+      //user로 post  확인
+      const artPost1 = await Post.findOne({uesr}).exec();
+      //작성 유저 인지 확인 조건
+      if(artPost.postId === artPost1.postId){
+        //조건 통과시 true값으로 변환
+        await Post.updateOne({$set:postId},{done:true})
+        res.status(200).send({
+          respons:'success',
+          msg:'판매 완료',
+        });
+      };
   }catch(error){
     req.status(200).json({
       respons:"fail",
@@ -254,10 +266,32 @@ const artdelete = async(req,res) => {
 const marckupCnt = async(req,res)=>{
   try{
       const postId = req.params ;
-      const {user} = req.locals ;
-      aw
+      const {user} = res.locals ;
+      //임시적 스키마
+      const Cnt = await Test.findOne({postId,user});
+      if(Cnt.length > 0){
+        await Test.create({postId,user});
+        await Post.updateOne({$set: postId},{marckupCnt:+1});
+        const artPost = await Post.findOne({postId});
+        res.status(200).json({
+          respons:'success',
+          msg:"성공",
+          data:artPost
+        });
+      }
+        await Test.deleteOne({postId,user});
+        await Post.updateOne({$set: postId},{marckupCnt:-1});
+        const artPost = await Post.findOne({postId});
+        res.status(200).json({
+          respons:'success',
+          msg:"취소",
+          data:artPost
+        });
   }catch(error){
-
+    res.status(400).send({
+      respons:'fail',
+      msg:'실패'
+    });
   }
 }
 module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete};
