@@ -26,6 +26,7 @@ module.exports = () => {
           // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
           let profileUrl = "";
+          let address = "";
           if (exUser) {
             console.log("로그인", exUser);
             done(null, exUser);
@@ -41,14 +42,11 @@ module.exports = () => {
               userId: profile.id,
               provider: "naver",
               profileUrl,
+              address,
               // email: profile.emails[0].value, // 유저 이메일
             };
-            console.log("user 정보");
             await User.create(user);
-
-            console.log("user=");
-            console.log(user);
-            return done(null, user);
+            done(null, user);
           }
         } catch {
           console.error(error);
