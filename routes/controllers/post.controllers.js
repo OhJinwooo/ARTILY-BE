@@ -232,9 +232,12 @@ const artUpdate = async (req,res) =>{
 // 삭제
 const artdelete = async(req,res) => {
   try{
+    //파라미터 값
       const postId = req.params.postId;
+      // user 정보 일치
       const {user} = req.locals;
-      await Post.deleteOne({postId});
+      //delete
+      await Post.deleteOne({postId, user});
       res.status(200).send({
         respons : 'success',
         msg: '삭제 완료'
