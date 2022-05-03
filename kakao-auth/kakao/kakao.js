@@ -21,7 +21,6 @@ const kakaoCallback = (req, res, next) => {
       // refreshToken: refreshToken,
     };
     console.log(1, result);
-    res.locals.user = result;
     res.send({ user: result });
   })(req, res, next);
 };

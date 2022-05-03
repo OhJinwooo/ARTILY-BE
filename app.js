@@ -18,6 +18,7 @@ const connect = require("./schemas/index.schemas");
 const postRouter = require("./routes/post.router");
 const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
+const testRouter = require("./routes/post.router");
 const mypageRouter = require("./routes/mypage.router");
 
 const cors = require("cors");
