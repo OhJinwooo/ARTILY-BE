@@ -141,7 +141,7 @@ const artPost = async (req, res) => {
       if (err) throw err;
      });
    }); */
-   
+   const {user} = res.locals;
 
   //req.body를 받음
   const {postTitle,
@@ -174,6 +174,7 @@ const artPost = async (req, res) => {
         postId,
         createdAt,
         done:false,
+        user
     });
     await artBrod.save();
     res.status(200).json({
@@ -190,23 +191,23 @@ const artPost = async (req, res) => {
 };
 
 
-//api 수정(이미지 업데이트 기능 미구현)
+//api 수정(이미지 업데이트 기능 미구현(새롭게 추가 형식으로 임시적 구현))
 const artUpdate = async (req,res) =>{
   try{
+      const {user} =res.locals;
       //수정할 파라미터 값
       const postId = req.params.postId;
-      console.log(postId)
       //바디로 받을 데이터
-     /*  const {
+      const {
         postTitle,
         postContent,
         category,
         transaction,
         changeAddress,
-        } = req.body; */
+        } = req.body; 
       //moment를 이용하여 한국시간으로 날짜생성
-      /* const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss'); */
-      //이미지 수정
+      const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
+      /* //이미지 수정
       const artPostimg = await Post.find({postId:postId});
       const img =  artPostimg[0].imageUrl
       for(let i = 0; i<img.length; i++){
@@ -216,9 +217,14 @@ const artUpdate = async (req,res) =>{
           key:`${img[i].split('/')[3]}`
         });
       };
-
-      //업데이트
-      /* await Post.updateOne({postId},{
+ */
+      //여러장 이미지 저장 
+      let imageUrl = new Array();
+      for(let i = 0; i<req.files.length; i++){
+        imageUrl.push(req.files[i].location)
+      }
+     if(user){ //업데이트
+      await Post.updateOne({postId},{
         $set:{
         postTitle,
         postContent,
@@ -228,11 +234,11 @@ const artUpdate = async (req,res) =>{
         createdAt,
         imageUrl
         }
-      }); */
+      });
       res.status(200).send({
         respons:'success',
         msg:'수정 완료'
-      })
+      })}
   }catch(error){
     res.status(400).send({
       respons:'fail',
