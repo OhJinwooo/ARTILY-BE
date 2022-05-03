@@ -28,11 +28,6 @@ app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [postRouter, userRouter, reviewRouter]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-<<<<<<< HEAD
-// 인증
-
-=======
->>>>>>> 1c8cb350c73f63cac638ff7901355d1fc95bbf40
 app.use(passport.initialize());
 app.use(passport.session());
 

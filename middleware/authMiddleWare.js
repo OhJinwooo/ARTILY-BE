@@ -19,13 +19,6 @@ module.exports = (req, res, next) => {
     const { userId } = jwt.verify(tokenValue, "ARTILY-secret-key");
     console.log("userId-->", userId);
     //error발생 StringToObjectID
-<<<<<<< HEAD
-    User.find({userId}).exec().then((user) => {
-      res.locals.user = user
-      next();
-    });
-  } catch(error){
-=======
     User.findOne({ userId })
       .exec()
       .then((user) => {
@@ -33,15 +26,9 @@ module.exports = (req, res, next) => {
         next();
       });
   } catch (error) {
->>>>>>> 1c8cb350c73f63cac638ff7901355d1fc95bbf40
     res.status(401).send({
       errorMessage: "로그인 후 이용하세요.",
     });
     return;
-<<<<<<< HEAD
-  };
-}; code test
-=======
   }
 };
->>>>>>> 1c8cb350c73f63cac638ff7901355d1fc95bbf40
