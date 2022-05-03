@@ -3,8 +3,19 @@ const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
 const CryptoJS = require("crypto-js");
 
+let multer = require("multer");
+let multerS3 = require("multer-s3");
+let AWS = require("aws-sdk");
+const path = require("path");
+AWS.config.loadFromPath(path.join(__dirname, "../config/s3.json")); // 인증
+let s3 = new AWS.S3();
+
 // 리뷰 조회
 const review = async (req, res) => {
+  // const { user } = res.locals;
+  // console.log("user", user);
+  // const userId = user.userId;
+  // console.log("userId", userId);
   try {
     const review = await Review.find({}).sort("-createdAt").limit(4);
     res.json({ review });
@@ -31,33 +42,32 @@ const review_detail = async (req, res) => {
 
 //리뷰 작성
 const review_write = async (req, res) => {
+  // const { user } = res.locals;
+  // console.log("user", user);
+  // const userId = user.userId;
+  // console.log("userId", userId);
+
   //작성한 정보 가져옴
-  const { category, userId, nickname, reviewTitle, likeCnt, reviewContent } =
-    req.body;
+  const { category, nickname, reviewTitle, likeCnt, reviewContent } = req.body;
+  console.log(category, nickname, reviewTitle, likeCnt, reviewContent); //ok
 
-  console.log(category, userId, nickname, reviewTitle, likeCnt, reviewContent); //ok
-
-  //const imageUrl = req.file?.location;
   const imageUrl = req.files;
   //console.log("req.files: ", req.files); // ok // 테스트 => req.file.location에 이미지 링크(s3-server)가 담겨있음
   //console.log("imageUrl", imageUrl); //ok
   //사용자 브라우저에서 보낸 쿠키를 인증미들웨어통해 user변수 생성
-  // const { user } = res.locals;
-  // const userId = user.userId;
-  // console.log(user)  //ok
 
   // 글작성시각 생성
   require("moment-timezone");
   moment.tz.setDefault("Asia/Seoul");
   const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
-  //console.log(createdAt); //ok
+  // console.log(createdAt); //ok
   // const reviewId = CryptoJS.SHA256(createdAt)['words'][0];
-  //console.log(reviewId);
+  // console.log(reviewId);
 
   //try {
   const ReviewList = await Review.create({
     category,
-    userId,
+    // userId,
     nickname,
     reviewTitle,
     likeCnt,
@@ -77,8 +87,8 @@ const review_modify = async (req, res) => {
   const { category, reviewTitle, reviewContent } = req.body;
   const imageUrl = req.files;
 
-  console.log(category, reviewTitle, reviewContent); //ok
-  console.log("imageUrl", imageUrl); //ok
+  //console.log(category, reviewTitle, reviewContent); //ok
+  //console.log("imageUrl", imageUrl); //ok
 
   //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
   if (!reviewContent.length) {
@@ -87,17 +97,17 @@ const review_modify = async (req, res) => {
   }
   //try {
   const photo = await Review.find({ _id: reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
-  console.log("photo", photo);
-  const url = photo[0].imageUrl.split("/"); // photo 저장된 fileUrl을 가져옴
+  console.log("photo", photo); //ok
+  const url = photo[0].imageUrl; // photo 저장된 fileUrl을 가져옴
   console.log("url", url);
-  const delFileName = url[url.length - 1]; //1651487282770.jpg
-  console.log("delFileName", delFileName);
+  //const delFileName = url[url.length - 1]; //1651487282770.jpg
+  //console.log("delFileName", delFileName);
   if (imageUrl) {
     console.log("new이미지====", imageUrl);
     s3.deleteObject(
       {
         Bucket: "mandublog",
-        Key: delFileName,
+        Key: url,
         //key 속성은 업로드하는 파일이 어떤 이름으로 버킷에 저장되는가에 대한 속성이다.
       },
       (err, data) => {
@@ -122,8 +132,8 @@ const review_modify = async (req, res) => {
   }
   const ReviewList = await Review.findOne({ _id: reviewId });
   res.send({ result: "success", ReviewList });
-  //} catch {
-  res.status(400).send({ msg: "게시글이 수정되지 않았습니다." });
+  // } catch {
+  //   res.status(400).send({ msg: "게시글이 수정되지 않았습니다." });
   // }
 };
 

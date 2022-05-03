@@ -16,10 +16,11 @@ const connect = () => {
 module.exports = connect;
 
 // const mongoose = require("mongoose");
+// require("dotenv").config();
 // const connect = () => {
 //   mongoose
 //     // .connect("mongodb://54.180.96.227:27017/artin", {
-//     //.connect(
+//     .connect(
 //       "mongodb+srv://sdnzmzm5:01040104@cluster0.ehvln.mongodb.net/ARTILY?retryWrites=true&w=majority",
 //       {
 //         ignoreUndefined: true,
