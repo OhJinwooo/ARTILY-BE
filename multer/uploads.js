@@ -31,7 +31,7 @@ storage: multerS3({
   s3: s3,
   // 버킷 이름 
   bucket: 'artvb', 
-  acl: 'public-read', 
+  acl: 'public-read-write', 
   key: function(req, file, cb) {
   //파일 이름 설정
   cb(null, 

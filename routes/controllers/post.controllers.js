@@ -201,7 +201,7 @@ const artUpdate = async (req,res) =>{
         console.log(img[i].split('/')[3])
         s3.deleteObject({
           Bucket:'artvb',
-          key:`${img[i].split('/')[3]}`
+          key:`${img[i]}`
         },function(err, data){});
       };
 
@@ -228,4 +228,22 @@ const artUpdate = async (req,res) =>{
     })
   };
 };
-module.exports = { getHome, artPost, artStore , artDetail, artUpdate};
+
+// 삭제
+const artdelete = async(req,res) => {
+  try{
+      const postId = req.params.postId;
+      const {user} = req.locals;
+      await Post.deleteOne({postId});
+      res.status(200).send({
+        respons : 'success',
+        msg: '삭제 완료'
+      })
+  }catch(error){
+    res.status(400).send({
+      respons:'fail',
+      msg:'삭제 실패'
+    });
+  };
+};
+module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete};

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require('../multer/uploads');
-const { artPost, artDetail,artStore, artUpdate, getHome } = require("./controllers/post.controllers");
+const { artPost, artDetail,artStore, artUpdate, getHome, artdelete } = require("./controllers/post.controllers");
 router.get("/post",getHome);
 
 router.get('/post/store', artStore);
@@ -12,6 +12,6 @@ router.post("/post",upload.array('img'),artPost);
 
 router.put('/post/:postId',upload.array('img'),artUpdate);
 
-router.delete('/post/:postId');
+router.delete('/post/:postId',artdelete);
 
 module.exports = router;
