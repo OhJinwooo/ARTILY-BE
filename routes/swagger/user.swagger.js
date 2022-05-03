@@ -35,6 +35,27 @@ const userController = require("../controllers/user.controllers");
  *                  address:
  *                    type: string
  *                    example: "강서구 어디 어디"
+ *                  blackList:
+ *                    type: array
+ *                    example: ["userId"]
+ *                  profile:
+ *                    type: string
+ *                    example: "전공/ 경력"
+ *                  follow:
+ *                    type: array
+ *                    example: ["userId"]
+ *                  follower:
+ *                    type: array
+ *                    example: ["userId"]
+ *                  myPost:
+ *                    type: array
+ *                    example: ["postId"]
+ *                  myReview:
+ *                    type: array
+ *                    example: ["reviewId"]
+ *                  myMarkup:
+ *                    type: array
+ *                    example: ["markUp"]
  *
  */
 userRouter.post("/oauth/kakao/callback");

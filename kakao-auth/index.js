@@ -7,14 +7,13 @@ module.exports = () => {
   passport.use(
     new KakaoStrategy(
       {
-        clientID: process.env.kakaoClientID, // 카카오 로그인에서 발급받은 REST API 키
+        clientID: process.env.KAKAOCLIENT_ID, // 카카오 로그인에서 발급받은 REST API 키
         callbackURL: "http://localhost:3000/oauth/kakao/callback", // 카카오 로그인 Redirect URI 경로
       },
 
       async (accessToken, refreshToken, profile, done) => {
         try {
           console.log(profile);
-          console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
           const exUser = await User.findOne({
             // 카카오 플랫폼에서 로그인 했고 & snsId필드에 카카오 아이디가 일치할경우
             userId: profile.id,
@@ -34,6 +33,7 @@ module.exports = () => {
               profileUrl = profile._json.properties?.profile_image;
             }
 
+            console.log("@@@@@@@@@@@@@@@@", process.env.KAKAOCLIENT_ID);
             const user = {
               accessToken: accessToken,
               refreshToken: refreshToken,

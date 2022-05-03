@@ -5,15 +5,17 @@ require("dotenv").config();
 
 //별도 config 파일에 '네아로'에 신청한 정보 입력
 module.exports = () => {
+  console.log("모듈");
   passport.use(
     new NaverStrategy(
       {
-        clientID: process.env.naverClient_id,
-        clientSecret: process.env.naverSecret,
+        clientID: process.env.NAVERCLIENT_ID,
+        clientSecret: process.env.NAVERSECRET,
         callbackURL: "http://localhost:3000/oauth/naver/callback",
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
+          console.log("try in", profile);
           const exUser = await User.findOne({
             userId: profile.id,
             provider: "naver",
@@ -41,6 +43,7 @@ module.exports = () => {
               profileUrl,
               // email: profile.emails[0].value, // 유저 이메일
             };
+            console.log("user 정보");
             await User.create(user);
 
             console.log("user=");
@@ -71,10 +74,10 @@ module.exports = () => {
 // const router = express.Router();
 // const client_id = process.env.naverClient_id;
 // const client_secret = process.env.naverSecret;
-// const state = "RANDOM_STATE";
+// const state = "";
 // const redirectURI = encodeURI("http://localhost:3000/oauth/naver/callback");
 // const api_url = "";
-// router.get("oauth/naver", function (req, res) {
+// router.get("/naver", function (req, res) {
 //   console.log("naver 접근함");
 //   api_url =
 //     "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" +
@@ -90,7 +93,7 @@ module.exports = () => {
 //       "'><img height='50' src='http://static.nid.naver.com/oauth/small_g_in.PNG'/></a>"
 //   );
 // });
-// router.get("/oauth/naver/callback", function (req, res) {
+// router.get("/naver/callback", function (req, res) {
 //   console.log("callback 접근");
 //   code = req.query.code;
 //   state = req.query.state;
@@ -116,8 +119,10 @@ module.exports = () => {
 //   request.get(options, function (error, response, body) {
 //     if (!error && response.statusCode == 200) {
 //       res.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
-//       res.end(body);
+//       console.log(body);
+//       res.end("body", body);
 //     } else {
+//       console.log("res", response);
 //       res.status(response.statusCode).end();
 //       console.log("error = " + response.statusCode);
 //     }

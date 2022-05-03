@@ -15,33 +15,36 @@ const UserSchema = new mongoose.Schema({
   profileUrl: {
     type: String,
   },
+  profile: {
+    type: String,
+  },
   refreshToken: {
     type: String,
   },
-  // role: {
-  //   type: Boolean,
-  // },
-  // refreshToken: {
-  //   type: String,
-  // },
-  // profileUrl: {
-  //   type: String,
-  // },
-  // address: {
-  //   type: String,
-  // },
-  // blacklist: {
-  //   type: Array,
-  // },
-  // profile: {
-  //   type: String,
-  // },
-  // follow: {
-  //   type: Array,
-  // },
-  // follower: {
-  //   type: Array,
-  // },
+  role: {
+    type: Boolean,
+  },
+  address: {
+    type: String,
+  },
+  blacklist: {
+    type: Array,
+  },
+  follow: {
+    type: Array,
+  },
+  follower: {
+    type: Array,
+  },
+  myPost: {
+    type: Array,
+  },
+  myReview: {
+    type: Array,
+  },
+  myMarkup: {
+    type: Array,
+  },
 });
 // UserSchema.virtual("userId").get(function () {
 //   return this._id.toHexString();
@@ -50,24 +53,3 @@ const UserSchema = new mongoose.Schema({
 //   virtuals: true,
 // });
 module.exports = mongoose.model("User", UserSchema);
-
-// const mongoose = require("mongoose");
-
-// const userSchema = mongoose.Schema({
-//   userId: {
-//     type: String,
-//     required: true,
-//     unique: true,
-//   },
-//   password: {
-//     type: String,
-//   },
-//   userName: {
-//     type: String,
-//   },
-//   provider: {
-//     type: String,
-//   },
-// });
-
-// module.exports = mongoose.model("User", userSchema);

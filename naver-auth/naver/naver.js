@@ -9,7 +9,7 @@ const naverCallback = (req, res, next) => {
   passport.authenticate("naver", { failureRedirect: "/" }, (err, user) => {
     if (err) return next(err);
     const { userId, nickname, provider, profileUrl, accessToken } = user;
-    const token = jwt.sign({ userId: userId }, "naver-secret-key");
+    const token = jwt.sign({ userId: userId }, "ARTILY-secret-key");
 
     result = {
       token,
@@ -20,7 +20,7 @@ const naverCallback = (req, res, next) => {
       accessToken,
       // refreshToken: refreshToken,
     };
-    console.log(1, result);
+    console.log(13121312312312, result);
     res.send({ user: result });
   })(req, res, next);
 };
