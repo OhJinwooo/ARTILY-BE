@@ -190,7 +190,7 @@ const artPost = async (req, res) => {
 };
 
 
-//api 수정(삭제 미구현)
+//api 수정(이미지 업데이트 기능 미구현)
 const artUpdate = async (req,res) =>{
   try{
       //수정할 파라미터 값
@@ -262,7 +262,7 @@ const artdelete = async(req,res) => {
   };
 };
 // 찜기능(구분이 명확하지 않음, user 와 postId를 저장 해서 구분을 주어 야하는 데 저장하는 곳이 없음)
-// 카운트 는  올릴 수 있으나 삭제시 구분할 기준 점이 없음
+// 카운트 는  올릴 수 있으나 삭제시 구분할 기준 점이 없음(임시적 구현)
 const marckupCnt = async(req,res)=>{
   try{
       const postId = req.params ;
@@ -276,7 +276,7 @@ const marckupCnt = async(req,res)=>{
         res.status(200).json({
           respons:'success',
           msg:"성공",
-          data:artPost
+          data:artPost.marckupCnt
         });
       }
         await Test.deleteOne({postId,user});
@@ -285,7 +285,7 @@ const marckupCnt = async(req,res)=>{
         res.status(200).json({
           respons:'success',
           msg:"취소",
-          data:artPost
+          data:artPost.marckupCnt
         });
   }catch(error){
     res.status(400).send({
@@ -294,4 +294,4 @@ const marckupCnt = async(req,res)=>{
     });
   }
 }
-module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete};
+module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete, marckupCnt};
