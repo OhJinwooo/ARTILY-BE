@@ -94,7 +94,7 @@ const artStore = async(req,res)=>{
 };
 
 
-//상세조회
+//상세조회(판매자가 판매완료 시 상태 변화 기능 추가)
 const artDetail = async(req,res) => {
   try{
       //파리미터 값받음
