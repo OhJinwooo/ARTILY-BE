@@ -102,12 +102,12 @@ const artDetail = async(req,res) => {
       //상세 페이지 데이터
       const artPost = await Post.findOne({postId}).exec();
       // 추가 데이터(상세 페이지 작가기준)
-      const artPost2 = await Post.find({uesr:artPost.user}).sort('-createdAt').limit(4)
+      const artPost2 = await Post.find({uesr:artPost.user}).sort('-createdAt').limit(4);
       req.status(200).json({
         respons:"success",
         msg:'상세페이지 조회 성공',
         data:[artPost,artPost2]
-      })
+      });
   }catch(error){
     req.status(200).json({
       respons:"fail",
@@ -199,10 +199,10 @@ const artUpdate = async (req,res) =>{
       const img =  artPostimg[0].imageUrl
       for(let i = 0; i<img.length; i++){
         console.log(img[i].split('/')[3])
-        s3.deleteObject({
+       await s3.deleteObject({
           Bucket:'artvb',
-          key:`${img[i]}`
-        },function(err, data){});
+          key:`${img[i].split('/')[3]}`
+        });
       };
 
       //업데이트
@@ -249,4 +249,15 @@ const artdelete = async(req,res) => {
     });
   };
 };
+// 찜기능(구분이 명확하지 않음, user 와 postId를 저장 해서 구분을 주어 야하는 데 저장하는 곳이 없음)
+// 카운트 는  올릴 수 있으나 삭제시 구분할 기준 점이 없음
+const marckupCnt = async(req,res)=>{
+  try{
+      const postId = req.params ;
+      const {user} = req.locals ;
+      aw
+  }catch(error){
+
+  }
+}
 module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete};
