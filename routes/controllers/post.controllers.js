@@ -22,12 +22,11 @@ const uuid = () => {
 const getHome = async (req, res) => {
   try {
     //limt함수 사용 보여주는 데이터 숫자 제한
-    const artPost = await Post.find(
-      {}
-    ); /* .sort('-marckupCnt') */ /* .limit(4) */
-    /*  const artWriter = artPost.user;
-      const reviwPage = await Review.find({}).sort('-Likecount').limit(4); */
-    console.log("console", artPost[6].imageUrl);
+    const artPost = await Post.find({});
+    //.sort('-marckupCnt') */ /* .limit(4)
+    //const artWriter = artPost.user;
+    //const reviwPage = await Review.find({}).sort('-Likecount').limit(4);
+    // console.log("console", artPost[6].imageUrl);
     res.status(200).json({
       respons: "success",
       msg: "조회 성공",
@@ -103,7 +102,7 @@ const artDetail = async (req, res) => {
     //상세 페이지 데이터
     const artPost = await Post.findOne({ postId }).exec();
     // 추가 데이터(상세 페이지 작가기준)
-    const artPost2 = await Post.find({ uesr: artPost.user })
+    const artPost2 = await Post.find({ user: artPost.user })
       .sort("-createdAt")
       .limit(4);
     req.status(200).json({
@@ -137,11 +136,11 @@ const artPost = async (req, res) => {
     const { postTitle, postContent, category, transaction, changeAddress } =
       req.body;
     //여러장 이미지 저장
-    let imageUrl = new Array();
-    for (let i = 0; i < req.files.length; i++) {
-      /* imageUrl.push(`${req.protocol}://${req.get('host')}/img/${req.files[i].filename}`) */
-      imageUrl.push(req.files[i].location);
-    }
+    // let imageUrl = new Array();
+    // for (let i = 0; i < req.files.length; i++) {
+    //   /* imageUrl.push(`${req.protocol}://${req.get('host')}/img/${req.files[i].filename}`) */
+    //   imageUrl.push(req.files[i].location);
+    // }
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //uuid를 사용하여 고유 값생성
@@ -149,14 +148,16 @@ const artPost = async (req, res) => {
     //검증 고유값중복 검증
     const artPostId = await Post.find({ postId }).exec();
     //조건 postId
+    console.log(123123);
     if (artPostId.postId !== postId) {
+      console.log(321321);
       const artBrod = new Post({
         postTitle,
         postContent,
         category,
         transaction,
         changeAddress,
-        imageUrl,
+        // imageUrl,
         postId,
         createdAt,
         done: false,
@@ -165,6 +166,7 @@ const artPost = async (req, res) => {
       res.status(200).json({
         respons: "success",
         msg: "판매글 생성 완료",
+        data: artBrod,
       });
     }
   } catch (error) {
