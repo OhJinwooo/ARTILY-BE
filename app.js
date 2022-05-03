@@ -10,7 +10,6 @@ const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
 const naverRouter = require("./naver-auth/naver/naver");
 const passportNaver = require("./naver-auth/login");
-// const passport = require("passport");
 const { swaggerUi, specs } = require("./swagger/swagger");
 
 const connect = require("./schemas/index.schemas");
