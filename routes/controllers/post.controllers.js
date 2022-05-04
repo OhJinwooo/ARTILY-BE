@@ -17,19 +17,20 @@ const uuid = () => {
   return tokens[2] + tokens[1] + tokens[3] ;
 }
 
-// //공통 항목(user에대한 미들웨어 미적용 코드)
+
+//공통 항목(user에대한 미들웨어 미적용 코드)
 
 //전체조회 페이지 (이달의 작가 추전 부분(임시적 구현 artPost 에 저장된user로 불러옴))
 const getHome = async (req, res) => {
   try{
       //limt함수 사용 보여주는 데이터 숫자 제한
-      const artPost = await Post.find({})/* .sort('-marckupCnt') *//* .limit(4) */;
-     /*  const artWriter = artPost.user;
-      const reviwPage = await Review.find({}).sort('-Likecount').limit(4); */
+      const artPost = await Post.find({}).sort('-marckupCnt').limit(4) ;
+     /*  const artWriter = artPost.user;*/
+      const reviwPage = await Review.find({}).sort('-Likecount').limit(4); 
       res.status(200).json({
         respons:'success',
         msg:'조회 성공',
-        data:{artPost/* ,artWriter,reviwPage */}
+        data:{artPost,/* artWriter, */reviwPage }
       })
   }catch(error){
     res.status(400).json({
