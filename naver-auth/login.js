@@ -27,7 +27,6 @@ module.exports = () => {
 
           let profileUrl = "";
           let address = "";
-          let profile = "";
           if (exUser) {
             console.log("로그인", exUser);
             done(null, exUser);
@@ -44,7 +43,6 @@ module.exports = () => {
               provider: "naver",
               profileUrl,
               address,
-              profile,
               // email: profile.emails[0].value, // 유저 이메일
             };
             await User.create(user);

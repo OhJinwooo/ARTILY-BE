@@ -26,7 +26,6 @@ module.exports = () => {
 
           let profileUrl = "";
           let address = "";
-          let profile = "";
           if (exUser) {
             console.log(99999999999, exUser);
             done(null, exUser); // 로그인 인증 완료
@@ -44,7 +43,6 @@ module.exports = () => {
               provider: "kakao",
               profileUrl,
               address,
-              profile,
             };
             // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
             await User.create(user);
