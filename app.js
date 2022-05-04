@@ -57,6 +57,7 @@ io.on("connection", (socket) => {
           });
         }
         chat.to(socket.id).emit("receive message", arr.reverse());
+        console.log(socket.id);
       }
     });
   });
@@ -74,11 +75,19 @@ io.on("connection", (socket) => {
       message: data.message,
       time: data.time,
     });
-    const saveChat = new Chat({
+    console.log({
+      roomName: data.roomName,
       from: data.from,
       message: data.message,
       time: data.time,
     });
+    const saveChat = new Chat({
+      from: data.from,
+      message: data.message,
+      time: data.time,
+      roomName: data.roomName,
+    });
+    console.log("save", saveChat);
     saveChat.save();
   });
 });
