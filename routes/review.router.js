@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("./multer/uploads");
+const upload = require("../routes/multer/uploads");
 const middleswares = require("../middleware/authMiddleWare");
 const { review } = require("./controllers/review.controllers");
 const { review_detail } = require("./controllers/review.controllers");
@@ -9,7 +9,7 @@ const { review_modify } = require("./controllers/review.controllers");
 const { review_delete } = require("./controllers/review.controllers");
 
 //리뷰조회
-router.get("/review", middleswares, review);
+router.get("/review", review);
 
 //리뷰상세조회
 router.get("/review/:reviewId", review_detail);

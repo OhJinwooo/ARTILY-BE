@@ -1,6 +1,7 @@
 // 로컬 테스트
 
 const mongoose = require("mongoose");
+require("dotenv").config();
 const connect = () => {
   mongoose
     .connect("mongodb://localhost:27017/artin", {

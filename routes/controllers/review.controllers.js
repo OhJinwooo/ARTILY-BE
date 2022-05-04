@@ -1,14 +1,9 @@
 const Review = require("../../schemas/review.schemas");
+const express = require("express");
 const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
 const CryptoJS = require("crypto-js");
-
-let multer = require("multer");
-let multerS3 = require("multer-s3");
-let AWS = require("aws-sdk");
-const path = require("path");
-AWS.config.loadFromPath(path.join(__dirname, "../config/s3.json")); // 인증
-let s3 = new AWS.S3();
+const s3 = require("../config/s3");
 
 // 리뷰 조회
 const review = async (req, res) => {
@@ -87,7 +82,7 @@ const review_modify = async (req, res) => {
   const { category, reviewTitle, reviewContent } = req.body;
   const imageUrl = req.files;
 
-  //console.log(category, reviewTitle, reviewContent); //ok
+  // console.log(category, reviewTitle, reviewContent); //ok
   //console.log("imageUrl", imageUrl); //ok
 
   //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
@@ -95,20 +90,66 @@ const review_modify = async (req, res) => {
     res.status(401).send({ msg: "게시글 내용을 입력해주세요." });
     return;
   }
-  //try {
-  const photo = await Review.find({ _id: reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
-  console.log("photo", photo); //ok
-  const url = photo[0].imageUrl; // photo 저장된 fileUrl을 가져옴
-  console.log("url", url);
-  //const delFileName = url[url.length - 1]; //1651487282770.jpg
-  //console.log("delFileName", delFileName);
-  if (imageUrl) {
-    console.log("new이미지====", imageUrl);
+  try {
+    const photo = await Review.find({ _id: reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
+    console.log("photo", photo); //ok
+
+    const url = photo[0].imageUrl[0].location;
+    console.log("imageUrl", imageUrl);
+    console.log("url", url); // https://mandublog.s3.ap-northeast-2.amazonaws.com/1651634249849.png
+
+    if (imageUrl) {
+      console.log("new이미지====", imageUrl);
+      s3.deleteObject(
+        {
+          Bucket: "mandublog",
+          Key: url,
+          //key 속성은 업로드하는 파일이 어떤 이름으로 버킷에 저장되는가에 대한 속성이다.
+        },
+        (err, data) => {
+          if (err) {
+            throw err;
+          }
+        }
+      );
+      await Review.updateOne(
+        { _id: reviewId },
+        { $set: { category, reviewTitle, reviewContent, imageUrl } }
+      );
+    } else {
+      // 이미지를 변경해주지 않을 때
+      const photo = await Review.find({ _id: reviewId });
+      // 포스트 아이디를 찾아서 안에 이미지 유알엘을 그대로 사용하기
+      const keepImage = photo[0].imageUrl; // ?? 바꿔줘야될듯 ?
+
+      await Review.updateOne(
+        { _id: reviewId },
+        { $set: { category, reviewTitle, reviewContent, imageUrl: keepImage } }
+      );
+    }
+    const ReviewList = await Review.findOne({ _id: reviewId });
+    res.send({ result: "success", ReviewList });
+  } catch {
+    res.status(400).send({ msg: "게시글이 수정되지 않았습니다." });
+  }
+};
+
+//리뷰 삭제
+const review_delete = async (req, res) => {
+  const { reviewId } = req.params;
+
+  try {
+    const photo = await Review.find({ _id: reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
+    console.log("photo", photo); //ok
+
+    const url = photo[0].imageUrl[0].location;
+    console.log("url", url); // https://mandublog.s3.ap-northeast-2.amazonaws.com/1651634249849.png
+
+    await Review.deleteOne({ _id: reviewId });
     s3.deleteObject(
       {
         Bucket: "mandublog",
         Key: url,
-        //key 속성은 업로드하는 파일이 어떤 이름으로 버킷에 저장되는가에 대한 속성이다.
       },
       (err, data) => {
         if (err) {
@@ -116,52 +157,10 @@ const review_modify = async (req, res) => {
         }
       }
     );
-    await Review.updateOne(
-      { _id: reviewId },
-      { $set: { category, reviewTitle, reviewContent, imageUrl } }
-    );
-  } else {
-    const photo = await Review.find({ _id: reviewId });
-    // 포스트 아이디를 찾아서 안에 이미지 유알엘을 그대로 사용하기
-    const keepImage = photo[0].imageUrl;
-
-    await Review.updateOne(
-      { _id: reviewId },
-      { $set: { category, reviewTitle, reviewContent, imageUrl: keepImage } }
-    );
+    res.send({ result: "success" });
+  } catch {
+    res.status(400).send({ msg: "게시글이 삭제되지 않았습니다." });
   }
-  const ReviewList = await Review.findOne({ _id: reviewId });
-  res.send({ result: "success", ReviewList });
-  // } catch {
-  //   res.status(400).send({ msg: "게시글이 수정되지 않았습니다." });
-  // }
-};
-
-//리뷰 삭제
-const review_delete = async (req, res) => {
-  const { reviewId } = req.params;
-
-  const photo = await Review.find({ _id: reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
-  //console.log(postId)
-  const url = photo[0].imageUrl.split("/"); // video에 저장된 fileUrl을 가져옴
-  const delFileName = url[url.length - 1];
-  //try {
-  await Review.deleteOne({ _id: reviewId });
-  s3.deleteObject(
-    {
-      Bucket: "mandublog",
-      Key: delFileName,
-    },
-    (err, data) => {
-      if (err) {
-        throw err;
-      }
-    }
-  );
-  res.send({ result: "success" });
-  //} catch {
-  res.status(400).send({ msg: "게시글이 삭제되지 않았습니다." });
-  //}
 };
 
 module.exports = {

@@ -1,9 +1,24 @@
-const express = require("express");
-const router = express.Router();
-const { test } = require("./controllers/post.controllers");
+// const express = require("express");
+// const router = express.Router();
+// //const upload = require("../multer/uploads");
+// const {
+//   artPost,
+//   artDetail,
+//   artStore,
+//   artUpdate,
+//   getHome,
+//   artdelete,
+// } = require("./controllers/post.controllers");
+// router.get("/post", getHome);
 
-router.get("/post");
+// router.get("/post/store", artStore);
 
-router.post("/test", test);
+// router.get("/post/:postId", artDetail);
 
-module.exports = router;
+// router.post("/post", upload.array("img"), artPost);
+
+// router.put("/post/:postId", upload.array("img"), artUpdate);
+
+// router.delete("/post/:postId", artdelete);
+
+// module.exports = router;
