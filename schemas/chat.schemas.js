@@ -8,7 +8,7 @@ const ChatSchema = new mongoose.Schema({
   message: {
     type: String,
   },
-  createdAt: {
+  time: {
     type: String,
   },
   profileImg: {
