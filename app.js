@@ -19,6 +19,7 @@ const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
+const blackListRouter = require("./routes/blackList.router");
 
 const cors = require("cors");
 
@@ -29,7 +30,13 @@ connect();
 app.use(cors());
 app.use(express.json());
 app.use("/oauth", [kakaoRouter, naverRouter]);
-app.use("/api", [userRouter, reviewRouter, mypageRouter, likeRouter]);
+app.use("/api", [
+  userRouter,
+  reviewRouter,
+  mypageRouter,
+  likeRouter,
+  blackListRouter,
+]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 const io = socket(server, {
