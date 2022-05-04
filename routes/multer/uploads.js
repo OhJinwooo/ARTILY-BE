@@ -1,13 +1,12 @@
 //multer-s3 미들웨어 연결
 //require("dotenv").config();
 //const authMiddleware = require("./middlewares/auth-middleware");
+const s3 = require("../config/s3");
 
 let multer = require("multer");
 let multerS3 = require("multer-s3");
-let AWS = require("aws-sdk");
-const path = require("path");
-AWS.config.loadFromPath(path.join(__dirname, "../config/s3.json")); // 인증
-let s3 = new AWS.S3();
+let path = require("path");
+
 let upload = multer({
   storage: multerS3({
     s3: s3,
@@ -22,4 +21,7 @@ let upload = multer({
   }),
 });
 
+//exports.upload = upload; //upload 인식못하는 에러남
 module.exports = upload;
+//module.exports = s3;
+//exports.s3 = s3;
