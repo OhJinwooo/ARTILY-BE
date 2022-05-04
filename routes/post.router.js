@@ -13,7 +13,7 @@ router.post("/post",upload.array('img'),artPost);
 router.put('/post/:postId',upload.array('img'),artUpdate);
 
 router.delete('/post/:postId',artdelete);
-//찜기능 임시적 url 수정 가능
+
 router.post('/cnt/:postId',marckupCnt)
 
 module.exports = router;

@@ -191,7 +191,6 @@ const artPost = async (req, res) => {
   }
 };
 
-
 //api 수정(구현완료)
 const artUpdate = async (req,res) =>{
   try{
