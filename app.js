@@ -50,10 +50,10 @@ io.on("connection", (socket) => {
       if (result.length !== 0) {
         for (var i = result.length - 1; i >= 0; i--) {
           arr.push({
+            roomName: data.roomName,
             from: result[i].from,
             message: result[i].message,
-            createdAt: result[i].createdAt,
-            profileImg: result[i].profileImg,
+            time: result[i].time,
           });
         }
         chat.to(socket.id).emit("receive message", arr.reverse());
@@ -69,6 +69,7 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     console.log("send: ", data);
     socket.to(data.roomName).emit("receive_message", {
+      roomName: data.roomName,
       from: data.from,
       message: data.message,
       time: data.time,

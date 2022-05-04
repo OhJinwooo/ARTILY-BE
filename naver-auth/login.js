@@ -13,7 +13,9 @@ module.exports = () => {
         clientSecret: process.env.NAVERSECRET,
         callbackURL: "http://localhost:3000/oauth/naver/callback",
       },
+
       async (accessToken, refreshToken, profile, done) => {
+        console.log("NaverStrategy");
         try {
           console.log("try in", profile);
           const exUser = await User.findOne({
