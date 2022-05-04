@@ -1,5 +1,6 @@
 const Post = require("../../schemas/post.schemas");
 const Review = require('../../schemas/review.schemas');
+const User = require('../../schemas/user.schemas')
 const sharp = require('sharp');
 const s3 = require('../../multer/s3');
 const moment = require('moment');
@@ -25,7 +26,6 @@ const getHome = async (req, res) => {
       const artPost = await Post.find({})/* .sort('-marckupCnt') *//* .limit(4) */;
      /*  const artWriter = artPost.user;
       const reviwPage = await Review.find({}).sort('-Likecount').limit(4); */
-      console.log('console',artPost[6].imageUrl)
       res.status(200).json({
         respons:'success',
         msg:'조회 성공',
@@ -48,11 +48,12 @@ const artStore = async(req,res)=>{
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
-    //태그기능 변수 통합
+    /* //태그기능 변수 통합
     const artFilter = {category:category,
       transaction:transaction,
-      changeAddress:changeAddress};
-    //시작을 지정할 변수 선언
+      changeAddress:changeAddress}; */
+      const artFilter = [category,transaction,changeAddress]
+   /*  //시작을 지정할 변수 선언
     let start = 0;
     //이미데이터가 넘어가서 있는지 확인
     if(data.start <= 0){
@@ -72,11 +73,11 @@ const artStore = async(req,res)=>{
       msg:'스토어 조회 성공',
       artPost
     });
-  }
-    if(artFilter){
-      console.log(object.key(artFilter).length)
+  } */
+  console.log('1',artFilter)
+    if(artFilter.length < 0){
       for(let i = 0 ; i<artFilter.length; i++){
-        console.log(artFilter[i])
+        console.log('2',artFilter[i])
       if(artFilter[i] !== undefined){
         console.log(artFilter[i])
         const fin = cat.find(artFilter[i])
@@ -141,7 +142,7 @@ const artPost = async (req, res) => {
       if (err) throw err;
      });
    }); */
-   const {user} = res.locals;
+   /* const {user} = res.locals; */
 
   //req.body를 받음
   const {postTitle,
@@ -174,7 +175,7 @@ const artPost = async (req, res) => {
         postId,
         createdAt,
         done:false,
-        user
+        /* user */
     });
     await artBrod.save();
     res.status(200).json({
@@ -191,7 +192,7 @@ const artPost = async (req, res) => {
 };
 
 
-//api 수정(이미지 업데이트 기능 미구현(새롭게 추가 형식으로 임시적 구현))
+//api 수정(구현완료)
 const artUpdate = async (req,res) =>{
   try{
       const {user} =res.locals;
@@ -207,24 +208,38 @@ const artUpdate = async (req,res) =>{
         } = req.body; 
       //moment를 이용하여 한국시간으로 날짜생성
       const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
-      /* //이미지 수정
+      //이미지 수정
       const artPostimg = await Post.find({postId:postId});
       const img =  artPostimg[0].imageUrl
+      //key 값을 저장 array
+      let deleteItems = []
+      //key값 추출위한 for문
       for(let i = 0; i<img.length; i++){
-        console.log(img[i].split('/')[3])
-       await s3.deleteObject({
-          Bucket:'artvb',
-          key:`${img[i].split('/')[3]}`
-        });
+      //key값을 string으로 지정
+       deleteItems.push({Key:String(img[i].split('/')[3])})
+      }
+      // s3 delete를 위한 option
+      let params = {
+        Bucket: 'artvb', 
+        Delete: {
+          Objects: deleteItems, 
+          Quiet: false
+        }
       };
- */
+      //option을 참조 하여 delete 실행
+     s3.deleteObjects(params, function(err, data) {
+        if (err) console.log(err)     
+        else console.log("Successfully deleted myBucket/myKey");   
+      });
+     
       //여러장 이미지 저장 
       let imageUrl = new Array();
       for(let i = 0; i<req.files.length; i++){
         imageUrl.push(req.files[i].location)
       }
-     if(user){ //업데이트
-      await Post.updateOne({postId},{
+     if(user){ 
+        //업데이트
+        await Post.updateOne({postId},{
         $set:{
         postTitle,
         postContent,
@@ -247,13 +262,38 @@ const artUpdate = async (req,res) =>{
   };
 };
 
-// 삭제
+// 삭제(구현 완료)
 const artdelete = async(req,res) => {
   try{
     //파라미터 값
       const postId = req.params.postId;
       // user 정보 일치
       const {user} = req.locals;
+      //이미지 URL 가져오기 위한 로직
+      const artPostimg = await Post.find({postId:postId});
+      const img =  artPostimg[0].imageUrl
+      // 복수의 이미지를 삭제 변수(array)
+      let deleteItems = []
+      //imageUrl이 array이 때문에 접근하기 위한 for문
+      for(let i = 0; i<img.length; i++){
+      // 추가하기 위한 코드(string으로 해야 접근 가능)
+       deleteItems.push({Key:String(img[i].split('/')[3])})
+      }
+      //삭제를 위한 변수
+      let params = {
+        //bucket 이름
+        Bucket: 'artvb',
+        //delete를 위한 key값 
+        Delete: {
+          Objects: deleteItems, 
+          Quiet: false
+        }
+      };
+      //복수의 delete를 위한 코드 변수(params를 받음)
+      s3.deleteObjects(params, function(err, data) {
+        if (err) console.log(err)     
+        else console.log("Successfully deleted myBucket/myKey");   
+      });
       //delete
       await Post.deleteOne({postId, user});
       res.status(200).send({
@@ -267,17 +307,15 @@ const artdelete = async(req,res) => {
     });
   };
 };
-// 찜기능(구분이 명확하지 않음, user 와 postId를 저장 해서 구분을 주어 야하는 데 저장하는 곳이 없음)
-// 카운트 는  올릴 수 있으나 삭제시 구분할 기준 점이 없음(임시적 구현)
+// 찜기능
 const marckupCnt = async(req,res)=>{
   try{
       const postId = req.params ;
       const {user} = res.locals ;
-      //임시적 스키마
-      const Cnt = await Test.findOne({postId,user});
+      const Cnt = await User.findOne({user,myMarkup:postId});
       if(Cnt.length > 0){
-        await Test.create({postId,user});
-        await Post.updateOne({$set: postId},{marckupCnt:+1});
+        await User.save({user},{$set:{myMarkup:postId}});
+        await Post.updateOne({postId},{$set:{marckupCnt:+1}});
         const artPost = await Post.findOne({postId});
         res.status(200).json({
           respons:'success',
@@ -285,8 +323,8 @@ const marckupCnt = async(req,res)=>{
           data:artPost.marckupCnt
         });
       }
-        await Test.deleteOne({postId,user});
-        await Post.updateOne({$set: postId},{marckupCnt:-1});
+        await User.deleteOne({user},{$set:{myMarkup:postId}});
+        await Post.updateOne({postId},{$set:{marckupCnt:-1}});
         const artPost = await Post.findOne({postId});
         res.status(200).json({
           respons:'success',
