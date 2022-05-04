@@ -10,9 +10,9 @@ const like = async (req, res) => {
   const { userId } = user;
   console.log(userId);
 
-  const existBoard = await Review.find({ _id: reviewId });
-  console.log("existBoard", existBoard);
-  let like = existBoard[0]["likeCnt"];
+  const existReview = await Review.find({ _id: reviewId });
+  console.log("existReview", existReview);
+  let like = existReview[0]["likeCnt"];
   console.log("likeCnt", like);
 
   await Review.updateOne({ _id: reviewId }, { $set: { likeCnt: like + 1 } });
@@ -21,15 +21,15 @@ const like = async (req, res) => {
   res.send("좋아요 성공!");
 };
 
-// 아니좋아요~
+// 좋아요 취소
 const unlike = async (req, res) => {
   const { reviewId } = req.params;
   const { user } = res.locals;
   const { userId } = user;
 
-  const existBoard = await Review.find({ _id: reviewId });
-  console.log("existBoard", existBoard);
-  let like = existBoard[0]["likeCnt"];
+  const existReview = await Review.find({ _id: reviewId });
+  console.log("existReview", existReview);
+  let like = existReview[0]["likeCnt"];
   console.log("likeCnt", like);
 
   await Review.updateOne({ _id: reviewId }, { $set: { likeCnt: like - 1 } });

@@ -45,6 +45,12 @@ const UserSchema = new mongoose.Schema({
   myMarkup: {
     type: Array,
   },
+  inquiry: {
+    type: String,
+  },
+  snsUrl: {
+    type: Array,
+  },
 });
 // UserSchema.virtual("userId").get(function () {
 //   return this._id.toHexString();

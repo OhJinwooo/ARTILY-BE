@@ -18,6 +18,7 @@
 
 // //공통 항목(user에대한 미들웨어 미적용 코드)
 
+<<<<<<< HEAD
 // //전체조회 페이지 (이달의 작가 추전 부분(임시적 구현 artPost 에 저장된user로 불러옴))
 // const getHome = async (req, res) => {
 //   try {
@@ -40,6 +41,29 @@
 //     });
 //   }
 // };
+=======
+//전체조회 페이지 (이달의 작가 추전 부분(임시적 구현 artPost 에 저장된user로 불러옴))
+const getHome = async (req, res) => {
+  try {
+    //limt함수 사용 보여주는 데이터 숫자 제한
+    const artPost = await Post.find({});
+    //.sort('-marckupCnt') */ /* .limit(4)
+    //const artWriter = artPost.user;
+    //const reviwPage = await Review.find({}).sort('-Likecount').limit(4);
+    // console.log("console", artPost[6].imageUrl);
+    res.status(200).json({
+      respons: "success",
+      msg: "조회 성공",
+      data: { artPost /* ,artWriter,reviwPage */ },
+    });
+  } catch (error) {
+    res.status(400).json({
+      respons: "file",
+      msg: "전체조회 실패",
+    });
+  }
+};
+>>>>>>> 9edebc905879cdef33d1d482cd06aae1bf77455e
 
 // //스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (개선 중(시간소요)) )
 // const artStore = async (req, res) => {
@@ -95,6 +119,7 @@
 //   }
 // };
 
+<<<<<<< HEAD
 // //상세조회
 // const artDetail = async (req, res) => {
 //   try {
@@ -118,6 +143,31 @@
 //     });
 //   }
 // };
+=======
+//상세조회
+const artDetail = async (req, res) => {
+  try {
+    //파리미터 값받음
+    const postId = req.params;
+    //상세 페이지 데이터
+    const artPost = await Post.findOne({ postId }).exec();
+    // 추가 데이터(상세 페이지 작가기준)
+    const artPost2 = await Post.find({ user: artPost.user })
+      .sort("-createdAt")
+      .limit(4);
+    req.status(200).json({
+      respons: "success",
+      msg: "상세페이지 조회 성공",
+      data: [artPost, artPost2],
+    });
+  } catch (error) {
+    req.status(200).json({
+      respons: "fail",
+      msg: "상세페이지 조회 실패",
+    });
+  }
+};
+>>>>>>> 9edebc905879cdef33d1d482cd06aae1bf77455e
 
 // //작성 api(구현 완료)
 // const artPost = async (req, res) => {
@@ -133,6 +183,7 @@
 //      });
 //    }); */
 
+<<<<<<< HEAD
 //     //req.body를 받음
 //     const { postTitle, postContent, category, transaction, changeAddress } =
 //       req.body;
@@ -174,6 +225,52 @@
 //     });
 //   }
 // };
+=======
+    //req.body를 받음
+    const { postTitle, postContent, category, transaction, changeAddress } =
+      req.body;
+    //여러장 이미지 저장
+    // let imageUrl = new Array();
+    // for (let i = 0; i < req.files.length; i++) {
+    //   /* imageUrl.push(`${req.protocol}://${req.get('host')}/img/${req.files[i].filename}`) */
+    //   imageUrl.push(req.files[i].location);
+    // }
+    //moment를 이용하여 한국시간으로 날짜생성
+    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+    //uuid를 사용하여 고유 값생성
+    const postId = uuid();
+    //검증 고유값중복 검증
+    const artPostId = await Post.find({ postId }).exec();
+    //조건 postId
+    console.log(123123);
+    if (artPostId.postId !== postId) {
+      console.log(321321);
+      const artBrod = new Post({
+        postTitle,
+        postContent,
+        category,
+        transaction,
+        changeAddress,
+        // imageUrl,
+        postId,
+        createdAt,
+        done: false,
+      });
+      await artBrod.save();
+      res.status(200).json({
+        respons: "success",
+        msg: "판매글 생성 완료",
+        data: artBrod,
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      respons: "fail",
+      msg: "판매글 생성 실패",
+    });
+  }
+};
+>>>>>>> 9edebc905879cdef33d1d482cd06aae1bf77455e
 
 // //api 수정(삭제 미구현)
 // const artUpdate = async (req, res) => {

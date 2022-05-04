@@ -7,10 +7,6 @@ const s3 = require("../config/s3");
 
 // 리뷰 조회
 const review = async (req, res) => {
-  // const { user } = res.locals;
-  // console.log("user", user);
-  // const userId = user.userId;
-  // console.log("userId", userId);
   try {
     const review = await Review.find({}).sort("-createdAt").limit(4);
     res.json({ review });
@@ -59,21 +55,20 @@ const review_write = async (req, res) => {
   // const reviewId = CryptoJS.SHA256(createdAt)['words'][0];
   // console.log(reviewId);
 
-  //try {
-
-  const ReviewList = await Review.create({
-    category,
-    userId,
-    nickname,
-    reviewTitle,
-    imageUrl,
-    reviewContent,
-    createdAt,
-  });
-  res.send({ result: "success", ReviewList });
-  //} catch {
-  //res.status(400).send({ msg: "게시글이 작성되지 않았습니다." });
-  //}
+  try {
+    const ReviewList = await Review.create({
+      category,
+      userId,
+      nickname,
+      reviewTitle,
+      imageUrl,
+      reviewContent,
+      createdAt,
+    });
+    res.send({ result: "success", ReviewList });
+  } catch {
+    res.status(400).send({ msg: "게시글이 작성되지 않았습니다." });
+  }
 };
 
 //리뷰 수정
