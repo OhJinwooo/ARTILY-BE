@@ -17,8 +17,8 @@ const connect = require("./schemas/index.schemas");
 //const postRouter = require("./routes/post.router");
 const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
-const testRouter = require("./routes/post.router");
 const mypageRouter = require("./routes/mypage.router");
+const likeRouter = require("./routes/like.router");
 
 const cors = require("cors");
 
@@ -29,7 +29,7 @@ connect();
 app.use(cors());
 app.use(express.json());
 app.use("/oauth", [kakaoRouter, naverRouter]);
-app.use("/api", [userRouter, reviewRouter, mypageRouter]);
+app.use("/api", [userRouter, reviewRouter, mypageRouter, likeRouter]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 const io = socket(server, {

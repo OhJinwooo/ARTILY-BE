@@ -37,14 +37,14 @@ const review_detail = async (req, res) => {
 
 //리뷰 작성
 const review_write = async (req, res) => {
-  // const { user } = res.locals;
-  // console.log("user", user);
-  // const userId = user.userId;
-  // console.log("userId", userId);
+  const { user } = res.locals;
+  console.log("user", user);
+  const userId = user.userId;
+  console.log("userId", userId);
 
   //작성한 정보 가져옴
-  const { category, nickname, reviewTitle, likeCnt, reviewContent } = req.body;
-  console.log(category, nickname, reviewTitle, likeCnt, reviewContent); //ok
+  const { category, nickname, reviewTitle, reviewContent } = req.body;
+  console.log(category, nickname, reviewTitle, reviewContent); //ok
 
   const imageUrl = req.files;
   //console.log("req.files: ", req.files); // ok // 테스트 => req.file.location에 이미지 링크(s3-server)가 담겨있음
@@ -60,12 +60,12 @@ const review_write = async (req, res) => {
   // console.log(reviewId);
 
   //try {
+
   const ReviewList = await Review.create({
     category,
-    // userId,
+    userId,
     nickname,
     reviewTitle,
-    likeCnt,
     imageUrl,
     reviewContent,
     createdAt,
@@ -95,7 +95,7 @@ const review_modify = async (req, res) => {
     console.log("photo", photo); //ok
 
     const url = photo[0].imageUrl[0].location;
-    console.log("imageUrl", imageUrl);
+    //console.log("imageUrl", imageUrl);
     console.log("url", url); // https://mandublog.s3.ap-northeast-2.amazonaws.com/1651634249849.png
 
     if (imageUrl) {

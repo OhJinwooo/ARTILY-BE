@@ -4,9 +4,9 @@ const likesSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
-  postId: {
+  reviewId: {
     type: String,
   },
 });
 
-module.exports = mongoose.model("likes", likesSchema);
+module.exports = mongoose.model("Like", likesSchema);

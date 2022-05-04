@@ -17,7 +17,7 @@ router.get("/review/:reviewId", review_detail);
 //리뷰작성
 router.post(
   "/review",
-  //middleswares,
+  middleswares,
   upload.array("imageUrl", 10),
   review_write
 );
@@ -25,12 +25,12 @@ router.post(
 //리뷰수정
 router.patch(
   "/review/:reviewId",
-  //middleswares,
+  middleswares,
   upload.array("imageUrl", 10),
   review_modify
 );
 
 //리뷰삭제
-router.delete("/review/:reviewId", review_delete);
+router.delete("/review/:reviewId", middleswares, review_delete);
 
 module.exports = router;
