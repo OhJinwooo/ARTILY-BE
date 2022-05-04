@@ -17,7 +17,7 @@ const uuid = () => {
   return tokens[2] + tokens[1] + tokens[3] ;
 }
 
-//공통 항목(user에대한 미들웨어 미적용 코드)
+// //공통 항목(user에대한 미들웨어 미적용 코드)
 
 //전체조회 페이지 (이달의 작가 추전 부분(임시적 구현 artPost 에 저장된user로 불러옴))
 const getHome = async (req, res) => {
@@ -94,7 +94,6 @@ const artStore = async(req,res)=>{
   };
 };
 
-
 //상세조회(판매자가 판매완료 시 상태 변화 기능 추가)
 const artDetail = async(req,res) => {
   try{
@@ -132,16 +131,6 @@ const artDetail = async(req,res) => {
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
  try{
-   /* // 리사이징(압축용 실험 코드(미적용))
-   const img = sharp(req.files)
-   .withMetadata()
-   .toBuffer((err,buffer)=>
-   {
-     if(err) throw err;
-     fs.withMetadata(req.files,buffer, (err)=>{
-      if (err) throw err;
-     });
-   }); */
    /* const {user} = res.locals; */
 
   //req.body를 받음
@@ -154,7 +143,6 @@ const artPost = async (req, res) => {
   //여러장 이미지 저장 
   let imageUrl = new Array();
   for(let i = 0; i<req.files.length; i++){
-    /* imageUrl.push(`${req.protocol}://${req.get('host')}/img/${req.files[i].filename}`) */
     imageUrl.push(req.files[i].location)
   }
   //moment를 이용하여 한국시간으로 날짜생성
@@ -336,5 +324,5 @@ const marckupCnt = async(req,res)=>{
       msg:'실패'
     });
   }
-}
+};
 module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete, marckupCnt};

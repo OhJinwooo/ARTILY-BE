@@ -1,40 +1,40 @@
 const mongoose = require("mongoose");
 
 const postSchema = new mongoose.Schema({
-   postId: {
-     type: String,
-     unique: true,
-   },
-   postTitle: {
-     type: String,
-   },
-   postContent: {
-     type: String,
-   },
-   createdAt: {
-     type: String,
-   },
-   category: {
-     type: String,
-   },
-   transaction: {
-     type: String,
-   },
-   user: {
-     type: Object,
-   },
-   changeAddress: {
-     type: String,
-   },
-   imageUrl: {
-     type: Object,
-   },
-   done: {
-     type: String,
-   },
-   marckupCnt: {
-     type: Number,
-   }
+  postId: {
+    type: String,
+    unique: true,
+  },
+  postTitle: {
+    type: String,
+  },
+  postContent: {
+    type: String,
+  },
+  createdAt: {
+    type: String,
+  },
+  category: {
+    type: String,
+  },
+  transaction: {
+    type: String,
+  },
+  user: {
+    type: Object,
+  },
+  changeAddress: {
+    type: String,
+  },
+  imageUrl: {
+    type: Object,
+  },
+  done: {
+    type: String,
+  },
+  marckupCnt: {
+    type: Number,
+  },
 });
 
 //몽고디비 고유의 id값을 가져오는 코드

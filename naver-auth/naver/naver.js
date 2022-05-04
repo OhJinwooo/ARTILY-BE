@@ -3,10 +3,10 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-router.get("/kakao", passport.authenticate("kakao"));
+router.get("/naver", passport.authenticate("naver"));
 
-const kakaoCallback = (req, res, next) => {
-  passport.authenticate("kakao", { failureRedirect: "/" }, (err, user) => {
+const naverCallback = (req, res, next) => {
+  passport.authenticate("naver", { failureRedirect: "/" }, (err, user) => {
     if (err) return next(err);
     const { userId, nickname, provider, profileUrl, accessToken } = user;
     const token = jwt.sign({ userId: userId }, "ARTILY-secret-key");
@@ -20,9 +20,9 @@ const kakaoCallback = (req, res, next) => {
       accessToken,
       // refreshToken: refreshToken,
     };
-    console.log(1, result);
+    console.log(13121312312312, result);
     res.send({ user: result });
   })(req, res, next);
 };
-router.get("/kakao/callback", kakaoCallback);
+router.get("/naver/callback", naverCallback);
 module.exports = router;

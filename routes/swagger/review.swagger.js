@@ -1,5 +1,4 @@
 const reviewRouter = require("express").Router();
-
 /**
  * @swagger
  * paths:
@@ -42,7 +41,6 @@ const reviewRouter = require("express").Router();
  *                      example: ["asdf","wert","dfgh"]
  */
 reviewRouter.get("/review", review);
-
 /**
  * @swagger
  * paths:
@@ -134,7 +132,6 @@ reviewRouter.get("/review", review);
  *                                  example: "qwer"
  */
 reviewRouter.post("/review", upload.single("imageUrl"), review_write);
-
 /**
  * @swagger
  *
@@ -156,98 +153,118 @@ reviewRouter.post("/review", upload.single("imageUrl"), review_write);
  *                example: "도자"
  *              userId:
  *                type: string
- *                example: "asdfsdf"
- *              nickname:
- *                type: string
- *                example: "병아리"
+ *                example: "214124"
  *              reviewTitle:
  *                type: string
  *                example: "도자기 장인 인정"
  *              reviewContent:
  *                type: string
- *                example: "도자기 이렇게 예쁠일?🧡"
+ *                example: "도자기 이렇게 예쁠일?:주황색_하트:"
+ *              imageUrl:
+ *                type: array
+ *                example: ["fdasasdf", "fdafavzzzdf"]
  *              likeCnt:
  *                type: Number
  *                example: 3
+ *              seller:
+ *                type: object
+ *                properties:
+ *                    postId:
+ *                      type: string
+ *                      example: "asdfsdf"
+ *                    postTitle:
+ *                      type: string
+ *                      example: "포스터 팔아요~"
+ *                    price:
+ *                      type: Number
+ *                      example: 3000
+ *                    imageUrl:
+ *                      type: array
+ *                      example: ["1412214", "7678"]
+ *                    userId:
+ *                      type: string
+ *                      example: "qwer"
+ *                    nickname:
+ *                      type: string
+ *                      example: "조리퐁소녀"
+ *                    profileUrl:
+ *                      type: string
+ *                      example: "asdfasdf"
  */
 reviewRouter.post("/review", upload.single("imageUrl"), review_write);
 
-// /**
-//  * @swagger
-//  * /api/review/{reviewId}:
-//  *   patch:
-//  *    summary: "리뷰 수정"
-//  *    description: "Patch 방식을 통해 특정 리뷰 수정(단일 데이터를 수정할 때 사용함)"
-//  *    tags: [Review]
-//  *    parameters:
-//  *      - in: path
-//  *        name: reviewId
-//  *        required: true
-//  *        description: 리뷰 아이디
-//  *        schema:
-//  *          type: string
-//  *    requestBody:
-//  *      description: 리뷰 수정
-//  *      required: true
-//  *      content:
-//  *        application/x-www-form-urlencoded:
-//  *          schema:
-//  *            type: object
-//  *            properties:
-//  *              category:
-//  *                type: string
-//  *                example: "도자"
-//  *              reviewTitle:
-//  *                type: string
-//  *                example: "도자기 잘샀어요!"
-//  *              reviewContent:
-//  *                type: string
-//  *                example: "둥근모양이 아름답네요"
-//  *              imageUrl:
-//  *                type: array
-//  *                example: ["1412214", "7678"]
-//  *    responses:
-//  *      "200":
-//  *        description: 사용자가 수정하고자 하는 값만 수정된다.
-//  *        content:
-//  *          application/json:
-//  *            schema:
-//  *              type: object
-//  *              properties:
-//  *                ok:
-//  *                  type: boolean
-//  */
-reviewRouter.patch(
-  "/review/:reviewId",
-  upload.single("imageUrl"),
-  review_modify
-);
-
-// /**
-//  * @swagger
-//  * /api/review/delete:
-//  *   delete:
-//  *    summary: "특정 리뷰 삭제"
-//  *    description: "요청 경로에 값을 담아 서버에 보낸다."
-//  *    tags: [Review]
-//  *    parameters:
-//  *      - in: query
-//  *        name: reveiwId
-//  *        required: true
-//  *        description: 리뷰 아이디
-//  *        schema:
-//  *          type: string
-//  *    responses:
-//  *      "200":
-//  *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (리뷰 삭제)
-//  *        content:
-//  *          application/json:
-//  *            schema:
-//  *              type: object
-//  *              properties:
-//  *                ok:
-//  *                  type: boolean
-//  */
+/**
+ * @swagger
+ *   /api/review/{reviewId}:
+ *     patch:
+ *      summary: "리뷰 수정"
+ *      description: "Patch 방식을 통해 특정 리뷰 수정(단일 데이터를 수정할 때 사용함)"
+ *      tags: [Review]
+ *      parameters:
+ *        - in: path
+ *          name: reviewId
+ *          required: true
+ *          description: 리뷰 아이디
+ *          schema:
+ *            type: string
+ *      requestBody:
+ *        description: 리뷰 수정
+ *        required: true
+ *        content:
+ *          application/x-www-form-urlencoded:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                category:
+ *                  type: string
+ *                  example: "도자"
+ *                reviewTitle:
+ *                  type: string
+ *                  example: "도자기 잘샀어요!"
+ *                reviewContent:
+ *                  type: string
+ *                  example: "둥근모양이 아름답네요"
+ *                imageUrl:
+ *                  type: array
+ *                  example: ["1412214", "7678"]
+ *      responses:
+ *        "200":
+ *          description: 사용자가 수정하고자 하는 값만 수정된다.
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  reviewId:
+ *                    type: string
+ *                    example: "2412412"
+ */
+reviewRouter.patch("/review/:reviewId");
+/**
+ * @swagger
+ * /api/review/delete:
+ *   delete:
+ *    summary: "특정 리뷰 삭제"
+ *    description: "요청 경로에 값을 담아 서버에 보낸다."
+ *    tags: [Review]
+ *    parameters:
+ *      - in: query
+ *        name: reveiwId
+ *        required: true
+ *        description: 리뷰 아이디
+ *        schema:
+ *          type: string
+ *    responses:
+ *      "200":
+ *        description: 사용자가 서버로 전달하는 값에 따라 결과 값은 다릅니다. (리뷰 삭제)
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                reviewId:
+ *                  type: string
+ *                  example: "2412412"
+ */
 reviewRouter.delete("/review/:reviewId", review_delete);
-
 module.exports = reviewRouter;

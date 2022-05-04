@@ -1,47 +1,46 @@
 const mongoose = require("mongoose");
 
-const CommentSchema = new mongoose.Schema({
-  reviewId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+const ReviewSchema = new mongoose.Schema({
   category: {
     type: String,
-    required: true,
+    // required: true,
   },
   userId: {
     type: String,
-    required: true,
+    // required: true,
   },
   nickname: {
     type: String,
-    required: true,
+    //   required: true,
   },
   reviewTitle: {
     type: String,
-    required: true,
+    //  required: true,
   },
   reviewContent: {
     type: String,
-    required: true,
+    //  required: true,
   },
   likeCnt: {
     type: Number,
-    required: true,
+    default: 0,
   },
   imageUrl: {
     type: Array,
-    required: true,
+    //   required: true,
+  },
+  createdAt: {
+    type: String,
+    //   required: true,
   },
 });
 
-// CommentSchema.virtual("commentid").get(function () {
-//   return this._id.toHexString();
-// });
+ReviewSchema.virtual("reviewId").get(function () {
+  return this._id.toHexString();
+});
 
-// CommentSchema.set("toJSON", {
-//   virtuals: true,
-// });
+ReviewSchema.set("toJSON", {
+  virtuals: true,
+});
 
-module.exports = mongoose.model("comment", CommentSchema);
+module.exports = mongoose.model("Review", ReviewSchema);
