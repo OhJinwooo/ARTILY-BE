@@ -1,0 +1,45 @@
+{
+  "name": "project-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OhJinwooo/Project-BE.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OhJinwooo/Project-BE/issues"
+  },
+  "homepage": "https://github.com/OhJinwooo/Project-BE#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1125.0",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.3",
+    "moment-timezone": "^0.5.34",
+    "mongoose": "^6.3.1",
+    "multer": "^1.4.4",
+    "multer-s3": "^2.10.0",
+    "node-fecth": "^0.0.1-security",
+    "nodemon": "^2.0.16",
+    "passport": "^0.5.2",
+    "passport-kakao": "^1.0.1",
+    "passport-naver": "^1.0.6",
+    "socket.io": "^4.5.0",
+    "sharp": "^0.30.4",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.3.0"
+  }
+}
