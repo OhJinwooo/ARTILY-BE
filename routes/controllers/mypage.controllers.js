@@ -1,6 +1,34 @@
 const User = require("../../schemas/user.schemas");
 
-const mypage = async (req, res) => {
+// 초반 프로필 설정
+const postProfile = async (req, res) => {
+  const { user } = res.locals;
+  const { profileImage, introduce, nickname, snsUrl } = req.body;
+  const userId = user.userId;
+
+  try {
+    await User.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
+          address,
+          introduce,
+          snsUrl,
+        },
+      }
+    );
+    res.status(201).json({ success: true });
+  } catch (error) {
+    res.sattus(400).send("작성 실패");
+  }
+};
+
+// 프로필 조회
+const getProfile = async (req, res) => {
   const userId = res.locals.user;
   try {
     const myprofile = await User.findOne({ userId });
@@ -12,18 +40,11 @@ const mypage = async (req, res) => {
   }
 };
 
-const mypageUpdate = async (req, res) => {
-  const user = res.locals.user;
-  const { nickname, profileUrl, address, profile, inquiry, snsUrl } = req.body;
+// 프로필 수정
+const updateProfile = async (req, res) => {
+  const { user } = res.locals;
+  const { nickname, profileImage, address, introduce, snsUrl } = req.body;
   const userId = user.userId;
-  // const myprofile = await User.findOne({ userId });
-  console.log(123, userId);
-
-  // if (!myprofile.length) {
-  //   return res
-  //     .status(400)
-  //     .json({ success: false, errorMessage: "해당 프로필이 없습니다." });
-  // }
 
   try {
     await User.updateOne(
@@ -33,10 +54,9 @@ const mypageUpdate = async (req, res) => {
       {
         $set: {
           nickname,
-          profileUrl,
+          profileImage,
           address,
-          profile,
-          inquiry,
+          introduce,
           snsUrl,
         },
       }
@@ -48,27 +68,7 @@ const mypageUpdate = async (req, res) => {
 };
 
 module.exports = {
-  mypage,
-  mypageUpdate,
+  postProfile,
+  getProfile,
+  updateProfile,
 };
-
-// 장바구니 수정
-// const editCart = async (req, res) => {
-//   const { user } = res.locals;
-//   const userId = user[0].userId;
-//   const { itemId, itemAmount, itemPrice } = req.body;
-//   try {
-//     await User.updateOne(
-//       { userId: userId, "userCart.itemId": itemId },
-//       {
-//         $set: {
-//           "userCart.$.itemAmount": itemAmount,
-//           "userCart.$.itemPrice": itemPrice,
-//         },
-//       }
-//     );
-//     res.status(201).send("장바구니가 수정되었습니다.");
-//   } catch (error) {
-//     res.status(400).send("실패했습니다.");
-//   }
-// };

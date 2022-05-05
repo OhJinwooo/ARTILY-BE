@@ -8,18 +8,18 @@ router.get("/naver", passport.authenticate("naver"));
 const naverCallback = (req, res, next) => {
   passport.authenticate("naver", { failureRedirect: "/" }, (err, user) => {
     if (err) return next(err);
-    const { userId, nickname, provider, profileUrl, accessToken, profile } =
+    const { userId, nickname, provider, profileImage, accessToken, introduce } =
       user;
     const token = jwt.sign({ userId: userId }, "ARTILY-secret-key");
 
     result = {
       token,
-      profileUrl: profileUrl,
+      profileImage: profileImage,
       userId: userId,
       nickname: nickname,
       provider: provider,
       accessToken,
-      profile,
+      introduce,
       // refreshToken: refreshToken,
     };
     console.log(13121312312312, result);
