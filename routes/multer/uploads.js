@@ -1,11 +1,11 @@
 // //multer-s3 미들웨어 연결
-// //require("dotenv").config();
-// //const authMiddleware = require("./middlewares/auth-middleware");
-// const s3 = require("../config/s3");
+//require("dotenv").config();
+//const authMiddleware = require("./middlewares/auth-middleware");
+const s3 = require("../config/s3");
 
-// let multer = require("multer");
-// let multerS3 = require("multer-s3");
-// let path = require("path");
+let multer = require("multer");
+let multerS3 = require("multer-s3");
+let path = require("path");
 
 let upload = multer({
   storage: multerS3({
@@ -21,7 +21,4 @@ let upload = multer({
   }),
 });
 
-// //exports.upload = upload; //upload 인식못하는 에러남
-// module.exports = upload;
-// //module.exports = s3;
-// //exports.s3 = s3;
+module.exports = upload;
