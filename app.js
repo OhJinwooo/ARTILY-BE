@@ -18,8 +18,10 @@ const connect = require("./schemas/index.schemas");
 const userRouter = require("./routes/user.router");
 // const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
-const likeRouter = require("./routes/like.router");
+// const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
+const followRouter = require("./routes/follow.router");
+const Chat = require("./schemas/chat.schemas");
 
 const cors = require("cors");
 
@@ -34,8 +36,9 @@ app.use("/api", [
   userRouter,
   // reviewRouter,
   mypageRouter,
-  likeRouter,
+  // likeRouter,
   blackListRouter,
+  followRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
@@ -45,24 +48,129 @@ const io = socket(server, {
     credentials: true,
   },
 });
-// global.onlineUsers = new Map();
+
 io.on("connection", (socket) => {
-  console.log("연결 connect: ", socket.id);
-  // console.log("globalChatSocket: ", global.chatSocket);
-  socket.on("disconnect", () => {
-    console.log("디스커넥트 disconnect: ", socket.id);
-  });
-  socket.on("join_room", (data) => {
-    socket.join(data);
-    console.log("join_room 방들어감: ", data);
-    console.log(socket.rooms);
-  });
-  socket.on("send_message", (data) => {
-    console.log("send: ", data);
-    socket.to(data.roomName).emit("receive_message", data);
-  });
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
+    });
+  }
+  socket.emit("users", users);
+  // ...
 });
 
 https: server.listen(port, () => {
   console.log(port, "서버가 연결되었습니다.");
 });
+
+//io.sockets.emit() 은 나를 포함한 모든 클라이언트에게 전송하고,
+//socket.broadcast.emit()은 나를 제외한 모든 클라이언트에게 전송함.
+
+// socket.remoteAddress = socket.request.connection._peername.address; //ip주소
+// socket.remotePort = socket.request.connection_peername.port; //post번호
+
+// 'login' 이벤트를 받았을 때의 처리
+//  socket.on("login", (input) => {
+//   console.log("login 이벤트를 받았습니다." + JSON.stringify(input));
+
+//   // 기존 클라이언트 ID가 없으면 클라이언트 ID를 맵에 추가
+//   login_ids[input.id] = socket.id;
+//   socket.login_id = input.id;
+
+//   // 응답 메시지 전송
+//   sendResponse(socket, "login", "200", "로그인되었습니다.");
+// });
+// // 'message' 이벤트를 받았을 때의 처리
+// socket.on("message", function (message) {
+//   console.log("message 이벤트를 받았습니다." + JSON.stringify(message));
+
+//   if (message.recepient == "ALL") {
+//     // 나를 포함한 모든 클라이언트에게 메시지 전달
+//     console.log(
+//       "나를 포함한 모든 클라이언트에게 message 이벤트를 전송합니다."
+//     );
+//     io.sockets.emit("message", message);
+//   } else {
+//     // 일대일 채팅 대상에게 메시지 전달
+//     if (login_ids[message.recepient]) {
+//       io.sockets.connected[login_ids[message.recepient]].emit(
+//         "message",
+//         message
+//       );
+
+//       // 응답 메시지 전송
+//       sendResponse(socket, "message", "200", "메시지를 전송했습니다.");
+//     } else {
+//       // 응답 메시지 전송
+//       sendResponse(
+//         socket,
+//         "message",
+//         "404",
+//         "상대방의 로그인 ID를 찾을 수 없습니다."
+//       );
+//     }
+//   }
+// });
+
+// send:  {
+//   roomName: '123123',
+//   from: '이한울',
+//   message: 'gdgd',
+//   time: '2022-05-02 22:21:15'
+// }
+
+//한울님 정민님
+// const chat = io.of("/chat");
+// io.on("connection", (socket) => {
+//   console.log("연결 connect: ", socket.id);
+//   // console.log("globalChatSocket: ", global.chatSocket);
+//   socket.on("disconnect", () => {
+//     console.log("디스커넥트 disconnect: ", socket.id);
+//     Chat.find(function (err, result) {
+//       const arr = [];
+//       if (result.length !== 0) {
+//         for (var i = result.length - 1; i >= 0; i--) {
+//           arr.push({
+//             roomName: data.roomName,
+//             from: result[i].from,
+//             message: result[i].message,
+//             time: result[i].time,
+//           });
+//         }
+//         chat.to(socket.id).emit("receive message", arr.reverse());
+//         console.log(socket.id);
+//       }
+//     });
+//   });
+//   socket.on("join_room", (data) => {
+//     socket.join(data);
+
+//     console.log("join_room 방들어감: ", data);
+//     console.log(socket.rooms);
+//   });
+//   socket.on("send_message", (data) => {
+//     console.log("send: ", data);
+//     socket.to(data.roomName).emit("receive_message", {
+//       roomName: data.roomName,
+//       from: data.from,
+//       message: data.message,
+//       time: data.time,
+//     });
+//     console.log({
+//       roomName: data.roomName,
+//       from: data.from,
+//       message: data.message,
+//       time: data.time,
+//     });
+//     const saveChat = new Chat({
+//       from: data.from,
+//       message: data.message,
+//       time: data.time,
+//       roomName: data.roomName,
+//     });
+//     console.log("save", saveChat);
+//     saveChat.save();
+//   });
+// });

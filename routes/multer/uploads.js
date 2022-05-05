@@ -1,7 +1,7 @@
 // //multer-s3 미들웨어 연결
 // //require("dotenv").config();
 // //const authMiddleware = require("./middlewares/auth-middleware");
-// // const s3 = require("../config/s3");
+// const s3 = require("../config/s3");
 
 // let multer = require("multer");
 // let multerS3 = require("multer-s3");

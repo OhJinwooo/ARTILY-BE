@@ -1,8 +1,9 @@
 const User = require("../../schemas/user.schemas");
 
+// 초반 프로필 설정
 const postProfile = async (req, res) => {
   const { user } = res.locals;
-  const { profileUrl, profile, nickname, snsUrl } = req.body;
+  const { profileImage, introduce, nickname, snsUrl } = req.body;
   const userId = user.userId;
 
   try {
@@ -13,9 +14,9 @@ const postProfile = async (req, res) => {
       {
         $set: {
           nickname,
-          profileUrl,
+          profileImage,
           address,
-          profile,
+          introduce,
           snsUrl,
         },
       }
@@ -26,6 +27,7 @@ const postProfile = async (req, res) => {
   }
 };
 
+// 프로필 조회
 const getProfile = async (req, res) => {
   const userId = res.locals.user;
   try {
@@ -38,9 +40,10 @@ const getProfile = async (req, res) => {
   }
 };
 
+// 프로필 수정
 const updateProfile = async (req, res) => {
   const { user } = res.locals;
-  const { nickname, profileUrl, address, profile, inquiry, snsUrl } = req.body;
+  const { nickname, profileImage, address, introduce, snsUrl } = req.body;
   const userId = user.userId;
 
   try {
@@ -51,10 +54,9 @@ const updateProfile = async (req, res) => {
       {
         $set: {
           nickname,
-          profileUrl,
+          profileImage,
           address,
-          profile,
-          inquiry,
+          introduce,
           snsUrl,
         },
       }

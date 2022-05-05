@@ -7,15 +7,14 @@ const UserSchema = new mongoose.Schema({
   },
   nickname: {
     type: String,
-    required: true,
   },
   provider: {
     type: String,
   },
-  profileUrl: {
+  profileImage: {
     type: String,
   },
-  profile: {
+  introduce: {
     type: String,
   },
   refreshToken: {
@@ -30,6 +29,14 @@ const UserSchema = new mongoose.Schema({
   blacklist: {
     type: Array,
   },
+  followCnt: {
+    type: Number,
+    default: 0,
+  },
+  followerCnt: {
+    type: Number,
+    default: 0,
+  },
   follow: {
     type: Array,
   },
@@ -43,6 +50,9 @@ const UserSchema = new mongoose.Schema({
     type: Array,
   },
   myMarkup: {
+    type: Array,
+  },
+  snsUrl: {
     type: Array,
   },
 });
