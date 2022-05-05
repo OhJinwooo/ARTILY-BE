@@ -5,7 +5,6 @@ const {
   postProfile,
   getProfile,
   updateProfile,
-  addfollow,
 } = require("./controllers/mypage.controllers");
 
 //프로필 등록
@@ -16,8 +15,5 @@ router.get("/profile", middleware, getProfile);
 
 //마이페이지 프로필 수정
 router.patch("/profile/update", middleware, updateProfile);
-
-//팔로우
-router.post("/follow/:followUser", middleware, addfollow);
 
 module.exports = router;

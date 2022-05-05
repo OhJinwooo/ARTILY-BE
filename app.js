@@ -20,6 +20,7 @@ const userRouter = require("./routes/user.router");
 const mypageRouter = require("./routes/mypage.router");
 // const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
+const followRouter = require("./routes/follow.router");
 const Chat = require("./schemas/chat.schemas");
 
 const cors = require("cors");
@@ -37,6 +38,7 @@ app.use("/api", [
   mypageRouter,
   // likeRouter,
   blackListRouter,
+  followRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
