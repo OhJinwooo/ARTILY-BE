@@ -14,6 +14,6 @@ router.patch("/profile", middleware, postProfile);
 router.get("/profile", middleware, getProfile);
 
 //마이페이지 프로필 수정
-router.patch("/profile/update", middleware, updateProfile);
+router.post("/profile/update", middleware, updateProfile);
 
 module.exports = router;

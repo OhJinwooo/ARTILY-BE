@@ -1,4 +1,5 @@
 const User = require("../../schemas/user.schemas");
+const s3 = require("../config/s3");
 
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
@@ -42,9 +43,14 @@ const getProfile = async (req, res) => {
 
 // 프로필 수정
 const updateProfile = async (req, res) => {
+  console.log(123123);
   const { user } = res.locals;
-  const { nickname, profileImage, address, introduce, snsUrl } = req.body;
+  const { nickname, address, introduce, snsUrl } = req.body;
   const userId = user.userId;
+  console.log(userId);
+  const profileImage = req.file?.location;
+  console.log("12312", profileImage);
+  console.log("213", url);
 
   try {
     await User.updateOne(

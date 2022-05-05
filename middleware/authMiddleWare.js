@@ -2,13 +2,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../schemas/user.schemas");
 
 module.exports = (req, res, next) => {
-  console.log("authMiddleware");
   //헤더의 이름 authorization 은 프론트와 얘기해야 함.
   const { authorization } = req.headers;
-  // console.log("1,autu", authorization)
+  // console.log("1,autu", authorization);
   const [tokenType, tokenValue] = authorization.split(" ");
-  console.log(tokenType);
-  console.log(tokenValue);
+  // console.log("통과");
   if (tokenType !== "Bearer") {
     res.status(401).send({
       errorMessage: "로그인 후 이용하세요!",
