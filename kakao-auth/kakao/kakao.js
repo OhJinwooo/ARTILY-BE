@@ -3,7 +3,11 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
-router.get("/kakao", passport.authenticate("kakao"));
+router.get(
+  "/kakao",
+  upload.single("profileImage"),
+  passport.authenticate("kakao")
+);
 
 const kakaoCallback = (req, res, next) => {
   passport.authenticate("kakao", { failureRedirect: "/" }, (err, user) => {
