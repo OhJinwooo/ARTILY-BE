@@ -29,8 +29,10 @@ const postProfile = async (req, res) => {
 
 // 프로필 조회
 const getProfile = async (req, res) => {
-  const userId = res.locals.user;
+  console.log(123);
+  const { userId } = res.locals.user;
   try {
+    console.log("try");
     const myprofile = await User.findOne({ userId });
     console.log(myprofile);
 
