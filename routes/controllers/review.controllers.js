@@ -4,11 +4,32 @@ const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
 const CryptoJS = require("crypto-js");
 const s3 = require("../config/s3");
+const sharp = require("sharp");
+const fs = require("fs");
+const { v4 } = require("uuid");
+const uuid = () => {
+  const tokens = v4().split("-");
+  return tokens[2] + tokens[1] + tokens[3];
+};
 
-// 리뷰 조회
+// 리뷰 조회(무한 스크롤(임시))
 const review = async (req, res) => {
   try {
-    const review = await Review.find({}).sort("-createdAt").limit(4);
+    //   //페이지의 시작 값을 받음(테이터의 총개수)
+    //   const data = req.body;
+    //   //시작을 지정할 변수 선언
+    //   let start = 0;
+
+    //   //이미데이터가 넘어가서 있는지 확인
+    //   if (data.start <= 0) {
+    //     start = 0;
+    //   } else {
+    //     start = data.start - 1;
+    //   }
+    //   //마지막 값 지정
+    //   let last = start + 5;
+    const review = await Review.find({}).sort("-createdAt");
+    //.limit(start, last);
     res.json({ review });
   } catch (err) {
     console.error(err);
@@ -18,13 +39,18 @@ const review = async (req, res) => {
 
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
+  // middlewares유저정보 가져오기(닉네임,프로필이미지)
+  const { user } = res.locals;
+  const nickname = user.nickname;
+  const profileUrl = user.profileUrl;
+  console.log("user", user);
+  console.log("nickname", nickname);
+  console.log("profileUrl", profileUrl);
   try {
     const { reviewId } = req.params;
     console.log(reviewId);
-    const review_detail = await Review.find({ _id: reviewId }).sort(
-      "-createdAt"
-    );
-    res.json({ review_detail });
+    const review_detail = await Review.find({ reviewId }).sort("-createdAt");
+    res.json({ review_detail, nickname, profileUrl });
   } catch (err) {
     console.error(err);
     next(err);
@@ -33,28 +59,35 @@ const review_detail = async (req, res) => {
 
 //리뷰 작성
 const review_write = async (req, res) => {
+  // middlewares유저정보 가져오기
   const { user } = res.locals;
   console.log("user", user);
   const userId = user.userId;
   console.log("userId", userId);
+  const nickname = user.nickname;
+  console.log("nickname", nickname);
 
   //작성한 정보 가져옴
-  const { category, nickname, reviewTitle, reviewContent } = req.body;
-  console.log(category, nickname, reviewTitle, reviewContent); //ok
+  const { category, reviewTitle, reviewContent } = req.body;
+  console.log(category, reviewTitle, reviewContent); //ok
 
+  // 이미지에서 location정보만 저장해줌
   let imageUrl = new Array();
   for (let i = 0; i < req.files.length; i++) {
-    /* imageUrl.push(`${req.protocol}://${req.get('host')}/img/${req.files[i].filename}`) */
     imageUrl.push(req.files[i].location);
   }
 
-  // 글작성시각 생성
+  //uuid를 사용하여 고유값인 reviewId 생성
+  const reviewId = uuid();
+
+  // 리뷰작성시각 생성
   require("moment-timezone");
   moment.tz.setDefault("Asia/Seoul");
   const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
 
   try {
     const ReviewList = await Review.create({
+      reviewId,
       category,
       userId,
       nickname,
@@ -63,9 +96,13 @@ const review_write = async (req, res) => {
       reviewContent,
       createdAt,
     });
-    res.send({ result: "success", ReviewList });
+    //res.send({ result: "success", ReviewList });
+    res.status(200).json({
+      respons: "success",
+      ReviewList,
+    });
   } catch {
-    res.status(400).send({ msg: "게시글이 작성되지 않았습니다." });
+    res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
 
@@ -81,7 +118,7 @@ const review_modify = async (req, res) => {
       return;
     }
     // 이미지 수정
-    const photo = await Review.find({ _id: reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
+    const photo = await Review.find({ reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
     //console.log("photo", photo); //ok
     const img = photo[0].imageUrl;
 
@@ -117,7 +154,7 @@ const review_modify = async (req, res) => {
     if (reviewId) {
       //업데이트
       await Review.updateOne(
-        { _id: reviewId },
+        { reviewId },
         {
           $set: {
             category,
@@ -146,7 +183,7 @@ const review_delete = async (req, res) => {
 
   //try {
   // 이미지 URL 가져오기 위한 로직
-  const photo = await Review.find({ _id: reviewId });
+  const photo = await Review.find({ reviewId });
   console.log("photo", photo); //ok
   const img = photo[0].imageUrl;
   console.log("img", img);

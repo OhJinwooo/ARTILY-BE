@@ -13,6 +13,10 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     //   required: true,
   },
+  reviewId: {
+    type: String,
+    //  required: true,
+  },
   reviewTitle: {
     type: String,
     //  required: true,
@@ -23,7 +27,7 @@ const ReviewSchema = new mongoose.Schema({
   },
   likeCnt: {
     type: Number,
-    default: 1,
+    default: 0,
   },
   imageUrl: {
     type: Array,
@@ -35,9 +39,9 @@ const ReviewSchema = new mongoose.Schema({
   },
 });
 
-ReviewSchema.virtual("reviewId").get(function () {
-  return this._id.toHexString();
-});
+// ReviewSchema.virtual("reviewId").get(function () {
+//   return this._id.toHexString();
+// });
 
 ReviewSchema.set("toJSON", {
   virtuals: true,

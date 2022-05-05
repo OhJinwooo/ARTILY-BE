@@ -27,8 +27,8 @@ const like = async (req, res) => {
         //남은 개수
         const totalLike = (await Like.find({ reviewId })).length;
         // Review 스키마에 likeCnt값 - 1 해줌.
-        await Review.updateOne({ reviewId }, { $set: { likeCnt: -1 } });
         //await Review.updateOne({ reviewId }, { $set: { likeCnt: like - 1 } });
+        await Review.updateOne({ reviewId }, { $set: { likeCnt: -1 } });
         return res.status(200).json({ result: "success", totalLike });
       }
 
@@ -53,70 +53,9 @@ const like = async (req, res) => {
   }
 };
 
-// 좋아요
-// const like = async (req, res) => {
-//   const { reviewId } = req.params;
-//   const { user } = res.locals;
-//   const { userId } = user;
-//   console.log(userId);
-
-//   try {
-//     if (userId > 0) {
-//       const existReview = await Review.find({ _id: reviewId, userId });
-//       console.log("existReview", existReview);
-
-//       let like = existReview[0]["likeCnt"];
-//       console.log("likeCnt", like);
-
-//       if (like) {
-//         //일치하는 값이 있으면 삭제
-//         await Like.deleteOne({ reviewId, userId });
-//         //남은 개수
-//         const totalLike = (await Like.find({ _id: reviewId })).length;
-//         return res.status(200).json({ result: "success", totalLike });
-//       }
-//       // 일치 하는 값이 없을 시 생성
-//       await Like.create({ userId, reviewId });
-//       // 총갯수
-//       const totalLike = (await Like.find({ _id: reviewId })).length;
-//       return res.status(200).json({ result: "success", totalLike });
-
-//       await Review.updateOne(
-//         { _id: reviewId },
-//         { $set: { likeCnt: like + 1 } }
-//       );
-//       await Like.create({ userId, reviewId });
-
-//       res.send("좋아요 성공!");
-//     }
-//     return res.status(401).json({
-//       response: "fail",
-//       msg: "유효하지 않은 토큰입니다",
-//     });
-//   } catch (error) {
-//     res.status(400).json({
-//       response: "fail",
-//       msg: "알수 없는 오류가 발생했습니다.",
-//     });
-//   }
-// };
-
-// 좋아요 취소
-// const unlike = async (req, res) => {
-//   const { reviewId } = req.params;
-//   const { user } = res.locals;
-//   const { userId } = user;
-
-//   const existReview = await Review.find({ _id: reviewId });
-//   console.log("existReview", existReview);
-//   let like = existReview[0]["likeCnt"];
-//   console.log("likeCnt", like);
-
-//   await Review.updateOne({ _id: reviewId }, { $set: { likeCnt: like - 1 } });
-//   await Like.findOneAndDelete({ userId, reviewId }, { userId });
-
-//   res.send("좋아요 취소");
-// };
+module.exports = {
+  like,
+};
 
 // 좋아요
 // const like = async (req, res) => {
@@ -152,8 +91,3 @@ const like = async (req, res) => {
 
 //   res.send("좋아요 취소");
 // };
-
-module.exports = {
-  like,
-  // unlike,
-};
