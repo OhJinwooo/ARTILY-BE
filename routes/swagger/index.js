@@ -27,4 +27,12 @@ router.use("/post", post);
  */
 router.use("/review", review);
 
+/**
+ * @swagger
+ * tags:
+ *   name: Mypage
+ *   description: review
+ */
+router.use("/Mypage", Mypage);
+
 module.exports = router;

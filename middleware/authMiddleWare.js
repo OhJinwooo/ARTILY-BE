@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
   }
   try {
     const { userId } = jwt.verify(tokenValue, "ARTILY-secret-key");
-    console.log("userId-->", userId);
+    // console.log("userId-->", userId);
     //error발생 StringToObjectID
     User.findOne({ userId })
       .exec()

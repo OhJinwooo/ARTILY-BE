@@ -16,9 +16,9 @@ const connect = require("./schemas/index.schemas");
 
 //const postRouter = require("./routes/post.router");
 const userRouter = require("./routes/user.router");
-const reviewRouter = require("./routes/review.router");
+// const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
-const likeRouter = require("./routes/like.router");
+// const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const Chat = require("./schemas/chat.schemas");
 
@@ -33,9 +33,9 @@ app.use(express.json());
 app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [
   userRouter,
-  reviewRouter,
+  // reviewRouter,
   mypageRouter,
-  likeRouter,
+  // likeRouter,
   blackListRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -46,58 +46,17 @@ const io = socket(server, {
     credentials: true,
   },
 });
-// global.onlineUsers = new Map();
-const chat = io.of("/chat");
-io.on("connection", (socket) => {
-  console.log("연결 connect: ", socket.id);
-  // console.log("globalChatSocket: ", global.chatSocket);
-  socket.on("disconnect", () => {
-    console.log("디스커넥트 disconnect: ", socket.id);
-    Chat.find(function (err, result) {
-      const arr = [];
-      if (result.length !== 0) {
-        for (var i = result.length - 1; i >= 0; i--) {
-          arr.push({
-            roomName: data.roomName,
-            from: result[i].from,
-            message: result[i].message,
-            time: result[i].time,
-          });
-        }
-        chat.to(socket.id).emit("receive message", arr.reverse());
-        console.log(socket.id);
-      }
-    });
-  });
-  socket.on("join_room", (data) => {
-    socket.join(data);
 
-    console.log("join_room 방들어감: ", data);
-    console.log(socket.rooms);
-  });
-  socket.on("send_message", (data) => {
-    console.log("send: ", data);
-    socket.to(data.roomName).emit("receive_message", {
-      roomName: data.roomName,
-      from: data.from,
-      message: data.message,
-      time: data.time,
+io.on("connection", (socket) => {
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
     });
-    console.log({
-      roomName: data.roomName,
-      from: data.from,
-      message: data.message,
-      time: data.time,
-    });
-    const saveChat = new Chat({
-      from: data.from,
-      message: data.message,
-      time: data.time,
-      roomName: data.roomName,
-    });
-    console.log("save", saveChat);
-    saveChat.save();
-  });
+  }
+  socket.emit("users", users);
+  // ...
 });
 
 https: server.listen(port, () => {
@@ -159,3 +118,57 @@ https: server.listen(port, () => {
 //   message: 'gdgd',
 //   time: '2022-05-02 22:21:15'
 // }
+
+//한울님 정민님
+// const chat = io.of("/chat");
+// io.on("connection", (socket) => {
+//   console.log("연결 connect: ", socket.id);
+//   // console.log("globalChatSocket: ", global.chatSocket);
+//   socket.on("disconnect", () => {
+//     console.log("디스커넥트 disconnect: ", socket.id);
+//     Chat.find(function (err, result) {
+//       const arr = [];
+//       if (result.length !== 0) {
+//         for (var i = result.length - 1; i >= 0; i--) {
+//           arr.push({
+//             roomName: data.roomName,
+//             from: result[i].from,
+//             message: result[i].message,
+//             time: result[i].time,
+//           });
+//         }
+//         chat.to(socket.id).emit("receive message", arr.reverse());
+//         console.log(socket.id);
+//       }
+//     });
+//   });
+//   socket.on("join_room", (data) => {
+//     socket.join(data);
+
+//     console.log("join_room 방들어감: ", data);
+//     console.log(socket.rooms);
+//   });
+//   socket.on("send_message", (data) => {
+//     console.log("send: ", data);
+//     socket.to(data.roomName).emit("receive_message", {
+//       roomName: data.roomName,
+//       from: data.from,
+//       message: data.message,
+//       time: data.time,
+//     });
+//     console.log({
+//       roomName: data.roomName,
+//       from: data.from,
+//       message: data.message,
+//       time: data.time,
+//     });
+//     const saveChat = new Chat({
+//       from: data.from,
+//       message: data.message,
+//       time: data.time,
+//       roomName: data.roomName,
+//     });
+//     console.log("save", saveChat);
+//     saveChat.save();
+//   });
+// });

@@ -27,14 +27,17 @@ module.exports = () => {
           // accessToken, refreshToken : 로그인 성공 후 카카오가 보내준 토큰
           // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
-          let profileUrl = "";
+          let profileImage = "";
           let address = "";
+          let nickname = "";
+          let introduce = "";
+          let role = true;
           if (exUser) {
             console.log("로그인", exUser);
             done(null, exUser);
           } else {
             if (profile._json.profile_image) {
-              profileUrl = profile._json.profile_image;
+              profileImage = profile._json.profile_image;
             }
 
             const user = {
@@ -43,9 +46,11 @@ module.exports = () => {
               nickname: profile.displayName, // 이름
               userId: profile.id,
               provider: "naver",
-              profileUrl,
+              profileImage,
               address,
-              // email: profile.emails[0].value, // 유저 이메일
+              nickname,
+              introduce,
+              role,
             };
             await User.create(user);
             done(null, user);
