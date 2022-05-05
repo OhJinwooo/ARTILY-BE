@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const likesSchema = new mongoose.Schema({
+const LikeSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
@@ -9,4 +9,4 @@ const likesSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Like", likesSchema);
+module.exports = mongoose.model("Like", LikeSchema);

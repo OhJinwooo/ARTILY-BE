@@ -45,6 +45,9 @@ const UserSchema = new mongoose.Schema({
   myMarkup: {
     type: Array,
   },
+  myBuy: {
+    type: Array,
+  },
   inquiry: {
     type: String,
   },
