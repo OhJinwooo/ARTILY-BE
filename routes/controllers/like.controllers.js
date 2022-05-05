@@ -1,7 +1,7 @@
 const express = require("express");
+const { create } = require("../../schemas/like.schemas");
 const Review = require("../../schemas/review.schemas");
 const Like = require("../../schemas/like.schemas");
-const { create } = require("../../schemas/like.schemas");
 
 // //좋아요 추가,삭제
 const like = async (req, res) => {
@@ -27,8 +27,7 @@ const like = async (req, res) => {
         //남은 개수
         const totalLike = (await Like.find({ reviewId })).length;
         // Review 스키마에 likeCnt값 - 1 해줌.
-        //await Review.updateOne({ reviewId }, { $set: { likeCnt: like - 1 } });
-        await Review.updateOne({ reviewId }, { $set: { likeCnt: -1 } });
+        await Review.updateOne({ reviewId }, { $inc: { likeCnt: -1 } });
         return res.status(200).json({ result: "success", totalLike });
       }
 
@@ -37,8 +36,7 @@ const like = async (req, res) => {
       // 총갯수
       const totalLike = (await Like.find({ reviewId })).length;
       // Review 스키마에 likeCnt값 + 1 해줌.
-      //await Review.updateOne({ reviewId }, { $set: { likeCnt: like + 1 } });
-      await Review.updateOne({ reviewId }, { $set: { likeCnt: 1 } });
+      await Review.updateOne({ reviewId }, { $inc: { likeCnt: 1 } });
       return res.status(200).json({ result: "success", totalLike });
     }
     return res.status(401).json({
@@ -56,38 +54,3 @@ const like = async (req, res) => {
 module.exports = {
   like,
 };
-
-// 좋아요
-// const like = async (req, res) => {
-//   const { reviewId } = req.params;
-//   const { user } = res.locals;
-//   const { userId } = user;
-//   console.log(userId);
-
-//   const existReview = await Review.find({ _id: reviewId });
-//   console.log("existReview", existReview);
-//   let like = existReview[0]["likeCnt"];
-//   console.log("likeCnt", like);
-
-//   await Review.updateOne({ _id: reviewId }, { $set: { likeCnt: like + 1 } });
-//   await Like.create({ userId, reviewId });
-
-//   res.send("좋아요 성공!");
-// };
-
-// // 좋아요 취소
-// const unlike = async (req, res) => {
-//   const { reviewId } = req.params;
-//   const { user } = res.locals;
-//   const { userId } = user;
-
-//   const existReview = await Review.find({ _id: reviewId });
-//   console.log("existReview", existReview);
-//   let like = existReview[0]["likeCnt"];
-//   console.log("likeCnt", like);
-
-//   await Review.updateOne({ _id: reviewId }, { $set: { likeCnt: like - 1 } });
-//   await Like.findOneAndDelete({ userId, reviewId }, { userId });
-
-//   res.send("좋아요 취소");
-// };
