@@ -23,7 +23,7 @@ const ReviewSchema = new mongoose.Schema({
   },
   likeCnt: {
     type: Number,
-    default: 0,
+    default: 1,
   },
   imageUrl: {
     type: Array,
