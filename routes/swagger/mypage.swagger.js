@@ -4,9 +4,9 @@ const postRouter = require("express").Router();
 /**
  * @swagger
  * paths:
- *  /api/post:
+ *  /api/profile:
  *    get:
- *      summary: "홈 조회"
+ *      summary: "마이페이지 조회"
  *      description: "bsetPost 찜순(4개), attention 랜덤 (4개), bestReview 좋아요순(4개)"
  *      tags: [Post]
  *      responses:
