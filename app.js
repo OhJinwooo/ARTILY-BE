@@ -14,7 +14,7 @@ const { swaggerUi, specs } = require("./swagger/swagger");
 
 const connect = require("./schemas/index.schemas");
 
-//const postRouter = require("./routes/post.router");
+const postRouter = require("./routes/post.router");
 /* const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
@@ -29,7 +29,7 @@ const cors = require("cors");
 passportKakao(); */
 connect();
 
-app.use(cors());
+/* app.use(cors()); */
 app.use(express.json());
 /* app.use("/oauth", [kakaoRouter, naverRouter]); */
 app.use("/api", [

@@ -32,7 +32,6 @@ const connect = () => {
       console.error(err);
     });
 };
-<<<<<<< HEAD
 module.exports = connect; */
 
  const mongoose = require("mongoose");
@@ -49,6 +48,3 @@ module.exports = connect; */
  };
 
  module.exports = connect;
-=======
-module.exports = connect;
->>>>>>> cc2d6f3ef3921db0006b9cbc0ce52557869e752d
