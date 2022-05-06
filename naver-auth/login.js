@@ -29,7 +29,6 @@ module.exports = () => {
 
           let profileImage = "";
           let address = "";
-          let nickname = "";
           let introduce = "";
           let role = true;
           if (exUser) {
@@ -48,7 +47,6 @@ module.exports = () => {
               provider: "naver",
               profileImage,
               address,
-              nickname,
               introduce,
               role,
             };

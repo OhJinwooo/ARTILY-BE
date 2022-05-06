@@ -26,7 +26,6 @@ module.exports = () => {
 
           let profileImage = "";
           let address = "";
-          let nickname = "";
           let introduce = "";
           let role = true;
           if (exUser) {
@@ -46,7 +45,6 @@ module.exports = () => {
               provider: "kakao",
               profileImage,
               address,
-              nickname,
               introduce,
               role,
             };

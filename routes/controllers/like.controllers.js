@@ -1,7 +1,7 @@
 const express = require("express");
+const { create } = require("../../schemas/like.schemas");
 const Review = require("../../schemas/review.schemas");
 const Like = require("../../schemas/like.schemas");
-const { create } = require("../../schemas/like.schemas");
 
 // //좋아요 추가,삭제
 const like = async (req, res) => {
@@ -27,7 +27,6 @@ const like = async (req, res) => {
         //남은 개수
         const totalLike = (await Like.find({ reviewId })).length;
         // Review 스키마에 likeCnt값 - 1 해줌.
-        //await Review.updateOne({ reviewId }, { $set: { likeCnt: like - 1 } });
         await Review.updateOne({ reviewId }, { $inc: { likeCnt: -1 } });
         return res.status(200).json({ result: "success", totalLike });
       }
@@ -37,7 +36,6 @@ const like = async (req, res) => {
       // 총갯수
       const totalLike = (await Like.find({ reviewId })).length;
       // Review 스키마에 likeCnt값 + 1 해줌.
-      //await Review.updateOne({ reviewId }, { $set: { likeCnt: like + 1 } });
       await Review.updateOne({ reviewId }, { $inc: { likeCnt: 1 } });
       return res.status(200).json({ result: "success", totalLike });
     }
