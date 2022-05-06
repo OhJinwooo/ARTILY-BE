@@ -10,17 +10,17 @@ const postProfile = async (req, res) => {
   const { introduce, nickname, snsUrl, address } = req.body;
 
   const profileImage = req.file?.location;
-  console.log("profileImage", profileImage);
 
   // try {
-  const photo = await User.find({ userId });
-  // console.log("photo", photo);
-  const url = photo[0].profileImage.split("/");
-  // console.log("url", url);
+  const photo = await User.findOne({ userId });
+  console.log("photo", photo);
+  const url = photo.profileImage.split("/");
+  console.log("profileImage", profileImage);
+  console.log("url", url);
   const delFileName = url[url.length - 1];
   // console.log("delFileName", delFileName);
 
-  if (profileImage) {
+  if (photo.profileImage) {
     console.log("이미지 있음");
     s3.deleteObject(
       {
@@ -33,6 +33,7 @@ const postProfile = async (req, res) => {
         }
       }
     );
+    console.log(123);
     await User.updateOne(
       {
         userId,
