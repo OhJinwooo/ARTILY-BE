@@ -1,4 +1,5 @@
 const User = require("../../schemas/user.schemas");
+const Post = require("../../schemas/post.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -6,20 +7,22 @@ const postProfile = async (req, res) => {
   const { user } = res.locals;
   const userId = user.userId;
 
-  const { introduce, nickname, snsUrl, address } = req.body;
+  const { introduce, snsUrl, address, nickname } = req.body;
 
   const profileImage = req.file?.location;
-  console.log("profileImage", profileImage);
+
+  console.log("img", profileImage);
 
   // try {
-  const photo = await User.find({ userId });
+  const photo = await User.findOne({ userId });
   // console.log("photo", photo);
-  const url = photo[0].profileImage.split("/");
-  // console.log("url", url);
+  const url = photo.profileImage.split("/");
+  console.log("profileImage", profileImage);
+  console.log("url", url);
   const delFileName = url[url.length - 1];
   // console.log("delFileName", delFileName);
 
-  if (profileImage) {
+  if (photo.profileImage) {
     console.log("이미지 있음");
     s3.deleteObject(
       {
@@ -32,6 +35,7 @@ const postProfile = async (req, res) => {
         }
       }
     );
+    console.log(123);
     await User.updateOne(
       {
         userId,
@@ -73,15 +77,49 @@ const postProfile = async (req, res) => {
 
 // 프로필 조회
 const getProfile = async (req, res) => {
-<<<<<<< HEAD
   console.log(123);
-=======
->>>>>>> sungbin
   const { userId } = res.locals.user;
   try {
     console.log("try");
-    const myprofile = await User.findOne({ userId });
+    const myprofile = await User.findOne(
+      { userId },
+      "userId nickname ProfileImage introduce followCnt followerCnt follow follower myPost myMarkup myReview myBuy snsUrl"
+    );
     console.log(myprofile);
+    // const mypost = myprofile.myPost;
+    const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const myPost = await Post.find(
+      { postId: mypost },
+      "postId imageUrl postTitle done"
+    );
+    // const mypost = myprofile.myReview;
+    const myreview = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const myReview = await Post.find(
+      { postId: mypost },
+      "postId imageUrl postTitle done"
+    );
+
+    console.log("더미", myPost);
+
+    // const myProfiles = {
+    //   myUserId: myprofile.userId,
+    //   //mynickname : myprofile.nickname;
+    //   mynickname: 1,
+    //   //myProfileImage : myprofile.profileImage;
+    //   myProfileImage: 2,
+    //   //myInrtoduce : myprofile.introduce;
+    //   myInrtoduce: 3,
+    //   myFollowCnt: myprofile.followCnt,
+    //   myFollowerCnt: myprofile.followerCnt,
+    //   myFollow: myprofile.follow,
+    //   myFollower: myprofile.follower,
+    //   myPost: myprofile.myPost,
+    //   myMarkup: myprofile.myMarkup,
+    //   myReview: myprofile.myReview,
+    //   myBuy: myprofile.myBuy,
+    //   mySnsUrl: myprofile.snsUrl,
+    // };
+    // console.log(123, myProfiles);
 
     res.status(200).json({ myprofile });
   } catch (err) {

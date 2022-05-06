@@ -15,7 +15,7 @@
 // };
 // module.exports = connect;
 
-/* const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 require("dotenv").config();
 const connect = () => {
   mongoose
@@ -32,9 +32,9 @@ const connect = () => {
       console.error(err);
     });
 };
-module.exports = connect; */
+module.exports = connect; 
 
- const mongoose = require("mongoose");
+ /* const mongoose = require("mongoose");
  const connect = () => {
    mongoose
      .connect(
@@ -47,4 +47,4 @@ module.exports = connect; */
      });
  };
 
- module.exports = connect;
+ module.exports = connect; */
