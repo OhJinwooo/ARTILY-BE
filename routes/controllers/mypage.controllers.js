@@ -7,14 +7,15 @@ const postProfile = async (req, res) => {
   const { user } = res.locals;
   const userId = user.userId;
 
-  const { introduce, nickname, snsUrl, address } = req.body;
+  const { introduce, snsUrl, address, nickname } = req.body;
 
   const profileImage = req.file?.location;
-  // console.log("img", profileImage);
+
+  console.log("img", profileImage);
 
   // try {
   const photo = await User.findOne({ userId });
-  console.log("photo", photo);
+  // console.log("photo", photo);
   const url = photo.profileImage.split("/");
   console.log("profileImage", profileImage);
   console.log("url", url);
@@ -80,51 +81,47 @@ const getProfile = async (req, res) => {
   const { userId } = res.locals.user;
   try {
     console.log("try");
-    const myprofile = await User.findOne({ userId });
+    const myprofile = await User.findOne(
+      { userId },
+      "userId nickname ProfileImage introduce followCnt followerCnt follow follower myPost myMarkup myReview myBuy snsUrl"
+    );
+    console.log(myprofile);
     // const mypost = myprofile.myPost;
     const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
-    const posts = await Post.find({ postId: mypost });
-    console.log("더미", posts);
-    const myPosts = {};
-    let postId = "";
-    let imageUrl = "";
-    let postTitle = "";
-    let done = "";
-    for (let i = 0; i < posts.length; i++) {
-      // myPosts = {
-      postId = posts[i].postId;
-      imageUrl = posts[i].imageUrl;
-      postTitle = posts[i].postTitle;
-      // price= posts[0].price;
-      done = posts[i].done;
-      // markupCnt= posts[i].markupCnt,
-      // };
-      console.log("for", { postId, imageUrl, postTitle, done });
-    }
-    console.log("out", postId, imageUrl, postTitle, done);
-    // console.log(myPosts);
+    const myPost = await Post.find(
+      { postId: mypost },
+      "postId imageUrl postTitle done"
+    );
+    // const mypost = myprofile.myReview;
+    const myreview = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const myReview = await Post.find(
+      { postId: mypost },
+      "postId imageUrl postTitle done"
+    );
 
-    const myProfiles = {
-      myUserId: myprofile.userId,
-      //mynickname : myprofile.nickname;
-      mynickname: 1,
-      //myProfileImage : myprofile.profileImage;
-      myProfileImage: 2,
-      //myInrtoduce : myprofile.introduce;
-      myInrtoduce: 3,
-      myFollowCnt: myprofile.followCnt,
-      myFollowerCnt: myprofile.followerCnt,
-      myFollow: myprofile.follow,
-      myFollower: myprofile.follower,
-      myPost: myprofile.myPost,
-      myMarkup: myprofile.myMarkup,
-      myReview: myprofile.myReview,
-      myBuy: myprofile.myBuy,
-      mySnsUrl: myprofile.snsUrl,
-    };
+    console.log("더미", myPost);
+
+    // const myProfiles = {
+    //   myUserId: myprofile.userId,
+    //   //mynickname : myprofile.nickname;
+    //   mynickname: 1,
+    //   //myProfileImage : myprofile.profileImage;
+    //   myProfileImage: 2,
+    //   //myInrtoduce : myprofile.introduce;
+    //   myInrtoduce: 3,
+    //   myFollowCnt: myprofile.followCnt,
+    //   myFollowerCnt: myprofile.followerCnt,
+    //   myFollow: myprofile.follow,
+    //   myFollower: myprofile.follower,
+    //   myPost: myprofile.myPost,
+    //   myMarkup: myprofile.myMarkup,
+    //   myReview: myprofile.myReview,
+    //   myBuy: myprofile.myBuy,
+    //   mySnsUrl: myprofile.snsUrl,
+    // };
     // console.log(123, myProfiles);
 
-    res.status(200).json({ myProfiles });
+    res.status(200).json({ myprofile });
   } catch (err) {
     res.send(err);
   }
