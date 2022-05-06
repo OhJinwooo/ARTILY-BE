@@ -26,11 +26,11 @@ const getHome = async (req, res) => {
     //limt함수 사용 보여주는 데이터 숫자 제한
     const artPost = await Post.find({}).sort("-marckupCnt").limit(4);
     const artWriter = artPost.user;
-    const reviwPage = await Review.find({}).sort("-Likecount").limit(4);
+    const reviewPage = await Review.find({}).sort("-Likecount").limit(4);
     res.status(200).json({
       respons: "success",
       msg: "조회 성공",
-      data: { artPost, artWriter, reviwPage },
+      data: { artPost, artWriter, reviewPage },
     });
   } catch (error) {
     res.status(400).json({
