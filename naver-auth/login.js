@@ -28,6 +28,7 @@ module.exports = () => {
           // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
           let profileImage = "";
+          let nickname = "";
           let address = "";
           let introduce = "";
           let role = true;
@@ -42,10 +43,10 @@ module.exports = () => {
             const user = {
               refreshToken: refreshToken,
               accessToken: accessToken,
-              nickname: profile.displayName, // 이름
               userId: profile.id,
               provider: "naver",
               profileImage,
+              nickname,
               address,
               introduce,
               role,

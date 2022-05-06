@@ -19,9 +19,9 @@ const naverCallback = (req, res, next) => {
 
     result = {
       token,
-      profileImage: profileImage,
+      profileImage,
       userId: userId,
-      nickname: nickname,
+      nickname,
       provider: provider,
       accessToken,
       introduce,

@@ -19,9 +19,9 @@ const kakaoCallback = (req, res, next) => {
 
     result = {
       token,
-      profileImage: profileImage,
+      profileImage,
+      nickname,
       userId: userId,
-      nickname: nickname,
       provider: provider,
       accessToken,
       introduce,
