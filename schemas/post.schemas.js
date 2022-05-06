@@ -20,8 +20,20 @@ const postSchema = new mongoose.Schema({
   transaction: {
     type: String,
   },
-  user: {
-    type: Object,
+  price: {
+    type: String,
+  },
+  postSize: {
+    type: String,
+  },
+  userId: {
+    type: String,
+  },
+  nickname: {
+    type: String,
+  },
+  profileImage: {
+    type: String,
   },
   changeAddress: {
     type: String,
