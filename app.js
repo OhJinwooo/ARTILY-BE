@@ -19,8 +19,9 @@ const connect = require("./schemas/index.schemas");
 const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
-const blackListRouter = require("./routes/blackList.router"); */
-const postRouter = require("./routes/post.router")
+const blackListRouter = require("./routes/blackList.router");
+const followRouter = require("./routes/follow.router");
+const Chat = require("./schemas/chat.schemas");
 
 const cors = require("cors");
 
@@ -47,22 +48,17 @@ const io = socket(server, {
     credentials: true,
   },
 });
-// global.onlineUsers = new Map();
+
 io.on("connection", (socket) => {
-  console.log("연결 connect: ", socket.id);
-  // console.log("globalChatSocket: ", global.chatSocket);
-  socket.on("disconnect", () => {
-    console.log("디스커넥트 disconnect: ", socket.id);
-  });
-  socket.on("join_room", (data) => {
-    socket.join(data);
-    console.log("join_room 방들어감: ", data);
-    console.log(socket.rooms);
-  });
-  socket.on("send_message", (data) => {
-    console.log("send: ", data);
-    socket.to(data.roomName).emit("receive_message", data);
-  });
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userID: id,
+      username: socket.username,
+    });
+  }
+  socket.emit("users", users);
+  // ...
 });
 
 https: server.listen(port, () => {

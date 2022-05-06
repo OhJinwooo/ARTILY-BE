@@ -11,8 +11,8 @@ const { review_delete } = require("./controllers/review.controllers");
 //리뷰조회
 router.get("/review", review);
 
-//리뷰상세조회
-router.get("/review/:reviewId", review_detail);
+//리뷰상세조회;
+router.get("/review/:reviewId", middleswares, review_detail);
 
 //리뷰작성
 router.post(

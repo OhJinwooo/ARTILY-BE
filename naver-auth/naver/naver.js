@@ -5,13 +5,13 @@ const jwt = require("jsonwebtoken");
 const upload = require("../../routes/multer/uploads");
 
 router.get(
-  "/kakao",
+  "/naver",
   upload.single("profileImage"),
-  passport.authenticate("kakao")
+  passport.authenticate("naver")
 );
 
-const kakaoCallback = (req, res, next) => {
-  passport.authenticate("kakao", { failureRedirect: "/" }, (err, user) => {
+const naverCallback = (req, res, next) => {
+  passport.authenticate("naver", { failureRedirect: "/" }, (err, user) => {
     if (err) return next(err);
     const {
       userId,
@@ -27,17 +27,17 @@ const kakaoCallback = (req, res, next) => {
     result = {
       token,
       profileImage,
-      nickname,
       userId: userId,
+      nickname,
       type,
       provider: provider,
       accessToken,
       introduce,
       // refreshToken: refreshToken,
     };
-    console.log(1, result);
+    console.log(13121312312312, result);
     res.send({ user: result });
   })(req, res, next);
 };
-router.get("/kakao/callback", kakaoCallback);
+router.get("/naver/callback", naverCallback);
 module.exports = router;

@@ -1,4 +1,21 @@
 {
+  "name": "project-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OhJinwooo/Project-BE.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OhJinwooo/Project-BE/issues"
+  },
+  "homepage": "https://github.com/OhJinwooo/Project-BE#readme",
   "dependencies": {
     "aws-sdk": "^2.1125.0",
     "cors": "^2.8.5",

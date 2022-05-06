@@ -1,23 +1,26 @@
-const passport = require("passport");
-const KakaoStrategy = require("passport-kakao").Strategy;
+const passport = require("passport"); //passport 추가
+const NaverStrategy = require("passport-naver").Strategy;
 const User = require("../schemas/user.schemas");
 require("dotenv").config();
 
+//별도 config 파일에 '네아로'에 신청한 정보 입력
 module.exports = () => {
+  console.log("모듈");
   passport.use(
-    new KakaoStrategy(
+    new NaverStrategy(
       {
-        clientID: process.env.KAKAOCLIENT_ID, // 카카오 로그인에서 발급받은 REST API 키
-        callbackURL: "http://localhost:3000/oauth/kakao/callback", // 카카오 로그인 Redirect URI 경로
+        clientID: process.env.NAVERCLIENT_ID,
+        clientSecret: process.env.NAVERSECRET,
+        callbackURL: "http://localhost:3000/oauth/naver/callback",
       },
 
       async (accessToken, refreshToken, profile, done) => {
+        console.log("NaverStrategy");
         try {
-          console.log(profile);
+          console.log("try in", profile);
           const exUser = await User.findOne({
-            // 카카오 플랫폼에서 로그인 했고 & snsId필드에 카카오 아이디가 일치할경우
             userId: profile.id,
-            provider: "kakao",
+            provider: "naver",
           });
           // clientID에 카카오 앱 아이디 추가
           // callbackURL: 카카오 로그인 후 카카오가 결과를 전송해줄 URL
@@ -30,27 +33,29 @@ module.exports = () => {
           let introduce = "";
           let role = true;
           if (exUser) {
-            console.log(99999999999, exUser);
-            done(null, exUser); // 로그인 인증 완료
+            console.log("로그인", exUser);
+            done(null, exUser);
           } else {
-            console.log("@@@@@@@@@@@@@@@@", process.env.KAKAOCLIENT_ID);
+            if (profile._json.profile_image) {
+              profileImage = profile._json.profile_image;
+            }
+
             const user = {
-              accessToken: accessToken,
               refreshToken: refreshToken,
+              accessToken: accessToken,
               userId: profile.id,
-              provider: "kakao",
+              provider: "naver",
               profileImage,
               nickname,
-              type: "new",
               address,
+              type: "new",
               introduce,
               role,
             };
-            // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
             await User.create(user);
-            done(null, user); // 회원가입하고 로그인 인증 완료
+            done(null, user);
           }
-        } catch (error) {
+        } catch {
           console.error(error);
           done(error);
         }

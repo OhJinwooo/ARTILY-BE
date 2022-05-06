@@ -20,7 +20,7 @@
 
  router.put("/post/:postId", upload.array("img"), artUpdate);
 
- router.delete("/post/:postId", artdelete);
+ router.delete("/post/:postId",artdelete);
 
 router.post('/cnt/:postId',marckupCnt)
 
