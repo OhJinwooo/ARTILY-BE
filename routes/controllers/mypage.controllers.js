@@ -10,7 +10,7 @@ const postProfile = async (req, res) => {
   const { introduce, nickname, snsUrl, address } = req.body;
 
   const profileImage = req.file?.location;
-  console.log("img", profileImage);
+  // console.log("img", profileImage);
 
   // try {
   const photo = await User.findOne({ userId });
