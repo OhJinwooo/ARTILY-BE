@@ -15,7 +15,7 @@
 // };
 // module.exports = connect;
 
-const mongoose = require("mongoose");
+/* const mongoose = require("mongoose");
 require("dotenv").config();
 const connect = () => {
   mongoose
@@ -32,4 +32,23 @@ const connect = () => {
       console.error(err);
     });
 };
+<<<<<<< HEAD
+module.exports = connect; */
+
+ const mongoose = require("mongoose");
+ const connect = () => {
+   mongoose
+     .connect(
+       "mongodb://localhost:27017/velog",
+       // 이후 배포 시 변경 필요.
+       { ignoreUndefined: true }
+     )
+     .catch((err) => {
+       console.error(err);
+     });
+ };
+
+ module.exports = connect;
+=======
 module.exports = connect;
+>>>>>>> cc2d6f3ef3921db0006b9cbc0ce52557869e752d

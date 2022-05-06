@@ -28,7 +28,7 @@ const mypageRouter = require("express").Router();
  *                  type: string
  *                  example: "홍대 서양미술과"
  *                snsUrl:
- *                  type: Array
+ *                  type: array
  *                  example: ["인스타url", "페이스북url"]
  *      responses:
  *        "200":
@@ -51,9 +51,58 @@ mypageRouter.patch("/profile", middleware, postProfile);
  *              schema:
  *                type: object
  *                properties:
- *                    myprofile:
+ *                    _id:
+ *                      type: string
+ *                      example: "asdfadsf"
+ *                    userId:
+ *                      type: string
+ *                      example: "234343223"
+ *                    nickname:
+ *                      type: string
+ *                      example: "만두조아"
+ *                    provider:
+ *                      type: string
+ *                      example: "kakao"
+ *                    profileUrl:
+ *                      type: string
+ *                      example: "http://k.kakaocdn.net/dn/Ksadfasdfm4z/bwasdfaJ30p1/img_640x640.jpg"
+ *                    refreshToken:
+ *                      type: string
+ *                      example: "asdfasdfdasfadsf"
+ *                    address:
+ *                      type: string
+ *                      example: "광주 남구 봉선동"
+ *                    followCnt:
+ *                      type: number
+ *                      example: 13
+ *                    followerCnt:
+ *                      type: number
+ *                      example: 20
+ *                    follow:
  *                      type: array
- *                      example: "user정보"
+ *                      example: ["abcd123","qwer345"]
+ *                    follower:
+ *                      type: array
+ *                      example: ["abcd12d3","qwer34d5"]
+ *                    blacklist:
+ *                      type: array
+ *                      example: ["abcd1s23","qwer34f5"]
+ *                    myBuy:
+ *                      type: array
+ *                      example: ["내가 산 물건의 poatId","asdf123"]
+ *                    myPost:
+ *                      type: array
+ *                      example: ["내가 판 물건","도자기"]
+ *                    myReview:
+ *                      type: array
+ *                      example: ["내가 작성한 reviewId", "asdfass"]
+ *                    myMarkup:
+ *                      type: array
+ *                      example: ["내가 찜한 물건", "해당 postId"]
+ *                    snsUrl:
+ *                      type: array
+ *                      example: ["인스타url", "페이스북url"]
+ *
  */
 mypageRouter.get("/profile", middleware, getProfile);
 
@@ -86,7 +135,7 @@ mypageRouter.get("/profile", middleware, getProfile);
  *                  type: string
  *                  example: "홍대 서양미술과"
  *                snsUrl:
- *                  type: Array
+ *                  type: array
  *                  example: ["인스타url", "페이스북url"]
  *      responses:
  *        "200":

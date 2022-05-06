@@ -1,4 +1,4 @@
-const express = require("express");
+/* const express = require("express");
 const router = express.Router();
 const upload = require("../routes/multer/uploads");
 const middleswares = require("../middleware/authMiddleWare");
@@ -33,4 +33,4 @@ router.patch(
 //리뷰삭제
 router.delete("/review/:reviewId", middleswares, review_delete);
 
-module.exports = router;
+module.exports = router; */
