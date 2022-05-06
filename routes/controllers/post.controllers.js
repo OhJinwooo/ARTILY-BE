@@ -12,6 +12,7 @@ const { v4 } = require('uuid');
 const { create } = require("../../schemas/user.schemas");
 const { object } = require("webidl-conversions");
 const { fstat } = require("fs");
+const { ppid } = require("process");
 const uuid = () => {
   const tokens = v4().split('-')
   return tokens[2] + tokens[1] + tokens[3] ;
@@ -24,13 +25,13 @@ const uuid = () => {
 const getHome = async (req, res) => {
   try{
       //limt함수 사용 보여주는 데이터 숫자 제한
-      const artPost = await Post.find({})/* .sort('-marckupCnt') */.limit() ;
+      const artPost = await Post.find({}).sort('-marckupCnt').limit(4) ;
       const artWriter = artPost.user;
       const reviwPage = await Review.find({}).sort('-Likecount').limit(4); 
       res.status(200).json({
         respons:'success',
         msg:'조회 성공',
-        data:{artPost,/* artWriter, */reviwPage }
+        data:{artPost,artWriter,reviwPage }
       })
   }catch(error){
     res.status(400).json({
@@ -50,38 +51,45 @@ const artStore = async(req,res)=>{
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
-    /* //태그기능 변수 통합
-    const artFilter = {category:category,
-      transaction:transaction,
-      changeAddress:changeAddress}; */
-    const artFilter = [category,transaction,changeAddress]
-   /*  //시작을 지정할 변수 선언
+    //태그기능 변수 통합
+    const artFilter = [category,transaction,changeAddress];
+    if(keyword && category && transaction && changeAddress){}
+    /* const artFilter = [{category:category},{transaction:transaction},{changeAddress}] */
+    /* //검색기능
+    if(keyword){
+      let option = [];
+      if(keyword){
+        option = [{postTitle: new RegExp(keyword)}]
+      }
+       //시작을 지정할 변수 선언
     let start = 0;
     //이미데이터가 넘어가서 있는지 확인
     if(data.start <= 0){
       start = 0 ;
-    }else{
+    }else{c
       start = data.start - 1
     };
     //마지막 값 지정
     let last = start + 5
     // 지정해서 보내주는 데이터
-    if(data.start && !category && !transaction && !changeAddress)
-    {
-      const artPost = await Post.find({}).limit(start,last);
-      
-      res.status(200).json({
-      respons:"success",
-      msg:'스토어 조회 성공',
-      artPost
-    });
-  } */
-  console.log('1',artFilter)
- 
+      await Post.find({$or:option}).limit(start,last)
+    } */
+   /*  //시작을 지정할 변수 선언
+    let start = 0;
+    //이미데이터가 넘어가서 있는지 확인
+    if(data.start <= 0){
+      start = 0 ;
+    }else{c
+      start = data.start - 1
+    };
+    //마지막 값 지정
+    let last = start + 5
+    // 지정해서 보내주는 데이터
+    */ 
   }catch(error){
     res.status(400).json({
       respons:"fail",
-      msg:'전체조회 실패'
+      msg:'store조회 실패'
     });
   };
 };
