@@ -11,7 +11,6 @@ const uuid = () => {
   const tokens = v4().split("-");
   return tokens[2] + tokens[1] + tokens[3];
 };
-
 // 리뷰 조회(무한 스크롤(임시))
 const review = async (req, res) => {
   try {
@@ -19,7 +18,6 @@ const review = async (req, res) => {
     //   const data = req.body;
     //   //시작을 지정할 변수 선언
     //   let start = 0;
-
     //   //이미데이터가 넘어가서 있는지 확인
     //   if (data.start <= 0) {
     //     start = 0;
@@ -36,7 +34,6 @@ const review = async (req, res) => {
     next(err);
   }
 };
-
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
   // middlewares유저정보 가져오기(닉네임,프로필이미지)
@@ -56,7 +53,6 @@ const review_detail = async (req, res) => {
     next(err);
   }
 };
-
 //리뷰 작성
 const review_write = async (req, res) => {
   // middlewares유저정보 가져오기
@@ -66,25 +62,20 @@ const review_write = async (req, res) => {
   console.log("userId", userId);
   const nickname = user.nickname;
   console.log("nickname", nickname);
-
   //작성한 정보 가져옴
   const { category, reviewTitle, reviewContent } = req.body;
   console.log(category, reviewTitle, reviewContent); //ok
-
   // 이미지에서 location정보만 저장해줌
   let imageUrl = new Array();
   for (let i = 0; i < req.files.length; i++) {
     imageUrl.push(req.files[i].location);
   }
-
   //uuid를 사용하여 고유값인 reviewId 생성
   const reviewId = uuid();
-
   // 리뷰작성시각 생성
   require("moment-timezone");
   moment.tz.setDefault("Asia/Seoul");
   const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
-
   try {
     const ReviewList = await Review.create({
       reviewId,
@@ -105,13 +96,11 @@ const review_write = async (req, res) => {
     res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
-
 //리뷰 수정
 const review_modify = async (req, res) => {
   try {
     const { reviewId } = req.params;
     const { category, reviewTitle, reviewContent } = req.body;
-
     //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
     if (!reviewContent.length) {
       res.status(401).send({ msg: "게시글 내용을 입력해주세요." });
@@ -121,16 +110,13 @@ const review_modify = async (req, res) => {
     const photo = await Review.find({ reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
     //console.log("photo", photo); //ok
     const img = photo[0].imageUrl;
-
     //key 값을 저장 array
     let deleteItems = [];
-
     //key값 추출위한 for문
     for (let i = 0; i < img.length; i++) {
       //key값을 string으로 지정
       deleteItems.push({ Key: String(img[i].split("/")[3]) });
     }
-
     // s3 delete를 위한 option
     let params = {
       Bucket: "myawsbukets",
@@ -139,13 +125,11 @@ const review_modify = async (req, res) => {
         Quiet: false,
       },
     };
-
     //option을 참조 하여 delete 실행
     s3.deleteObjects(params, function (err, data) {
       if (err) console.log(err);
       else console.log("Successfully deleted myBucket/myKey");
     });
-
     //여러장 이미지 저장
     let imageUrl = new Array();
     for (let i = 0; i < req.files.length; i++) {
@@ -176,11 +160,9 @@ const review_modify = async (req, res) => {
     });
   }
 };
-
 //리뷰 삭제
 const review_delete = async (req, res) => {
   const { reviewId } = req.params;
-
   //try {
   // 이미지 URL 가져오기 위한 로직
   const photo = await Review.find({ reviewId });
@@ -188,10 +170,8 @@ const review_delete = async (req, res) => {
   const img = photo[0].imageUrl;
   console.log("img", img);
   //const img = photo[0].imageUrl[0].location;
-
   // 복수의 이미지를 삭제 변수(array)
   let deleteItems = [];
-
   //imageUrl이 array이 때문에 접근하기 위한 for문
   for (let i = 0; i < img.length; i++) {
     console.log("Aaa", img[i]);
@@ -199,7 +179,6 @@ const review_delete = async (req, res) => {
     deleteItems.push({ Key: String(img[i].split("/")[3]) });
   }
   console.log("deleteItems", deleteItems);
-
   //삭제를 위한 변수
   let params = {
     //bucket 이름
@@ -210,20 +189,17 @@ const review_delete = async (req, res) => {
       Quiet: false,
     },
   };
-
   //복수의 delete를 위한 코드 변수(params를 받음)
   s3.deleteObjects(params, function (err, data) {
     if (err) console.log(err);
     else console.log("Successfully deleted myBucket/myKey");
   });
-
   //delete
   await Review.deleteOne({ reviewId });
   res.status(200).send({
     respons: "success",
     msg: "삭제 완료",
   });
-
   //} catch (error) {
   // res.status(400).send({
   //   respons: "fail",
@@ -231,7 +207,6 @@ const review_delete = async (req, res) => {
   // });
 };
 //};
-
 module.exports = {
   review,
   review_detail,

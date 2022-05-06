@@ -42,7 +42,7 @@ const postRouter = require("express").Router();
  *                           example: 99
  *                         imageUrl:
  *                           type: array
- *                           example: ["1412214", "7678"]
+ *                           : ["14example12214", "7678"]
  *                         user:
  *                           type: object
  *                           properties:

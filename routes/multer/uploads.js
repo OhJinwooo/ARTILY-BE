@@ -10,7 +10,7 @@ let path = require("path");
 let upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "myawsbuckets",
+    bucket: "myawsbukets",
     key: function (req, file, cb) {
       //The name of the file
       let extension = path.extname(file.originalname);

@@ -25,6 +25,7 @@ module.exports = () => {
           // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
           let profileImage = "";
+          let nickname = "";
           let address = "";
           let introduce = "";
           let role = true;
@@ -32,18 +33,15 @@ module.exports = () => {
             console.log(99999999999, exUser);
             done(null, exUser); // 로그인 인증 완료
           } else {
-            if (profile._json.properties?.profile_image) {
-              profileImage = profile._json.properties?.profile_image;
-            }
-
             console.log("@@@@@@@@@@@@@@@@", process.env.KAKAOCLIENT_ID);
             const user = {
               accessToken: accessToken,
               refreshToken: refreshToken,
-              nickname: profile.username,
               userId: profile.id,
               provider: "kakao",
               profileImage,
+              nickname,
+              type: "new",
               address,
               introduce,
               role,

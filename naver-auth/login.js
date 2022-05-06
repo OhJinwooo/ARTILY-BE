@@ -16,6 +16,7 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         console.log("NaverStrategy");
+
         try {
           console.log("try in", profile);
           const exUser = await User.findOne({
@@ -28,6 +29,7 @@ module.exports = () => {
           // profile: 카카오가 보내준 유저 정보. profile의 정보를 바탕으로 회원가입
 
           let profileImage = "";
+          let nickname = "";
           let address = "";
           let introduce = "";
           let role = true;
@@ -35,22 +37,21 @@ module.exports = () => {
             console.log("로그인", exUser);
             done(null, exUser);
           } else {
-            if (profile._json.profile_image) {
-              profileImage = profile._json.profile_image;
-            }
-
             const user = {
               refreshToken: refreshToken,
               accessToken: accessToken,
-              nickname: profile.displayName, // 이름
               userId: profile.id,
               provider: "naver",
+              type,
               profileImage,
+              nickname,
               address,
+              type: "new",
               introduce,
               role,
             };
             await User.create(user);
+
             done(null, user);
           }
         } catch {

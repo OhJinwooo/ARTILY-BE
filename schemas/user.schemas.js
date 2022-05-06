@@ -58,6 +58,9 @@ const UserSchema = new mongoose.Schema({
   snsUrl: {
     type: Array,
   },
+  type: {
+    type: String,
+  },
 });
 // UserSchema.virtual("userId").get(function () {
 //   return this._id.toHexString();
