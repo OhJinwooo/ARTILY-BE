@@ -30,8 +30,10 @@ const postProfile = async (req, res) => {
 
 // 프로필 조회
 const getProfile = async (req, res) => {
+  console.log(123);
   const userId = res.locals.user;
   try {
+    console.log(123456);
     const myprofile = await User.findOne({ userId });
     console.log(myprofile);
 
@@ -50,24 +52,40 @@ const updateProfile = async (req, res) => {
   console.log(userId);
   const profileImage = req.file?.location;
   console.log("12312", profileImage);
-  console.log("213", url);
 
   try {
-    await User.updateOne(
-      {
-        userId,
-      },
-      {
-        $set: {
-          nickname,
-          profileImage,
-          address,
-          introduce,
-          snsUrl,
+    if (profileImage) {
+      s3.deleteObject(
+        {
+          Bucket: "myawsbucket",
+          // Key: delFile
         },
-      }
-    );
-    res.status(201).json({ success: true });
+        (err, data) => {
+          if (err) {
+            throw err;
+          }
+        }
+      );
+      await User.updateOne({ userId }, { $set: { profileImage } });
+    } else {
+      const photo = await User.find({ userId });
+      const profileImage = photo[0].profileImage;
+      await User.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            address,
+            introduce,
+            profileImage,
+            snsUrl,
+          },
+        }
+      );
+      res.status(201).json({ success: true });
+    }
   } catch (error) {
     res.sattus(400).send("수정 실패");
   }

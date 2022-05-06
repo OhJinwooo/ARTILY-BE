@@ -2,8 +2,13 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
+const upload = require("../../routes/multer/uploads");
 
-router.get("/naver", passport.authenticate("naver"));
+router.get(
+  "/naver",
+  upload.single("profileImage"),
+  passport.authenticate("naver")
+);
 
 const naverCallback = (req, res, next) => {
   passport.authenticate("naver", { failureRedirect: "/" }, (err, user) => {
