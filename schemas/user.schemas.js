@@ -60,7 +60,6 @@ const UserSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    default: "new",
   },
 });
 // UserSchema.virtual("userId").get(function () {
