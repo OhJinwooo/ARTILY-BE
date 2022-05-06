@@ -43,8 +43,8 @@ const ReviewSchema = new mongoose.Schema({
 //   return this._id.toHexString();
 // });
 
-ReviewSchema.set("toJSON", {
-  virtuals: true,
-});
+// ReviewSchema.set("toJSON", {
+//   virtuals: true,
+// });
 
 module.exports = mongoose.model("Review", ReviewSchema);

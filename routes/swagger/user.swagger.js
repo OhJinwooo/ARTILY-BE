@@ -41,10 +41,10 @@ const userController = require("../controllers/user.controllers");
  *                  profile:
  *                    type: string
  *                    example: "전공/ 경력"
- *                  follow:
+ *                  followCnt:
  *                    type: array
  *                    example: ["userId"]
- *                  follower:
+ *                  followerCnt:
  *                    type: array
  *                    example: ["userId"]
  *                  myPost:
