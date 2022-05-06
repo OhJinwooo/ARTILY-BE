@@ -6,16 +6,16 @@ const server = http.createServer(app);
 const socket = require("socket.io");
 require("dotenv").config();
 
-/* const kakaoRouter = require("./kakao-auth/kakao/kakao");
+const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
 const naverRouter = require("./naver-auth/naver/naver");
-const passportNaver = require("./naver-auth/login"); */
+const passportNaver = require("./naver-auth/login");
 const { swaggerUi, specs } = require("./swagger/swagger");
 
 const connect = require("./schemas/index.schemas");
 
-//const postRouter = require("./routes/post.router");
-/* const userRouter = require("./routes/user.router");
+const postRouter = require("./routes/post.router");
+const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
@@ -25,19 +25,19 @@ const Chat = require("./schemas/chat.schemas");
 
 const cors = require("cors");
 
-/* passportNaver();
-passportKakao(); */
+passportNaver();
+passportKakao();
 connect();
 
 app.use(cors());
 app.use(express.json());
-/* app.use("/oauth", [kakaoRouter, naverRouter]); */
+app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [
-  /* userRouter,
+  userRouter,
   reviewRouter,
   mypageRouter,
   likeRouter,
-  blackListRouter, */
+  blackListRouter,
   postRouter
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
