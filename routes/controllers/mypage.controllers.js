@@ -73,10 +73,7 @@ const postProfile = async (req, res) => {
 
 // 프로필 조회
 const getProfile = async (req, res) => {
-<<<<<<< HEAD
   console.log(123);
-=======
->>>>>>> sungbin
   const { userId } = res.locals.user;
   try {
     console.log("try");
