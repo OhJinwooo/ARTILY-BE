@@ -48,7 +48,7 @@ module.exports = () => {
               profileImage,
               nickname,
               address,
-              type,
+              type: "new",
               introduce,
               role,
             };

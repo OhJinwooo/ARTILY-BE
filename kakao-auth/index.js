@@ -41,7 +41,7 @@ module.exports = () => {
               provider: "kakao",
               profileImage,
               nickname,
-              type,
+              type: "new",
               address,
               introduce,
               role,
