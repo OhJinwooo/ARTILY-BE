@@ -16,6 +16,7 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         console.log("NaverStrategy");
+
         try {
           console.log("try in", profile);
           const exUser = await User.findOne({
@@ -36,15 +37,12 @@ module.exports = () => {
             console.log("로그인", exUser);
             done(null, exUser);
           } else {
-            if (profile._json.profile_image) {
-              profileImage = profile._json.profile_image;
-            }
-
             const user = {
               refreshToken: refreshToken,
               accessToken: accessToken,
               userId: profile.id,
               provider: "naver",
+              type,
               profileImage,
               nickname,
               address,
@@ -53,6 +51,7 @@ module.exports = () => {
               role,
             };
             await User.create(user);
+
             done(null, user);
           }
         } catch {
