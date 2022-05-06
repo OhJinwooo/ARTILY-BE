@@ -131,7 +131,7 @@ reviewRouter.get("/review", review);
  *                                  type: string
  *                                  example: "qwer"
  */
-reviewRouter.post("/review", upload.single("imageUrl"), review_write);
+reviewRouter.post("/review", upload.array("imageUrl"), review_write);
 /**
  * @swagger
  *
@@ -191,7 +191,7 @@ reviewRouter.post("/review", upload.single("imageUrl"), review_write);
  *                      type: string
  *                      example: "asdfasdf"
  */
-reviewRouter.post("/review", upload.single("imageUrl"), review_write);
+reviewRouter.post("/review", upload.array("imageUrl"), review_write);
 
 /**
  * @swagger

@@ -1,4 +1,4 @@
-//multer-s3 미들웨어 연결
+// //multer-s3 미들웨어 연결
 //require("dotenv").config();
 //const authMiddleware = require("./middlewares/auth-middleware");
 const s3 = require("../config/s3");
@@ -10,7 +10,7 @@ let path = require("path");
 let upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "myawsbukets",
+    bucket: "myawsbuckets",
     key: function (req, file, cb) {
       //The name of the file
       let extension = path.extname(file.originalname);
@@ -21,7 +21,4 @@ let upload = multer({
   }),
 });
 
-//exports.upload = upload; //upload 인식못하는 에러남
 module.exports = upload;
-//module.exports = s3;
-//exports.s3 = s3;
