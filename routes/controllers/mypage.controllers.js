@@ -4,10 +4,34 @@ const s3 = require("../config/s3");
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
   const { user } = res.locals;
-  const { profileImage, introduce, nickname, snsUrl } = req.body;
   const userId = user.userId;
 
-  try {
+  const { introduce, nickname, snsUrl, address } = req.body;
+
+  const profileImage = req.file?.location;
+  console.log("profileImage", profileImage);
+
+  // try {
+  const photo = await User.find({ userId });
+  // console.log("photo", photo);
+  const url = photo[0].profileImage.split("/");
+  // console.log("url", url);
+  const delFileName = url[url.length - 1];
+  // console.log("delFileName", delFileName);
+
+  if (profileImage) {
+    console.log("이미지 있음");
+    s3.deleteObject(
+      {
+        Bucket: "myawsbukets",
+        Key: delFileName,
+      },
+      (err, data) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
     await User.updateOne(
       {
         userId,
@@ -19,13 +43,32 @@ const postProfile = async (req, res) => {
           address,
           introduce,
           snsUrl,
+          type: "member",
         },
       }
     );
-    res.status(201).json({ success: true });
-  } catch (error) {
-    res.sattus(400).send("작성 실패");
+  } else {
+    console.log("이미지 없음");
+    await User.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
+          address,
+          introduce,
+          snsUrl,
+          type: "member",
+        },
+      }
+    );
   }
+  res.status(201).json({ success: true });
+  // } catch (error) {
+  //   res.status(400).send("작성 실패");
+  // }
 };
 
 // 프로필 조회
