@@ -24,8 +24,8 @@ const uuid = () => {
 const getHome = async (req, res) => {
   try{
       //limt함수 사용 보여주는 데이터 숫자 제한
-      const artPost = await Post.find({}).sort('-marckupCnt').limit(4) ;
-     /*  const artWriter = artPost.user;*/
+      const artPost = await Post.find({})/* .sort('-marckupCnt') */.limit() ;
+      const artWriter = artPost.user;
       const reviwPage = await Review.find({}).sort('-Likecount').limit(4); 
       res.status(200).json({
         respons:'success',
@@ -45,6 +45,7 @@ const artStore = async(req,res)=>{
   try{
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
+    const keyword = req.query.keyword;
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
@@ -53,7 +54,7 @@ const artStore = async(req,res)=>{
     const artFilter = {category:category,
       transaction:transaction,
       changeAddress:changeAddress}; */
-      const artFilter = [category,transaction,changeAddress]
+    const artFilter = [category,transaction,changeAddress]
    /*  //시작을 지정할 변수 선언
     let start = 0;
     //이미데이터가 넘어가서 있는지 확인
@@ -76,16 +77,6 @@ const artStore = async(req,res)=>{
     });
   } */
   console.log('1',artFilter)
-    if(artFilter.length < 0){
-      for(let i = 0 ; i<artFilter.length; i++){
-        console.log('2',artFilter[i])
-      if(artFilter[i] !== undefined){
-        console.log(artFilter[i])
-        const fin = cat.find(artFilter[i])
-        console.log(fin)
-      }
-    }
-    };
  
   }catch(error){
     res.status(400).json({
@@ -99,7 +90,7 @@ const artStore = async(req,res)=>{
 const artDetail = async(req,res) => {
   try{
       //파리미터 값받음
-      const postId = req.params ;
+      const {postId} = req.params ;
       //상세 페이지 데이터
       const artPost = await Post.findOne({postId}).exec();
       // 추가 데이터(상세 페이지 작가기준)
@@ -115,10 +106,11 @@ const artDetail = async(req,res) => {
       //작성 유저 인지 확인 조건
       if(artPost.postId === artPost1.postId){
         //조건 통과시 true값으로 변환
-        await Post.updateOne({$set:postId},{done:true})
+        const data = await Post.updateOne({postId},{$set:{done:true}})
         res.status(200).send({
           respons:'success',
           msg:'판매 완료',
+          data: data.done
         });
       };
   }catch(error){
@@ -132,14 +124,15 @@ const artDetail = async(req,res) => {
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
  try{
-   /* const {user} = res.locals; */
+   const {user} = res.locals;
 
   //req.body를 받음
-  const {postTitle,
+  const {
+        postTitle,
         postContent,
         category,
         transaction,
-        changeAddress
+        changeAddress,
       } = req.body;
   //여러장 이미지 저장 
   let imageUrl = new Array();
@@ -163,15 +156,16 @@ const artPost = async (req, res) => {
         imageUrl,
         postId,
         createdAt,
+        marckupCnt:0,
         done:false,
-        /* user */
+        user
     });
     await artBrod.save();
     res.status(200).json({
       respons:"success",
       msg:'판매글 생성 완료'
     });
-  }
+  };
   }catch(error){
     res.status(400).json({
       respons:"fail",
@@ -185,7 +179,7 @@ const artUpdate = async (req,res) =>{
   try{
       const {user} =res.locals;
       //수정할 파라미터 값
-      const postId = req.params.postId;
+      const {postId} = req.params;
       //바디로 받을 데이터
       const {
         postTitle,
@@ -257,6 +251,9 @@ const artdelete = async(req,res) => {
       const postId = req.params.postId;
       // user 정보 일치
       const {user} = req.locals;
+      //해당 유저 비교 조건 변수
+      const postUser = await Post.findOne({user,postId})
+      if(postUser.length > 0){
       //이미지 URL 가져오기 위한 로직
       const artPostimg = await Post.find({postId:postId});
       const img =  artPostimg[0].imageUrl
@@ -288,6 +285,7 @@ const artdelete = async(req,res) => {
         respons : 'success',
         msg: '삭제 완료'
       })
+    };
   }catch(error){
     res.status(400).send({
       respons:'fail',
@@ -295,15 +293,19 @@ const artdelete = async(req,res) => {
     });
   };
 };
+
 // 찜기능
 const marckupCnt = async(req,res)=>{
   try{
-      const postId = req.params ;
-      const {user} = res.locals ;
-      const Cnt = await User.findOne({user,myMarkup:postId});
-      if(Cnt.length > 0){
-        await User.save({user},{$set:{myMarkup:postId}});
-        await Post.updateOne({postId},{$set:{marckupCnt:+1}});
+      const {postId} = req.params ;
+      const {user} = req.locals ;
+      // 갇은 post에 찜했는 지 확인
+      const Cnt = await User.findOne({user:user.userId,myMarkup:postId});
+      if(Cnt === null){
+        // 생성 로직
+        await User.findOneAndUpdate({user:user.userId},{$push:{myMarkup:postId}});
+        await Post.findOneAndUpdate({postId},{$inc:{marckupCnt:+1}});
+        // 해당 post 에 찜개수
         const artPost = await Post.findOne({postId});
         res.status(200).json({
           respons:'success',
@@ -311,14 +313,18 @@ const marckupCnt = async(req,res)=>{
           data:artPost.marckupCnt
         });
       }
-        await User.deleteOne({user},{$set:{myMarkup:postId}});
-        await Post.updateOne({postId},{$set:{marckupCnt:-1}});
+      else{
+        // 있을 시 삭제  
+        await User.updateOne({user:user.userId},{$pull:{myMarkup:postId}});
+        await Post.updateOne({postId},{$inc:{marckupCnt:-1}});
+        //개수
         const artPost = await Post.findOne({postId});
         res.status(200).json({
           respons:'success',
           msg:"취소",
           data:artPost.marckupCnt
         });
+      };
   }catch(error){
     res.status(400).send({
       respons:'fail',

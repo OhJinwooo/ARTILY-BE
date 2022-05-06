@@ -8,6 +8,7 @@
    artUpdate,
    getHome,
    artdelete,
+   marckupCnt
  } = require("./controllers/post.controllers");
  router.get("/post", getHome);
 
