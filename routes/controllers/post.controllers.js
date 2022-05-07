@@ -115,48 +115,44 @@ const artStore = async(req,res)=>{
 };
 
 //상세조회(판매자가 판매완료 시 상태 변화 기능 추가)
-const artDetail = async (req, res) => {
-  try {
-    const { uesrId } = res.locals.user;
-    const { postId } = req.params;
-    //상세 페이지 데이터
-    const artPost = await Post.findOne(
-      { postId },
-      "postId postTitle done imageUrl category postSize transaction changeAddress postContent user"
-    ).exec();
-    // 추가 데이터(상세 페이지 작가기준)
-    const artWriter = await Post.find(
-      { uesrId },
-      "postId imageUrl postTitle price"
-    )
-      .sort("-createdAt")
-      .limit(4);
-    res.status(200).json({
-      respons: "success",
-      msg: "상세페이지 조회 성공",
-      data: [artPost, artWriter],
-    });
-    // //user로 post  확인
-    // const artPost1 = await Post.findOne({ uesrId }).exec();
-    // //작성 유저 인지 확인 조건
-
-    // if (artPost.postId === artPost1.postId) {
-    //   //조건 통과시 true값으로 변환
-    //   const data = await Post.updateOne({ postId }, { $set: { done: true } });
-    //   console.log(65465);
-    //   res.status(200).send({
-    //     respons: "success",
-    //     msg: "판매 완료",
-    //     data: data.done,
-    //   });
-    // }
-  } catch (error) {
-    res.status(200).json({
-      respons: "fail",
-      msg: "상세페이지 조회 실패",
-    });
-  }
-};
+const artDetail = async(req,res) => {
+  try{
+      //파리미터 값받음
+      const {postId} = req.params ;
+    if(postId) 
+    {
+        //상세 페이지 데이터
+      const detail = await Post.findOne({postId}).exec();
+      // 추가 데이터(상세 페이지 작가기준)
+      const getUser = await Post.find({uesrId:detail.userId}).sort('-createdAt').limit(4);
+      req.status(200).json({
+        respons:"success",
+        msg:'상세페이지 조회 성공',
+        detail,getUser
+      });
+    }
+    const {user} = res.locals;
+     if(user.userId){ 
+      //user로 post  확인
+      const artPost1 = await Post.findOne({uesrId:user.uesrId}).exec();
+      const detail = await Post.findOne({postId}).exec();
+      //작성 유저 인지 확인 조건
+      if(detail.postId === artPost1.postId){
+        //조건 통과시 true값으로 변환
+        const data = await Post.updateOne({postId},{$set:{done:true}})
+        res.status(200).send({
+          respons:'success',
+          msg:'판매 완료',
+          data: data.done
+        });
+      };}
+  }catch(error){
+    req.status(200).json({
+      respons:"fail",
+      msg:'상세페이지 조회 실패',
+    })
+  };
+}
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
