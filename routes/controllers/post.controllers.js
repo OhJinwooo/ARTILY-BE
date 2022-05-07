@@ -124,20 +124,25 @@ const artDetail = async(req,res) => {
   try{
       //파리미터 값받음
       const {postId} = req.params ;
-      //상세 페이지 데이터
-      const artPost = await Post.findOne({postId}).exec();
+    if(postId) 
+    {
+        //상세 페이지 데이터
+      const detail = await Post.findOne({postId}).exec();
       // 추가 데이터(상세 페이지 작가기준)
-      const artPost2 = await Post.find({uesr:artPost.user}).sort('-createdAt').limit(4);
+      const getUser = await Post.find({uesrId:detail.userId}).sort('-createdAt').limit(4);
       req.status(200).json({
         respons:"success",
         msg:'상세페이지 조회 성공',
-        data:[artPost,artPost2]
+        detail,getUser
       });
-      const {uesr} = res.locals;
+    }
+    const {user} = res.locals;
+     if(user.userId){ 
       //user로 post  확인
-      const artPost1 = await Post.findOne({uesr}).exec();
+      const artPost1 = await Post.findOne({uesrId:user.uesrId}).exec();
+      const detail = await Post.findOne({postId}).exec();
       //작성 유저 인지 확인 조건
-      if(artPost.postId === artPost1.postId){
+      if(detail.postId === artPost1.postId){
         //조건 통과시 true값으로 변환
         const data = await Post.updateOne({postId},{$set:{done:true}})
         res.status(200).send({
@@ -145,7 +150,7 @@ const artDetail = async(req,res) => {
           msg:'판매 완료',
           data: data.done
         });
-      };
+      };}
   }catch(error){
     req.status(200).json({
       respons:"fail",
