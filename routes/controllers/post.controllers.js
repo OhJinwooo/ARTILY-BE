@@ -196,7 +196,8 @@ const artPost = async (req, res) => {
         createdAt,
         marckupCnt:0,
         done:false,
-        user
+        userId:user.userId,
+        u
     });
     await artBrod.save();
     res.status(200).json({
