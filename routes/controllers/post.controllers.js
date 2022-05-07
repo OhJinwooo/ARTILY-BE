@@ -167,6 +167,7 @@ const artPost = async (req, res) => {
       transaction,
       changeAddress,
       price,
+      postSize,
     } = req.body;
     //여러장 이미지 저장
     let imageUrl = new Array();
@@ -194,6 +195,7 @@ const artPost = async (req, res) => {
         marckupCnt: 0,
         done: false,
         user,
+        postSize
       });
       await artBrod.save();
       res.status(200).json({
@@ -223,6 +225,7 @@ const artUpdate = async (req, res) => {
       transaction,
       changeAddress,
       price,
+      postSize
     } = req.body;
     const userPost = await Post.findOne({user,postId}).exec();
 if(userPost.length > 0){
@@ -272,6 +275,7 @@ if(userPost.length > 0){
             createdAt,
             imageUrl,
             price,
+            postSize
           }
         }
       );
