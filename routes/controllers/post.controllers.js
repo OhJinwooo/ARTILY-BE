@@ -134,7 +134,7 @@ const artDetail = async(req,res) => {
     const {user} = res.locals;
      if(user.userId){ 
       //user로 post  확인
-      const artPost1 = await Post.findOne({uesrId:user.uesrId}).exec();
+      const artPost1 = await Post.findOne({user}).exec();
       const detail = await Post.findOne({postId}).exec();
       //작성 유저 인지 확인 조건
       if(detail.postId === artPost1.postId){
@@ -224,8 +224,8 @@ const artUpdate = async (req, res) => {
       changeAddress,
       price,
     } = req.body;
-    const userPost = await Post.findOne({user,postId}).exec()
-if(){
+    const userPost = await Post.findOne({user,postId}).exec();
+if(userPost.length > 0){
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //이미지 수정
@@ -296,7 +296,7 @@ const artdelete = async (req, res) => {
     // user 정보 일치
     const { user } = res.locals;
     //해당 유저 비교 조건 변수
-    const postUser = await Post.findOne({ user:user.uesrId, postId });
+    const postUser = await Post.findOne({ user:user.uesrId, postId }).exec();
     if (postUser) {
       //이미지 URL 가져오기 위한 로직
       const artPostimg = await Post.find({ postId });
@@ -344,7 +344,7 @@ const marckupCnt = async(req,res)=>{
       const {postId} = req.params ;
       const {user} = res.locals ;
       const userPost = await Post.findOne({postId}).exec();
-    if(user.uesrId !== userPost.uesr.uesrId) { 
+    if(user !== userPost.uesr) { 
       // 갇은 post에 찜했는 지 확인
       const Cnt = await User.findOne({user:user.userId,myMarkup:postId});
       if(Cnt === null){
