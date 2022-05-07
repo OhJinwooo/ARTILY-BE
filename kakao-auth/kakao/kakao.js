@@ -33,7 +33,6 @@ const kakaoCallback = (req, res, next) => {
       nickname,
       introduce,
       type,
-      // refreshToken: refreshToken,
     };
     console.log(1, result);
     res.send({ user: result });

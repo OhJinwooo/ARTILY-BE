@@ -48,12 +48,46 @@ const addfollow = async (req, res) => {
     // const followers = newfollowers.follower;
 
     console.log("new", newfollows, newfollowers);
-    res.json({ follows, followers });
+    res.status(200).json({ success: true });
   } catch {
-    res.send("Error");
+    res.status(400).send("Error");
+  }
+};
+
+//내 팔로우 리스트 조회
+const getFollow = async (req, res) => {
+  try {
+    const { userId } = res.locals.user;
+    const follow = await User.findOne({ userId });
+    // const followlist = follow.follow;
+    const followlist = ["2221693614", "2222434554", "2222423044"];
+
+    const followList = await User.find({ followlist }, "nickname");
+    console.log(123, followList);
+    res.status(200).json({ followList });
+  } catch (err) {
+    res.status(400).send("팔로우 목록 조회 실패");
+  }
+};
+
+//내 팔로워 리스트 조회
+const getFollower = async (req, res) => {
+  try {
+    const { userId } = res.locals.user;
+    const follow = await User.findOne({ userId });
+    // const followlist = follow.follower;
+    const followerlist = ["2221693614", "2222434554", "2222423044"];
+
+    const followerList = await User.find({ followerlist }, "nickname");
+    console.log(123, followerList);
+    res.status(200).json({ followerList });
+  } catch (err) {
+    res.status(400).send("팔로우 목록 조회 실패");
   }
 };
 
 module.exports = {
   addfollow,
+  getFollow,
+  getFollower,
 };
