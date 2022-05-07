@@ -241,7 +241,7 @@ if(userPost.length > 0){
     }
     // s3 delete를 위한 option
     let params = {
-      Bucket: "myawsbukets",
+      Bucket: "artvb",
       Delete: {
         Objects: deleteItems,
         Quiet: false,
@@ -311,7 +311,7 @@ const artdelete = async (req, res) => {
       //삭제를 위한 변수
       let params = {
         //bucket 이름
-        Bucket: "myawsbukets",
+        Bucket: "artvb",
         //delete를 위한 key값
         Delete: {
           Objects: deleteItems,
