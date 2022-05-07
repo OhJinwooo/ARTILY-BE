@@ -40,7 +40,7 @@ const getHome = async (req, res) => {
   }
 };
 
-//스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (개선 중(시간소요)) )
+//스토어 페이지 구현
 const artStore = async(req,res)=>{
   try{
     //페이지의 시작 값을 받음(테이터의 총개수)
@@ -86,25 +86,25 @@ const artStore = async(req,res)=>{
       //검색기능      
       let option = [];
       if(keyword){
-        option = [{postId: new RegExp(keyword)}]
+        option = [{postTitle: new RegExp(keyword)}]
       }
       // 검색 기능 filter
-      if(category!==undefined){
-        option.push({category:category})
-      }
+      if(category !== undefined){
+        option.push({category:category});
+      };
       if(transaction !== undefined){
         option.push({transaction: transaction});
-      }
+      };
       if(changeAddress !== undefined){
-        option.push({changeAddress:changeAddress})
-      }
+        option.push({changeAddress:changeAddress});
+      };
       //search and filter = option
       const artPost = await Post.find({$and:option}).skip(skip).limit(limit);
       res.status(200).json({
         respons:"success",
         msg:'filter complete',
         data:artPost
-      })
+      });
     };
   }catch(error){
     res.status(400).json({
@@ -152,7 +152,7 @@ const artDetail = async(req,res) => {
       msg:'상세페이지 조회 실패',
     })
   };
-}
+};
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
@@ -241,7 +241,7 @@ if(userPost.length > 0){
     }
     // s3 delete를 위한 option
     let params = {
-      Bucket: "myawsbukets",
+      Bucket: "artvb",
       Delete: {
         Objects: deleteItems,
         Quiet: false,
@@ -311,7 +311,7 @@ const artdelete = async (req, res) => {
       //삭제를 위한 변수
       let params = {
         //bucket 이름
-        Bucket: "myawsbukets",
+        Bucket: "artvb",
         //delete를 위한 key값
         Delete: {
           Objects: deleteItems,
