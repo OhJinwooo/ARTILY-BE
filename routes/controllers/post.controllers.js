@@ -46,7 +46,6 @@ const artStore = async(req,res)=>{
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
     const keyword = req.query.keyword;
-    console.log(keyword)
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
