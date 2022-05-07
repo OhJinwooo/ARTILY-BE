@@ -22,27 +22,17 @@ const uuid = () => {
 
 //전체조회 페이지 (이달의 작가 추전 부분(임시적 구현 artPost 에 저장된user로 불러옴))
 const getHome = async (req, res) => {
-  try {
-    //limt함수 사용 보여주는 데이터 숫자 제한
-    const bestPost = await Post.find(
-      {},
-      "postId postTitle imageUrl transaction price markupCnt user"
-    )
-      .sort("-marckupCnt")
-      .limit(4);
-    const attention = [];
-    const bestReview = await Review.find(
-      {},
-      "reviewId imageUrl reviewTitle reviewContent likeCnt user"
-    )
-      .sort("-Likecount")
-      .limit(4);
-    res.status(200).json({
-      respons: "success",
-      msg: "조회 성공",
-      data: { bestPost, attention, bestReview },
-    });
-  } catch (error) {
+  try{
+      //limt함수 사용 보여주는 데이터 숫자 제한
+      const artPost = await Post.find({}).sort('-marckupCnt').limit(4) ;
+      const artWriter = artPost.user;
+      const reviwPage = await Review.find({}).sort('-Likecount').limit(4); 
+      res.status(200).json({
+        respons:'success',
+        msg:'조회 성공',
+        data:{artPost,artWriter,reviwPage }
+      });
+  }catch(error){
     res.status(400).json({
       respons: "file",
       msg: "전체조회 실패",
@@ -325,61 +315,49 @@ const artdelete = async (req, res) => {
     }
   } catch (error) {
     res.status(400).send({
-      respons: "fail",
-      msg: "삭제 실패",
+      respons:'fail',
+      msg:'삭제 실패'
+    });
+  };
+};
+
+// 찜기능
+const marckupCnt = async(req,res)=>{
+  try{
+      const {postId} = req.params ;
+      const {user} = res.locals ;
+      // 갇은 post에 찜했는 지 확인
+      const Cnt = await User.findOne({user:user.userId,myMarkup:postId});
+      if(Cnt === null){
+        // 생성 로직
+        await User.findOneAndUpdate({user:user.userId},{$push:{myMarkup:postId}});
+        await Post.findOneAndUpdate({postId},{$inc:{marckupCnt:+1}});
+        // 해당 post 에 찜개수
+        const artPost = await Post.findOne({postId});
+        res.status(200).json({
+          respons:'success',
+          msg:"성공",
+          data:artPost.marckupCnt
+        });
+      }
+      else{
+        // 있을 시 삭제  
+        await User.updateOne({user:user.userId},{$pull:{myMarkup:postId}});
+        await Post.updateOne({postId},{$inc:{marckupCnt:-1}});
+        //개수
+        const artPost = await Post.findOne({postId});
+        res.status(200).json({
+          respons:'success',
+          msg:"취소",
+          data:artPost.marckupCnt
+        });
+      };
+  }catch(error){
+    res.status(400).send({
+      respons:'fail',
+      msg:'실패'
     });
   }
 };
 
-// 찜기능
-const marckupCnt = async (req, res) => {
-  try {
-    const { postId } = req.params;
-    const { user } = res.locals;
-    // 갇은 post에 찜했는 지 확인
-    const Cnt = await User.findOne({ user: user.userId, myMarkup: postId });
-    if (Cnt === null) {
-      // 생성 로직
-      await User.findOneAndUpdate(
-        { user: user.userId },
-        { $push: { myMarkup: postId } }
-      );
-      await Post.findOneAndUpdate({ postId }, { $inc: { marckupCnt: +1 } });
-      // 해당 post 에 찜개수
-      const artPost = await Post.findOne({ postId });
-      res.status(200).json({
-        respons: "success",
-        msg: "성공",
-        data: artPost.marckupCnt,
-      });
-    } else {
-      // 있을 시 삭제
-      await User.updateOne(
-        { user: user.userId },
-        { $pull: { myMarkup: postId } }
-      );
-      await Post.updateOne({ postId }, { $inc: { marckupCnt: -1 } });
-      //개수
-      const artPost = await Post.findOne({ postId });
-      res.status(200).json({
-        respons: "success",
-        msg: "취소",
-        data: artPost.marckupCnt,
-      });
-    }
-  } catch (error) {
-    res.status(400).send({
-      respons: "fail",
-      msg: "실패",
-    });
-  }
-};
-module.exports = {
-  getHome,
-  artPost,
-  artStore,
-  artDetail,
-  artUpdate,
-  artdelete,
-  marckupCnt,
-};
+module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete, marckupCnt};
