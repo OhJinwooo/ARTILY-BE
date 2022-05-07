@@ -1,23 +1,22 @@
 const Post = require("../../schemas/post.schemas");
-const Review = require('../../schemas/review.schemas');
-const User = require('../../schemas/user.schemas')
-const sharp = require('sharp');
-const s3 = require('../../multer/s3');
-const moment = require('moment');
-const fs = require('fs');
-const path = require('path')
-require('moment-timezone');
+const Review = require("../../schemas/review.schemas");
+const User = require("../../schemas/user.schemas");
+const sharp = require("sharp");
+const s3 = require("../config/s3");
+const moment = require("moment");
+const fs = require("fs");
+const path = require("path");
+require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
-const { v4 } = require('uuid');
+const { v4 } = require("uuid");
 const { create } = require("../../schemas/user.schemas");
 const { object } = require("webidl-conversions");
 const { fstat } = require("fs");
 const { ppid } = require("process");
 const uuid = () => {
-  const tokens = v4().split('-')
-  return tokens[2] + tokens[1] + tokens[3] ;
-}
-
+  const tokens = v4().split("-");
+  return tokens[2] + tokens[1] + tokens[3];
+};
 
 //공통 항목(user에대한 미들웨어 미적용 코드)
 
@@ -35,13 +34,13 @@ const getHome = async (req, res) => {
       });
   }catch(error){
     res.status(400).json({
-      respons:"file",
-      msg:'전체조회 실패'
-    })
+      respons: "file",
+      msg: "전체조회 실패",
+    });
   }
 };
 
-//스토어 페이지 구현 완료
+//스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (개선 중(시간소요)) )
 const artStore = async(req,res)=>{
   try{
     //페이지의 시작 값을 받음(테이터의 총개수)
@@ -53,10 +52,6 @@ const artStore = async(req,res)=>{
     const changeAddress = data.changeAddress;
     // 일반적인 상태(조건이 없을 때)
     if(
-        /* keyword === undefined && 
-        category === undefined &&
-        transaction === undefined && 
-        changeAddress  */
         keyword &&
           category &&
           transaction &&
@@ -139,7 +134,7 @@ const artDetail = async(req,res) => {
     const {user} = res.locals;
      if(user.userId){ 
       //user로 post  확인
-      const artPost1 = await Post.findOne({uesrId:user.uesrId}).exec();
+      const artPost1 = await Post.findOne({user}).exec();
       const detail = await Post.findOne({postId}).exec();
       //작성 유저 인지 확인 조건
       if(detail.postId === artPost1.postId){
@@ -161,31 +156,32 @@ const artDetail = async(req,res) => {
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
- try{
-   const {user} = res.locals;
+  try {
+    const { user } = res.locals;
 
-  //req.body를 받음
-  const {
-        postTitle,
-        postContent,
-        category,
-        transaction,
-        changeAddress,
-      } = req.body;
-  //여러장 이미지 저장 
-  let imageUrl = new Array();
-  for(let i = 0; i<req.files.length; i++){
-    imageUrl.push(req.files[i].location)
-  }
-  //moment를 이용하여 한국시간으로 날짜생성
-  const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
-  //uuid를 사용하여 고유 값생성
-  const postId = uuid();
-  //검증 고유값중복 검증
-  const artPostId = await Post.find({postId}).exec();
-  //조건 postId
-  if(artPostId.postId !== postId){
-    const artBrod = new Post({
+    //req.body를 받음
+    const {
+      postTitle,
+      postContent,
+      category,
+      transaction,
+      changeAddress,
+      price,
+    } = req.body;
+    //여러장 이미지 저장
+    let imageUrl = new Array();
+    for (let i = 0; i < req.files.length; i++) {
+      imageUrl.push(req.files[i].location);
+    }
+    //moment를 이용하여 한국시간으로 날짜생성
+    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+    //uuid를 사용하여 고유 값생성
+    const postId = uuid();
+    //검증 고유값중복 검증
+    const artPostId = await Post.find({ postId }).exec();
+    //조건 postId
+    if (artPostId.postId !== postId) {
+      const artBrod = new Post({
         postTitle,
         postContent,
         category,
@@ -193,139 +189,148 @@ const artPost = async (req, res) => {
         changeAddress,
         imageUrl,
         postId,
+        price,
         createdAt,
-        marckupCnt:0,
-        done:false,
-        userId:user.userId,
-        u
-    });
-    await artBrod.save();
-    res.status(200).json({
-      respons:"success",
-      msg:'판매글 생성 완료'
-    });
-  };
-  }catch(error){
+        marckupCnt: 0,
+        done: false,
+        user,
+      });
+      await artBrod.save();
+      res.status(200).json({
+        respons: "success",
+        msg: "판매글 생성 완료",
+      });
+    }
+  } catch (error) {
     res.status(400).json({
-      respons:"fail",
-      msg:'판매글 생성 실패'
-    })
+      respons: "fail",
+      msg: "판매글 생성 실패",
+    });
   }
 };
 
 //api 수정(구현완료)
-const artUpdate = async (req,res) =>{
-  try{
-      const {user} =res.locals;
-      //수정할 파라미터 값
-      const {postId} = req.params;
-      //바디로 받을 데이터
-      const {
-        postTitle,
-        postContent,
-        category,
-        transaction,
-        changeAddress,
-        } = req.body; 
-      //moment를 이용하여 한국시간으로 날짜생성
-      const createdAt = new moment().format('YYYY-MM-DD HH:mm:ss');
-      //이미지 수정
-      const artPostimg = await Post.find({postId:postId});
-      const img =  artPostimg[0].imageUrl
-      //key 값을 저장 array
-      let deleteItems = []
-      //key값 추출위한 for문
-      for(let i = 0; i<img.length; i++){
+const artUpdate = async (req, res) => {
+  try {
+    const { user } = res.locals;
+    //수정할 파라미터 값
+    const { postId } = req.params;
+    //바디로 받을 데이터
+    const {
+      postTitle,
+      postContent,
+      category,
+      transaction,
+      changeAddress,
+      price,
+    } = req.body;
+    const userPost = await Post.findOne({user,postId}).exec();
+if(userPost.length > 0){
+    //moment를 이용하여 한국시간으로 날짜생성
+    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+    //이미지 수정
+    const artPostimg = await Post.find({ postId });
+
+    const img = artPostimg[0].imageUrl;
+    //key 값을 저장 array
+    let deleteItems = [];
+    //key값 추출위한 for문
+    for (let i = 0; i < img.length; i++) {
       //key값을 string으로 지정
-       deleteItems.push({Key:String(img[i].split('/')[3])})
-      }
-      // s3 delete를 위한 option
-      let params = {
-        Bucket: 'artvb', 
-        Delete: {
-          Objects: deleteItems, 
-          Quiet: false
+      deleteItems.push({ Key: String(img[i].split("/")[3]) });
+    }
+    // s3 delete를 위한 option
+    let params = {
+      Bucket: "myawsbukets",
+      Delete: {
+        Objects: deleteItems,
+        Quiet: false,
+      },
+    };
+    //option을 참조 하여 delete 실행
+    s3.deleteObjects(params, function (err, data) {
+      if (err) console.log(err);
+      else console.log("Successfully deleted myBucket/myKey");
+    });
+
+    //여러장 이미지 저장
+    let imageUrl = new Array();
+    for (let i = 0; i < req.files.length; i++) {
+      imageUrl.push(req.files[i].location);
+    }
+    
+      //업데이트
+      await Post.updateOne(
+        { postId },
+        {
+          $set: {
+            postTitle,
+            postContent,
+            category,
+            transaction,
+            changeAddress,
+            createdAt,
+            imageUrl,
+            price,
+          }
         }
-      };
-      //option을 참조 하여 delete 실행
-     s3.deleteObjects(params, function(err, data) {
-        if (err) console.log(err)     
-        else console.log("Successfully deleted myBucket/myKey");   
-      });
-     
-      //여러장 이미지 저장 
-      let imageUrl = new Array();
-      for(let i = 0; i<req.files.length; i++){
-        imageUrl.push(req.files[i].location)
-      }
-     if(user){ 
-        //업데이트
-        await Post.updateOne({postId},{
-        $set:{
-        postTitle,
-        postContent,
-        category,
-        transaction,
-        changeAddress,
-        createdAt,
-        imageUrl
-        }
-      });
+      );
       res.status(200).send({
-        respons:'success',
-        msg:'수정 완료'
-      })}
-  }catch(error){
+        respons: "success",
+        msg: "수정 완료",
+      });
+    }
+  } catch (error) {
     res.status(400).send({
-      respons:'fail',
-      msg:'수정 실패'
-    })
-  };
+      respons: "fail",
+      msg: "수정 실패",
+    });
+  }
 };
 
 // 삭제(구현 완료)
-const artdelete = async(req,res) => {
-  try{
+const artdelete = async (req, res) => {
+  try {
     //파라미터 값
-      const postId = req.params.postId;
-      // user 정보 일치
-      const {user} = req.locals;
-      //해당 유저 비교 조건 변수
-      const postUser = await Post.findOne({user,postId})
-      if(postUser.length > 0){
+    const postId = req.params.postId;
+    // user 정보 일치
+    const { user } = res.locals;
+    //해당 유저 비교 조건 변수
+    const postUser = await Post.findOne({ user:user.uesrId, postId }).exec();
+    if (postUser) {
       //이미지 URL 가져오기 위한 로직
-      const artPostimg = await Post.find({postId:postId});
-      const img =  artPostimg[0].imageUrl
+      const artPostimg = await Post.find({ postId });
+      const img = artPostimg[0].imageUrl;
       // 복수의 이미지를 삭제 변수(array)
-      let deleteItems = []
+      let deleteItems = [];
       //imageUrl이 array이 때문에 접근하기 위한 for문
-      for(let i = 0; i<img.length; i++){
-      // 추가하기 위한 코드(string으로 해야 접근 가능)
-       deleteItems.push({Key:String(img[i].split('/')[3])})
+      for (let i = 0; i < img.length; i++) {
+        // 추가하기 위한 코드(string으로 해야 접근 가능)
+        deleteItems.push({ Key: String(img[i].split("/")[3]) });
       }
       //삭제를 위한 변수
       let params = {
         //bucket 이름
-        Bucket: 'artvb',
-        //delete를 위한 key값 
+        Bucket: "myawsbukets",
+        //delete를 위한 key값
         Delete: {
-          Objects: deleteItems, 
-          Quiet: false
-        }
+          Objects: deleteItems,
+          Quiet: false,
+        },
       };
       //복수의 delete를 위한 코드 변수(params를 받음)
-      s3.deleteObjects(params, function(err, data) {
-        if (err) console.log(err)     
-        else console.log("Successfully deleted myBucket/myKey");   
+      s3.deleteObjects(params, function (err, data) {
+        if (err) console.log(err);
+        else console.log("Successfully deleted myBucket/myKey");
       });
       //delete
-      await Post.deleteOne({postId, user});
+      await Post.deleteOne({ postId, userId });
       res.status(200).send({
-        respons : 'success',
-        msg: '삭제 완료'
-      })
+        respons: "success",
+        msg: "삭제 완료",
+      });
     };
-  }catch(error){
+  } catch (error) {
     res.status(400).send({
       respons:'fail',
       msg:'삭제 실패'
@@ -338,6 +343,8 @@ const marckupCnt = async(req,res)=>{
   try{
       const {postId} = req.params ;
       const {user} = res.locals ;
+      const userPost = await Post.findOne({postId}).exec();
+    if(user !== userPost.uesr) { 
       // 갇은 post에 찜했는 지 확인
       const Cnt = await User.findOne({user:user.userId,myMarkup:postId});
       if(Cnt === null){
@@ -364,6 +371,7 @@ const marckupCnt = async(req,res)=>{
           data:artPost.marckupCnt
         });
       };
+    };
   }catch(error){
     res.status(400).send({
       respons:'fail',

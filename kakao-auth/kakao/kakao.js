@@ -15,25 +15,24 @@ const kakaoCallback = (req, res, next) => {
     if (err) return next(err);
     const {
       userId,
-      nickname,
       provider,
-      profileImage,
       accessToken,
       introduce,
+      profileImage,
+      nickname,
       type,
     } = user;
     const token = jwt.sign({ userId: userId }, "ARTILY-secret-key");
 
     result = {
       token,
-      profileImage,
-      nickname,
       userId: userId,
-      type,
       provider: provider,
       accessToken,
+      profileImage,
+      nickname,
       introduce,
-      // refreshToken: refreshToken,
+      type,
     };
     console.log(1, result);
     res.send({ user: result });

@@ -131,7 +131,7 @@ reviewRouter.get("/review", review);
  *                                  type: string
  *                                  example: "qwer"
  */
-reviewRouter.post("/review", upload.array("imageUrl"), review_write);
+router.get("/review/:reviewId", middleswares, review_detail);
 /**
  * @swagger
  *

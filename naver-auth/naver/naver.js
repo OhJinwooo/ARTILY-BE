@@ -15,25 +15,24 @@ const naverCallback = (req, res, next) => {
     if (err) return next(err);
     const {
       userId,
-      nickname,
       provider,
-      profileImage,
       accessToken,
       introduce,
+      profileImage,
+      nickname,
       type,
     } = user;
     const token = jwt.sign({ userId: userId }, "ARTILY-secret-key");
 
     result = {
       token,
-      profileImage,
       userId: userId,
-      nickname,
-      type,
       provider: provider,
       accessToken,
+      profileImage,
+      nickname,
       introduce,
-      // refreshToken: refreshToken,
+      type,
     };
     console.log(13121312312312, result);
     res.send({ user: result });
