@@ -224,7 +224,8 @@ const artUpdate = async (req, res) => {
       changeAddress,
       price,
     } = req.body;
-
+    const userPost = await Post.findOne({user,postId}).exec()
+if(){
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //이미지 수정
@@ -257,7 +258,7 @@ const artUpdate = async (req, res) => {
     for (let i = 0; i < req.files.length; i++) {
       imageUrl.push(req.files[i].location);
     }
-    if (user) {
+    
       //업데이트
       await Post.updateOne(
         { postId },
