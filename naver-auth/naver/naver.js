@@ -33,7 +33,6 @@ const naverCallback = (req, res, next) => {
       nickname,
       introduce,
       type,
-      // refreshToken: refreshToken,
     };
     console.log(13121312312312, result);
     res.send({ user: result });

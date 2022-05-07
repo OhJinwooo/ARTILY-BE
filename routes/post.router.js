@@ -1,28 +1,40 @@
- const express = require("express");
- const router = express.Router();
- const upload = require("../multer/uploads");
- const middleswares = require("../middleware/authMiddleWare");
- const {
-   artPost,
-   artDetail,
-   artStore,
-   artUpdate,
-   getHome,
-   artdelete,
-   marckupCnt
- } = require("./controllers/post.controllers");
- router.get("/post", getHome);
+const express = require("express");
+const router = express.Router();
+const upload = require("./multer/uploads");
+const middleware = require("../middleware/authMiddleware");
+const {
+  artPost,
+  artDetail,
+  artStore,
+  artUpdate,
+  getHome,
+  artdelete,
+  marckupCnt,
+} = require("./controllers/post.controllers");
+//홈 조회
+router.get("/post", getHome);
 
- router.get("/post/store", artStore);
+//스토어 조회
+router.get("/post/store", artStore);
 
- router.get("/post/:postId", artDetail);
+//상세페이지 조회
+router.get("/post/:postId", middleware, artDetail);
 
- router.post("/post",middleswares,upload.array("img"), artPost);
+//작품 등록
+router.post("/post", middleware, upload.array("imageUrl", 10), artPost);
 
- router.put("/post/:postId",middleswares, upload.array("img"), artUpdate);
+//작품 판매글 수정
+router.patch(
+  "/post/:postId",
+  middleware,
+  upload.array("imageUrl", 10),
+  artUpdate
+);
 
- router.delete("/post/:postId",middleswares,artdelete);
+//작품 판매글 삭제
+router.delete("/post/:postId", middleware, artdelete);
 
-router.post('/cnt/:postId',middleswares,marckupCnt)
+//작품 찜하기
+router.post("/markup/:postId", middleware, marckupCnt);
 
 module.exports = router;
