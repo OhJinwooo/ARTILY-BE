@@ -13,6 +13,9 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     //   required: true,
   },
+  profileImage: {
+    type: String,
+  },
   reviewId: {
     type: String,
     //  required: true,
