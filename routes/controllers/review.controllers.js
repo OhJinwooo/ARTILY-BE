@@ -18,7 +18,9 @@ const uuid = () => {
 const review = async (req, res) => {
   try {
     const { user } = res.locals;
+    console.log(user);
     const { userId } = user;
+    console.log(userId);
     const data = req.body;
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현

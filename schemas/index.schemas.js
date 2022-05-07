@@ -32,9 +32,9 @@ const connect = () => {
       console.error(err);
     });
 };
-module.exports = connect; 
+module.exports = connect;
 
- /* const mongoose = require("mongoose");
+/* const mongoose = require("mongoose");
  const connect = () => {
    mongoose
      .connect(
