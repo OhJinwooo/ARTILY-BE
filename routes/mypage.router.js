@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("../routes/multer/uploads");
+const upload = require("./multer/uploads");
 const middleware = require("../middleware/authMiddleWare");
 const {
   postProfile,

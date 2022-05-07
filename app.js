@@ -23,13 +23,31 @@ const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
 
 const cors = require("cors");
+//접속로그 남기기
+const requestMiddleware = (req,res,next) => {
+  console.log(
+  "ip:",
+  req.ip, 
+  "domain:", 
+  req.rawHeaders[1],
+  "method:",
+  req.method,
+  "Request URL:", 
+  req.originalUrl,
+  "-", new Date());
+  next();
+  ;
+}
+
+
 
 passportNaver();
 passportKakao();
 connect();
 
-/* app.use(cors()); */
+app.use(cors());
 app.use(express.json());
+app.use(requestMiddleware);
 app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [
   userRouter,

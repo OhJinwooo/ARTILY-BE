@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("./multer/uploads");
-const middleware = require("../middleware/authMiddleware");
+const middleware = require("../middleware/authMiddleWare");
+
 const {
   artPost,
   artDetail,
@@ -16,7 +17,7 @@ const {
 router.get("/post", getHome);
 
 //스토어 조회
-router.get("/post/store", artStore);
+router.get("/post/store", middleware, artStore);
 
 //상세페이지 조회
 router.get("/post/:postId", middleware, artDetail);
