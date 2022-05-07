@@ -41,8 +41,8 @@ const getHome = async (req, res) => {
 };
 
 //스토어 페이지(무한스크롤(임시적용 개선 방안 필요), 필터 기능 (개선 중(시간소요)) )
-const artStore = async (req, res) => {
-  try {
+const artStore = async(req,res)=>{
+  try{
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
     const keyword = req.query.keyword;
@@ -50,48 +50,72 @@ const artStore = async (req, res) => {
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
-    //태그기능 변수 통합
-    const artFilter = [category, transaction, changeAddress];
-    if (keyword && category && transaction && changeAddress) {
-    }
-    /* const artFilter = [{category:category},{transaction:transaction},{changeAddress}] */
-    /* //검색기능
-    if(keyword){
+    // 일반적인 상태(조건이 없을 때)
+    if(
+        /* keyword === undefined && 
+        category === undefined &&
+        transaction === undefined && 
+        changeAddress  */
+        keyword &&
+          category &&
+          transaction &&
+          changeAddress
+        === undefined)
+    {
+      //infinite scroll 핸들링
+      // 변수 선언 값이 정수로 표현
+      let page = Math.max(1,parseInt(data.page));
+      let limit = Math.max(1,parseInt(data.limit));
+      //NaN일때 값지정
+      page = !isNaN(page)?page:1;
+      limit = !isNaN(limit)?limit:6;
+      //제외할 데이터 지정
+      let skip = (page-1)*limit;
+      let artPost = await Post.find({}).sort("-createdAt").skip(skip).limit(limit);
+      res.status(200).json({
+        respons:"success",
+        msg:"스토어 조회 성공",
+        data:artPost
+      });
+    }else{
+      //infinite scroll 핸들링
+      // 변수 선언 값이 정수로 표현
+      let page = Math.max(1,parseInt(data.page));
+      let limit = Math.max(1,parseInt(data.limit));
+      //NaN일때 값지정
+      page = !isNaN(page)?page:1;
+      limit = !isNaN(limit)?limit:6;
+      //제외할 데이터 지정
+      let skip = (page-1)*limit;
+      //검색기능      
       let option = [];
       if(keyword){
-        option = [{postTitle: new RegExp(keyword)}]
+        option = [{postId: new RegExp(keyword)}]
       }
-       //시작을 지정할 변수 선언
-    let start = 0;
-    //이미데이터가 넘어가서 있는지 확인
-    if(data.start <= 0){
-      start = 0 ;
-    }else{c
-      start = data.start - 1
+      // 검색 기능 filter
+      if(category!==undefined){
+        option.push({category:category})
+      }
+      if(transaction !== undefined){
+        option.push({transaction: transaction});
+      }
+      if(changeAddress !== undefined){
+        option.push({changeAddress:changeAddress})
+      }
+      //search and filter = option
+      const artPost = await Post.find({$and:option}).skip(skip).limit(limit);
+      res.status(200).json({
+        respons:"success",
+        msg:'filter complete',
+        data:artPost
+      })
     };
-    //마지막 값 지정
-    let last = start + 5
-    // 지정해서 보내주는 데이터
-      await Post.find({$or:option}).limit(start,last)
-    } */
-    /*  //시작을 지정할 변수 선언
-    let start = 0;
-    //이미데이터가 넘어가서 있는지 확인
-    if(data.start <= 0){
-      start = 0 ;
-    }else{c
-      start = data.start - 1
-    };
-    //마지막 값 지정
-    let last = start + 5
-    // 지정해서 보내주는 데이터
-    */
-  } catch (error) {
+  }catch(error){
     res.status(400).json({
-      respons: "fail",
-      msg: "store조회 실패",
+      respons:"fail",
+      msg:'store조회 실패'
     });
-  }
+  };
 };
 
 //상세조회(판매자가 판매완료 시 상태 변화 기능 추가)
