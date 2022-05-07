@@ -52,10 +52,6 @@ const artStore = async(req,res)=>{
     const changeAddress = data.changeAddress;
     // 일반적인 상태(조건이 없을 때)
     if(
-        /* keyword === undefined && 
-        category === undefined &&
-        transaction === undefined && 
-        changeAddress  */
         keyword &&
           category &&
           transaction &&
