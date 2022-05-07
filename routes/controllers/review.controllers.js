@@ -1,4 +1,6 @@
 const Review = require("../../schemas/review.schemas");
+const Post = require("../../schemas/post.schemas");
+const User = require("../../schemas/user.schemas");
 const express = require("express");
 const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
@@ -11,17 +13,17 @@ const uuid = () => {
   const tokens = v4().split("-");
   return tokens[2] + tokens[1] + tokens[3];
 };
+
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
+    const { user } = res.locals;
+    const { userId } = user;
     const data = req.body;
-    console.log(data);
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
     let page = Math.max(1, parseInt(data.page));
-    //console.log(page); //ok
     let limit = Math.max(1, parseInt(data.limit));
-    //console.log(limit); //ok
     //NaN일때 값지정 ??
     page = !isNaN(page) ? page : 1;
     limit = !isNaN(limit) ? limit : 6;
@@ -31,8 +33,38 @@ const review = async (req, res) => {
       .sort("-createdAt")
       .skip(skip)
       .limit(limit);
-    //const review = await Review.find({}).sort("-ceatedAt");
-    res.json({ review });
+
+    // 내가 구매한 작품의 postId 찾기
+    let mybuy = await User.findOne({ userId }, "myBuy");
+
+    // 내가 구매한 작품의 정보 찾기
+    for (let i = 0; i < mybuy.myBuy.length; i++) {
+      console.log("ss", i);
+    }
+
+    let myBuy = await Post.findOne(
+      { postId: mybuy.myBuy },
+      "postId postTitle price"
+    );
+
+    //내가 구매한 작가의 정보 찾기
+    let seller = await User.findOne(
+      { myPost: myBuy.postId },
+      "nickname profileImage myPost"
+    );
+
+    //내가 구매한 작가의 다른 작품들 찾기
+    let defferent = await Post.findOne(
+      { postId: seller.myPost[1] },
+      "postId postTitle price"
+    );
+
+    console.log("mybuy", mybuy);
+    console.log("myBuy", myBuy);
+    console.log("seller", seller);
+    console.log("defferent", defferent);
+
+    res.json({ review, myBuy, seller, defferent });
   } catch (err) {
     console.error(err);
     next(err);
@@ -61,13 +93,13 @@ const review_detail = async (req, res) => {
 const review_write = async (req, res) => {
   // middlewares유저정보 가져오기
   const { user } = res.locals;
-  console.log("user", user);
+  //console.log("user", user);
   const userId = user.userId;
-  console.log("userId", userId);
+  //console.log("userId", userId);
   const nickname = user.nickname;
-  console.log("nickname", nickname);
+  //console.log("nickname", nickname);
   const profileImage = user.profileImage;
-  console.log("profileImage", profileImage);
+  //console.log("profileImage", profileImage);
   //작성한 정보 가져옴
   const { category, reviewTitle, reviewContent } = req.body;
   console.log(category, reviewTitle, reviewContent); //ok
@@ -103,6 +135,7 @@ const review_write = async (req, res) => {
     res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
+
 //리뷰 수정
 const review_modify = async (req, res) => {
   try {
@@ -126,7 +159,7 @@ const review_modify = async (req, res) => {
     }
     // s3 delete를 위한 option
     let params = {
-      Bucket: "myawsbukets",
+      Bucket: "hyewonblog",
       Delete: {
         Objects: deleteItems,
         Quiet: false,
@@ -189,7 +222,7 @@ const review_delete = async (req, res) => {
   //삭제를 위한 변수
   let params = {
     //bucket 이름
-    Bucket: "myawsbukets",
+    Bucket: "hyewonblog",
     //delete를 위한 key값
     Delete: {
       Objects: deleteItems,
