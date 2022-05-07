@@ -5,7 +5,6 @@ module.exports = (req, res, next) => {
   //헤더의 이름 authorization 은 프론트와 얘기해야 함.
   const { authorization } = req.headers;
   const [tokenType, tokenValue] = authorization.split(" ");
-  console.log("@@@@", tokenType, tokenValue);
   if (tokenType !== "Bearer") {
     res.status(401).send({
       errorMessage: "로그인 후 이용하세요!",

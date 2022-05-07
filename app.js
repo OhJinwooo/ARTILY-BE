@@ -28,7 +28,7 @@ passportNaver();
 passportKakao();
 connect();
 
-app.use(cors());
+/* app.use(cors()); */
 app.use(express.json());
 app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [
