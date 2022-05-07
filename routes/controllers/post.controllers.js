@@ -53,12 +53,14 @@ const artStore = async(req,res)=>{
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
+    const price = data.price
     // 일반적인 상태(조건이 없을 때)
     if(
         keyword &&
           category &&
           transaction &&
-          changeAddress
+          changeAddress &&
+          price
         === undefined)
     {
       //infinite scroll 핸들링
@@ -101,6 +103,9 @@ const artStore = async(req,res)=>{
       if(changeAddress !== undefined){
         option.push({changeAddress:changeAddress});
       };
+      if(price === 0){
+        option.push({price:price});
+      };
       //search and filter = option
       const data = await Post.find({$and:option}).skip(skip).limit(limit);
       res.status(200).json({
@@ -121,7 +126,8 @@ const artStore = async(req,res)=>{
 const artDetail = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { uesr } = res.locals;
+    const { user } = res.locals;
+  if(postId) { 
     //상세 페이지 데이터
     const detail = await Post.findOne({ postId }).exec();
     // 추가 데이터(상세 페이지 작가기준)
@@ -134,21 +140,24 @@ const artDetail = async (req, res) => {
       detail:detail,
       getUser
     });
-  
-    // //user로 post  확인
-    // const artPost1 = await Post.findOne({ uesrId }).exec();
-    // //작성 유저 인지 확인 조건
+  } 
+  else if(user.userId){
+      //user로 post  확인
+     const artPost1 = await Post.findOne({ uesrId }).exec();
+     const detail = await Post.findOne({ postId }).exec();
+     //작성 유저 인지 확인 조건
 
-    // if (artPost.postId === artPost1.postId) {
-    //   //조건 통과시 true값으로 변환
-    //   const data = await Post.updateOne({ postId }, { $set: { done: true } });
-    //   console.log(65465);
-    //   res.status(200).send({
-    //     respons: "success",
-    //     msg: "판매 완료",
-    //     data: data.done,
-    //   });
-    // }
+    if (detail.postId === artPost1.postId) {
+       //조건 통과시 true값으로 변환
+       const data = await Post.updateOne({ postId }, { $set: { done: true } });
+       console.log(65465);
+       res.status(200).send({
+         respons: "success",
+         msg: "판매 완료",
+         data: data.done,
+       });
+     };
+  }
   } catch (error) {
     res.status(200).json({
       respons: "fail",
@@ -356,9 +365,11 @@ const marckupCnt = async (req, res) => {
   try {
     const { postId } = req.params;
     const { user } = res.locals;
-    // 갇은 post에 찜했는 지 확인
-    const Cnt = await User.findOne({ userId: user.userId, myMarkup: postId });
-    if (Cnt === null) {
+    const postUser = await Post.findOne({postId})
+    if(postUser.userId !== user.userId){
+      // 갇은 post에 찜했는 지 확인
+      const Cnt = await User.findOne({ userId: user.userId, myMarkup: postId });
+      if (Cnt === null) {
       // 생성 로직
       await User.findOneAndUpdate(
         { user: user.userId },
@@ -389,6 +400,11 @@ const marckupCnt = async (req, res) => {
         marckupCnt
       });
     }
+  };
+  return res.status(406).send({
+    respons:"success",
+    msg:"실패"
+  });
   } catch (error) {
     res.status(400).send({
       respons: "fail",
