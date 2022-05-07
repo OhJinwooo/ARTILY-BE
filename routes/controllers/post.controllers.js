@@ -115,7 +115,7 @@ const artDetail = async (req, res) => {
       "postId postTitle done imageUrl category postSize transaction changeAddress postContent user"
     ).exec();
     // 추가 데이터(상세 페이지 작가기준)
-    const artPost2 = await Post.find(
+    const artWriter = await Post.find(
       { uesrId },
       "postId imageUrl postTitle price"
     )
@@ -124,7 +124,7 @@ const artDetail = async (req, res) => {
     res.status(200).json({
       respons: "success",
       msg: "상세페이지 조회 성공",
-      data: [artPost, artPost2],
+      data: [artPost, artWriter],
     });
     // //user로 post  확인
     // const artPost1 = await Post.findOne({ uesrId }).exec();
