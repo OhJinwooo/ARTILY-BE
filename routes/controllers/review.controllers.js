@@ -11,23 +11,27 @@ const uuid = () => {
   const tokens = v4().split("-");
   return tokens[2] + tokens[1] + tokens[3];
 };
-// 리뷰 조회(무한 스크롤(임시))
+// 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
-    //   //페이지의 시작 값을 받음(테이터의 총개수)
-    //   const data = req.body;
-    //   //시작을 지정할 변수 선언
-    //   let start = 0;
-    //   //이미데이터가 넘어가서 있는지 확인
-    //   if (data.start <= 0) {
-    //     start = 0;
-    //   } else {
-    //     start = data.start - 1;
-    //   }
-    //   //마지막 값 지정
-    //   let last = start + 5;
-    const review = await Review.find({}).sort("-createdAt");
-    //.limit(start, last);
+    const data = req.body;
+    console.log(data);
+    //infinite scroll 핸들링
+    // 변수 선언 값이 정수로 표현
+    let page = Math.max(1, parseInt(data.page));
+    //console.log(page); //ok
+    let limit = Math.max(1, parseInt(data.limit));
+    //console.log(limit); //ok
+    //NaN일때 값지정 ??
+    page = !isNaN(page) ? page : 1;
+    limit = !isNaN(limit) ? limit : 6;
+    //제외할 데이터 지정
+    let skip = (page - 1) * limit;
+    let review = await Review.find({})
+      .sort("-createdAt")
+      .skip(skip)
+      .limit(limit);
+    //const review = await Review.find({}).sort("-ceatedAt");
     res.json({ review });
   } catch (err) {
     console.error(err);
@@ -39,15 +43,15 @@ const review_detail = async (req, res) => {
   // middlewares유저정보 가져오기(닉네임,프로필이미지)
   const { user } = res.locals;
   const nickname = user.nickname;
-  const profileUrl = user.profileUrl;
+  const profileImage = user.profileImage;
   console.log("user", user);
   console.log("nickname", nickname);
-  console.log("profileUrl", profileUrl);
+  console.log("profileImage", profileImage);
   try {
     const { reviewId } = req.params;
     console.log(reviewId);
     const review_detail = await Review.find({ reviewId }).sort("-createdAt");
-    res.json({ review_detail, nickname, profileUrl });
+    res.json({ review_detail, nickname, profileImage });
   } catch (err) {
     console.error(err);
     next(err);
@@ -62,6 +66,8 @@ const review_write = async (req, res) => {
   console.log("userId", userId);
   const nickname = user.nickname;
   console.log("nickname", nickname);
+  const profileImage = user.profileImage;
+  console.log("profileImage", profileImage);
   //작성한 정보 가져옴
   const { category, reviewTitle, reviewContent } = req.body;
   console.log(category, reviewTitle, reviewContent); //ok
@@ -82,6 +88,7 @@ const review_write = async (req, res) => {
       category,
       userId,
       nickname,
+      profileImage,
       reviewTitle,
       imageUrl,
       reviewContent,
