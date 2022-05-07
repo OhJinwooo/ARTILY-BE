@@ -32,7 +32,7 @@ const getHome = async (req, res) => {
         respons:'success',
         msg:'조회 성공',
         data:{artPost,artWriter,reviwPage }
-      })
+      });
   }catch(error){
     res.status(400).json({
       respons:"file",
@@ -47,7 +47,6 @@ const artStore = async(req,res)=>{
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
     const keyword = req.query.keyword;
-    console.log(keyword)
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
@@ -332,7 +331,7 @@ const artdelete = async(req,res) => {
 const marckupCnt = async(req,res)=>{
   try{
       const {postId} = req.params ;
-      const {user} = req.locals ;
+      const {user} = res.locals ;
       // 갇은 post에 찜했는 지 확인
       const Cnt = await User.findOne({user:user.userId,myMarkup:postId});
       if(Cnt === null){
@@ -366,4 +365,5 @@ const marckupCnt = async(req,res)=>{
     });
   }
 };
+
 module.exports = { getHome, artPost, artStore , artDetail, artUpdate, artdelete, marckupCnt};
