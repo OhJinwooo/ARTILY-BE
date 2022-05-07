@@ -271,7 +271,7 @@ const artUpdate = async (req, res) => {
             createdAt,
             imageUrl,
             price,
-          },
+          }
         }
       );
       res.status(200).send({
@@ -293,9 +293,9 @@ const artdelete = async (req, res) => {
     //파라미터 값
     const postId = req.params.postId;
     // user 정보 일치
-    const { userId } = res.locals.user;
+    const { user } = res.locals;
     //해당 유저 비교 조건 변수
-    const postUser = await Post.findOne({ userId, postId });
+    const postUser = await Post.findOne({ user:user.uesrId, postId });
     if (postUser) {
       //이미지 URL 가져오기 위한 로직
       const artPostimg = await Post.find({ postId });
@@ -328,7 +328,7 @@ const artdelete = async (req, res) => {
         respons: "success",
         msg: "삭제 완료",
       });
-    }
+    };
   } catch (error) {
     res.status(400).send({
       respons:'fail',
@@ -342,6 +342,8 @@ const marckupCnt = async(req,res)=>{
   try{
       const {postId} = req.params ;
       const {user} = res.locals ;
+      const userPost = await Post.findOne({postId}).exec();
+    if(user.uesrId !== userPost.uesr.uesrId) { 
       // 갇은 post에 찜했는 지 확인
       const Cnt = await User.findOne({user:user.userId,myMarkup:postId});
       if(Cnt === null){
@@ -368,6 +370,7 @@ const marckupCnt = async(req,res)=>{
           data:artPost.marckupCnt
         });
       };
+    };
   }catch(error){
     res.status(400).send({
       respons:'fail',
