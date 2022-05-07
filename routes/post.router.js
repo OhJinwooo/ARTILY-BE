@@ -1,6 +1,7 @@
  const express = require("express");
  const router = express.Router();
  const upload = require("../multer/uploads");
+ const middleswares = require("../middleware/authMiddleWare");
  const {
    artPost,
    artDetail,
@@ -16,12 +17,12 @@
 
  router.get("/post/:postId", artDetail);
 
- router.post("/post", upload.array("img"), artPost);
+ router.post("/post",middleswares,upload.array("img"), artPost);
 
- router.put("/post/:postId", upload.array("img"), artUpdate);
+ router.put("/post/:postId",middleswares, upload.array("img"), artUpdate);
 
- router.delete("/post/:postId",artdelete);
+ router.delete("/post/:postId",middleswares,artdelete);
 
-router.post('/cnt/:postId',marckupCnt)
+router.post('/cnt/:postId',middleswares,marckupCnt)
 
 module.exports = router;

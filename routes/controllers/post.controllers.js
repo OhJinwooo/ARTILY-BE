@@ -1,11 +1,8 @@
 const Post = require("../../schemas/post.schemas");
 const Review = require("../../schemas/review.schemas");
 const User = require("../../schemas/user.schemas");
-const sharp = require("sharp");
 const s3 = require("../../routes/config/s3");
 const moment = require("moment");
-const fs = require("fs");
-const path = require("path");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
 const { v4 } = require("uuid");
@@ -52,10 +49,6 @@ const artStore = async(req,res)=>{
     const changeAddress = data.changeAddress;
     // 일반적인 상태(조건이 없을 때)
     if(
-        /* keyword === undefined && 
-        category === undefined &&
-        transaction === undefined && 
-        changeAddress  */
         keyword &&
           category &&
           transaction &&
@@ -90,25 +83,25 @@ const artStore = async(req,res)=>{
       //검색기능      
       let option = [];
       if(keyword){
-        option = [{postId: new RegExp(keyword)}]
+        option = [{postId: new RegExp(keyword)}];
       }
       // 검색 기능 filter
       if(category!==undefined){
         option.push({category:category})
-      }
+      };
       if(transaction !== undefined){
         option.push({transaction: transaction});
-      }
+      };
       if(changeAddress !== undefined){
-        option.push({changeAddress:changeAddress})
-      }
+        option.push({changeAddress:changeAddress});
+      };
       //search and filter = option
       const artPost = await Post.find({$and:option}).skip(skip).limit(limit);
       res.status(200).json({
         respons:"success",
         msg:'filter complete',
         data:artPost
-      })
+      });
     };
   }catch(error){
     res.status(400).json({
@@ -155,14 +148,16 @@ const artDetail = async (req, res) => {
   }
 };
 
-//작성 api(구현 완료)
+//작성(구현 완료)
 const artPost = async (req, res) => {
   try {
-    const { user } = res.locals;
-
+    const { user } = res.locals ;
     //req.body를 받음
     const { postTitle, postContent, category, transaction, changeAddress } =
       req.body;
+    const id = await User.findOne({user:user.userId});
+    if(id.length > 0)
+    {
     //여러장 이미지 저장
     let imageUrl = new Array();
     for (let i = 0; i < req.files.length; i++) {
@@ -194,7 +189,8 @@ const artPost = async (req, res) => {
         respons: "success",
         msg: "판매글 생성 완료",
       });
-    }
+    };
+  };
   } catch (error) {
     res.status(400).json({
       respons: "fail",
@@ -203,7 +199,7 @@ const artPost = async (req, res) => {
   }
 };
 
-//api 수정(구현완료)
+//수정(구현완료)
 const artUpdate = async (req, res) => {
   try {
     const { user } = res.locals;
@@ -211,7 +207,10 @@ const artUpdate = async (req, res) => {
     const { postId } = req.params;
     //바디로 받을 데이터
     const { postTitle, postContent, category, transaction, changeAddress } =
-      req.body;
+    req.body;
+    const id = await Post.find({user:user.userId,postId});
+  if(id.length > 0) 
+  { 
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //이미지 수정
@@ -243,7 +242,7 @@ const artUpdate = async (req, res) => {
     for (let i = 0; i < req.files.length; i++) {
       imageUrl.push(req.files[i].location);
     }
-    if (user) {
+    
       //업데이트
       await Post.updateOne(
         { postId },
@@ -263,7 +262,7 @@ const artUpdate = async (req, res) => {
         respons: "success",
         msg: "수정 완료",
       });
-    }
+    };
   } catch (error) {
     res.status(400).send({
       respons: "fail",
@@ -341,7 +340,7 @@ const marckupCnt = async (req, res) => {
       res.status(200).json({
         respons: "success",
         msg: "성공",
-        data: artPost.marckupCnt,
+        data: artPost.marckupCnt
       });
     } else {
       // 있을 시 삭제
@@ -365,6 +364,7 @@ const marckupCnt = async (req, res) => {
     });
   }
 };
+
 module.exports = {
   getHome,
   artPost,
