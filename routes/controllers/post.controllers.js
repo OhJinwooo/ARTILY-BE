@@ -40,25 +40,27 @@ const getHome = async (req, res) => {
   }
 };
 
-//스토어 페이지(무한스크롤구현 완료, 필터 기능 (개선 중(시간소요)),검색기능 구현 완료 )
+//스토어 페이지 구현 완료
 const artStore = async(req,res)=>{
   try{
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
     const keyword = req.query.keyword;
+    console.log(keyword)
     //태그 기능 변수
-    /* const category = data.category;
-    const transaction = data.transaction; */
-    /* const changeAddress = changeAddress; */
-    //태그기능 변수 통합
-    /* const artFilter = [category,transaction,changeAddress];
-    console.log(artFilter) */
+    const category = data.category;
+    const transaction = data.transaction;
+    const changeAddress = data.changeAddress;
     // 일반적인 상태(조건이 없을 때)
     if(
-      (keyword && 
-        category &&
-        transaction && 
-        changeAddress) 
+        /* keyword === undefined && 
+        category === undefined &&
+        transaction === undefined && 
+        changeAddress  */
+        keyword &&
+          category &&
+          transaction &&
+          changeAddress
         === undefined)
     {
       //infinite scroll 핸들링
@@ -76,18 +78,39 @@ const artStore = async(req,res)=>{
         msg:"스토어 조회 성공",
         data:artPost
       });
-    }
-    //조건이 있을 때 동작 로직
-    else{
-
-    }
-    /* const artFilter = [{category:category},{transaction:transaction},{changeAddress}] */
-    /* //검색기능
-    if(keyword){
+    }else{
+      //infinite scroll 핸들링
+      // 변수 선언 값이 정수로 표현
+      let page = Math.max(1,parseInt(data.page));
+      let limit = Math.max(1,parseInt(data.limit));
+      //NaN일때 값지정
+      page = !isNaN(page)?page:1;
+      limit = !isNaN(limit)?limit:6;
+      //제외할 데이터 지정
+      let skip = (page-1)*limit;
+      //검색기능      
       let option = [];
       if(keyword){
-        option = [{postTitle: new RegExp(keyword)}]
-      }*/ 
+        option = [{postId: new RegExp(keyword)}]
+      }
+      // 검색 기능 filter
+      if(category!==undefined){
+        option.push({category:category})
+      }
+      if(transaction !== undefined){
+        option.push({transaction: transaction});
+      }
+      if(changeAddress !== undefined){
+        option.push({changeAddress:changeAddress})
+      }
+      //search and filter = option
+      const artPost = await Post.find({$and:option}).skip(skip).limit(limit);
+      res.status(200).json({
+        respons:"success",
+        msg:'filter complete',
+        data:artPost
+      })
+    };
   }catch(error){
     res.status(400).json({
       respons: "fail",
