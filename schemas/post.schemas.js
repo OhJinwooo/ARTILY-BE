@@ -38,7 +38,7 @@ const postSchema = new mongoose.Schema({
   done: {
     type: String,
   },
-  marckupCnt: {
+  markupCnt: {
     type: Number,
   },
 });
