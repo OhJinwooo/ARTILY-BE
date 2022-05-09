@@ -44,6 +44,10 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     //   required: true,
   },
+  seller: {
+    type: Object,
+    //   required: true,
+  },
 });
 
 // ReviewSchema.virtual("reviewId").get(function () {
