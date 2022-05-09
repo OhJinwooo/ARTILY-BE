@@ -56,8 +56,8 @@ const review_detail = async (req, res) => {
 
     res.json({ buyer, defferent });
   } catch (err) {
-    console.error(err);
-    next(err);
+    console.log("상제조회 에러");
+    res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
   }
 };
 //리뷰 작성
