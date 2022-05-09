@@ -366,38 +366,32 @@ const artdelete = async (req, res) => {
 const markupCnt = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { user } = res.locals;
+    const { userId } = res.locals.user;
     const userPost = await Post.findOne({ postId }).exec();
-    if (user !== userPost.uesr) {
+    console.log("userPost", userPost);
+    if (userId !== userPost.uesr) {
       // 갇은 post에 찜했는 지 확인
-      const Cnt = await User.findOne({ user: user.userId, myMarkup: postId });
+      const Cnt = await User.findOne({ userId, myMarkup: postId });
       if (Cnt === null) {
         // 생성 로직
         await User.findOneAndUpdate(
-          { user: user.userId },
+          { userId },
           { $push: { myMarkup: postId } }
         );
         await Post.findOneAndUpdate({ postId }, { $inc: { markupCnt: +1 } });
         // 해당 post 에 찜개수
-        const artPost = await Post.findOne({ postId });
         res.status(200).json({
           respons: "success",
           msg: "성공",
-          data: artPost.markupCnt,
         });
       } else {
         // 있을 시 삭제
-        await User.updateOne(
-          { user: user.userId },
-          { $pull: { myMarkup: postId } }
-        );
+        await User.updateOne({ userId }, { $pull: { myMarkup: postId } });
         await Post.updateOne({ postId }, { $inc: { markupCnt: -1 } });
         //개수
-        const artPost = await Post.findOne({ postId });
         res.status(200).json({
           respons: "success",
           msg: "취소",
-          data: artPost.markupCnt,
         });
       }
     }
