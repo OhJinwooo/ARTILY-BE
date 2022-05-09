@@ -80,7 +80,7 @@ const postProfile = async (req, res) => {
 // 프로필 조회
 const getProfile = async (req, res) => {
   console.log(123);
-  const { userId } = res.locals.user;
+  const { userId } = req.params;
   console.log(res.locals.user);
   try {
     console.log("try");
@@ -90,20 +90,17 @@ const getProfile = async (req, res) => {
     );
     console.log(myprofile);
     const mypost = myprofile.myPost;
-    // const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myPost = await Post.find(
       { postId: mypost },
       "postId imageUrl postTitle done"
     );
     const myreview = myprofile.myReview;
-    // const myreview = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myReview = await Review.find(
       { postId: myreview },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
     );
 
     const mymarkup = myprofile.myMarkup;
-    // const mymarkup = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myMarkup = await Post.find(
       { postId: mymarkup },
       "postId imageUrl postTitle price done markupCnt"

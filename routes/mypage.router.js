@@ -18,8 +18,8 @@ router.patch(
   postProfile
 );
 
-//마이페이지 조회
-router.get("/profile", middleware, getProfile);
+//프로필 조회 조회
+router.get("/profile/:userId", getProfile);
 
 //마이페이지 프로필 수정
 router.patch(
