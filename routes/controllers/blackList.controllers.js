@@ -1,6 +1,4 @@
 const User = require("../../schemas/user.schemas");
-const express = require("express");
-const { create } = require("../../schemas/review.schemas");
 
 // 신고하기
 const blackList = async (req, res) => {

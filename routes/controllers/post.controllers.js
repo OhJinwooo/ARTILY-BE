@@ -1,18 +1,11 @@
 const Post = require("../../schemas/post.schemas");
 const Review = require("../../schemas/review.schemas");
 const User = require("../../schemas/user.schemas");
-const sharp = require("sharp");
 const s3 = require("../config/s3");
 const moment = require("moment");
-const fs = require("fs");
-const path = require("path");
 require("moment-timezone");
 moment.tz.setDefault("Asia/Seoul");
 const { v4 } = require("uuid");
-const { create } = require("../../schemas/user.schemas");
-const { object } = require("webidl-conversions");
-const { fstat } = require("fs");
-const { ppid } = require("process");
 const uuid = () => {
   const tokens = v4().split("-");
   return tokens[2] + tokens[1] + tokens[3];

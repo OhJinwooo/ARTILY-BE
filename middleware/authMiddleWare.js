@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../schemas/user.schemas");
+require("dotenv").config();
 
 module.exports = (req, res, next) => {
   //헤더의 이름 authorization 은 프론트와 얘기해야 함.
@@ -12,7 +13,7 @@ module.exports = (req, res, next) => {
     return;
   }
   try {
-    const { userId } = jwt.verify(tokenValue, "ARTILY-secret-key");
+    const { userId } = jwt.verify(tokenValue, process.env.JWTSECRETKEY);
     User.findOne({ userId })
       .exec()
       .then((user) => {
