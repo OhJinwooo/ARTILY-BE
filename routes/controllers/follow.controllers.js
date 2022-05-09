@@ -2,32 +2,29 @@ const User = require("../../schemas/user.schemas");
 
 //follow
 const addfollow = async (req, res) => {
-  //내가 팔로우 하려는 유저
-  const followId = req.params;
-  console.log("followId", followId);
-  const followUserId = followId.followId;
-  console.log("123123", followUserId);
-  //내 유저 아이디
-  const { user } = res.locals;
-  const { userId } = user;
-  console.log("userId", userId);
-
-  //DB에 저장된 내user정보 가져오기
-  const myFollow = await User.findOne({ userId }).exec();
-  // console.log("myFollow", myFollow);
-  const found = await User.find({ follow: followUserId });
-  //DB에 저장된 상대user정보 가져오기
-  const follower = await User.findOne({ userId: followUserId }).exec();
-  // console.log("follower", follower);
-
   try {
+    //내가 팔로우 하려는 유저
+    const followId = req.params;
+    const followUserId = followId.followId;
+    //내 유저 아이디
+    const { user } = res.locals;
+    const { userId } = user;
+
+    //DB에 저장된 내user정보 가져오기
+    const myFollow = await User.findOne({ userId }).exec();
+    // console.log("myFollow", myFollow);
+    const found = await User.find({ follow: followUserId });
+    //DB에 저장된 상대user정보 가져오기
+    const follower = await User.findOne({ userId: followUserId }).exec();
+    // console.log("follower", follower);
+
     if (!found.length) {
       await myFollow.updateOne({ $push: { follow: followUserId } });
       await myFollow.updateOne({ $inc: { followCnt: 1 } });
       await follower.updateOne({ $push: { follower: userId } });
       await follower.updateOne({ $inc: { followerCnt: 1 } });
 
-      res.status(200).json({ respons: "success", msg: "팔로우" });
+      res.status(200).json({ respons: "success", msg: "팔로잉" });
     } else {
       await myFollow.updateOne({ $pull: { follow: followUserId } });
       await myFollow.updateOne({ $inc: { followCnt: -1 } });
