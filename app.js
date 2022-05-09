@@ -1,12 +1,12 @@
+require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const https = require("https");
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 const server = http.createServer(app);
 const socket = require("socket.io");
-const passport = require("passport");
-require("dotenv").config();
+// const passport = require("passport");
 
 /* const option = {
   key:
@@ -51,8 +51,8 @@ passportNaver();
 passportKakao();
 connect();
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
@@ -71,7 +71,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.CORSPORT,
     credentials: true,
   },
 });

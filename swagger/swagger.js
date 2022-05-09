@@ -1,3 +1,4 @@
+require("dotenv").config();
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 
@@ -9,7 +10,7 @@ const options = {
       title: "ARTIN 시리즈 API",
       description: "ARTIN API 명세서",
     },
-    host: "localhost:3000",
+    host: process.env.SWAGGERHOST,
     schemes: ["http", "https"],
     basePath: "/",
     components: {

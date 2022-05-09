@@ -1,14 +1,14 @@
+require("dotenv").config();
 const passport = require("passport");
 const KakaoStrategy = require("passport-kakao").Strategy;
 const User = require("../schemas/user.schemas");
-require("dotenv").config();
 
 module.exports = () => {
   passport.use(
     new KakaoStrategy(
       {
         clientID: process.env.KAKAOCLIENT_ID, // 카카오 로그인에서 발급받은 REST API 키
-        callbackURL: "http://localhost:3000/oauth/kakao/callback", // 카카오 로그인 Redirect URI 경로
+        callbackURL: process.env.KAKAOCALLBACKURL, // 카카오 로그인 Redirect URI 경로
       },
 
       async (accessToken, refreshToken, profile, done) => {

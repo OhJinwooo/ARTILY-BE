@@ -11,7 +11,7 @@ module.exports = () => {
       {
         clientID: process.env.NAVERCLIENT_ID,
         clientSecret: process.env.NAVERSECRET,
-        callbackURL: "http://localhost:3000/oauth/naver/callback",
+        callbackURL: process.env.NAVERCALLBACKURL,
       },
 
       async (accessToken, refreshToken, profile, done) => {
