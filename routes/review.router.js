@@ -14,7 +14,7 @@ const {
 router.get("/review", review);
 
 //리뷰상세조회;
-router.get("/review/:reviewId", middleswares, review_detail);
+router.get("/review/:reviewId", review_detail);
 
 //리뷰작성
 router.post(
