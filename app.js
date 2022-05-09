@@ -52,8 +52,8 @@ passportNaver();
 passportKakao();
 connect();
 
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.initialize());
+// app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
