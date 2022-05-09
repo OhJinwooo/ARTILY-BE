@@ -5,6 +5,7 @@ const app = express();
 const port = 3000;
 const server = http.createServer(app);
 const socket = require("socket.io");
+const passport = require("passport");
 require("dotenv").config();
 
 /* const option = {
@@ -50,6 +51,8 @@ passportNaver();
 passportKakao();
 connect();
 
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
