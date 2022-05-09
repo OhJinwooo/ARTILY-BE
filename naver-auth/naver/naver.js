@@ -23,7 +23,7 @@ const naverCallback = (req, res, next) => {
       nickname,
       type,
     } = user;
-    const token = jwt.sign({ userId: userId }, process.env.JWTSECRETKEZY);
+    const token = jwt.sign({ userId: userId }, process.env.JWTSECRETKEY);
 
     result = {
       token,

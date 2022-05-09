@@ -13,7 +13,7 @@ module.exports = (req, res, next) => {
     return;
   }
   try {
-    const { userId } = jwt.verify(tokenValue, process.env.JWTSECRETKEZY);
+    const { userId } = jwt.verify(tokenValue, process.env.JWTSECRETKEY);
     User.findOne({ userId })
       .exec()
       .then((user) => {
