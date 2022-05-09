@@ -4,6 +4,7 @@ const http = require("http");
 const https = require("https");
 const app = express();
 const port = process.env.PORT;
+const passport = require("passport");
 const server = http.createServer(app);
 const socket = require("socket.io");
 // const passport = require("passport");
@@ -51,8 +52,8 @@ passportNaver();
 passportKakao();
 connect();
 
-// app.use(passport.initialize());
-// app.use(passport.session());
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
