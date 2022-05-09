@@ -22,7 +22,7 @@ const getHome = async (req, res) => {
       {},
       "postId postTitle imageUrl transaction price markupCnt user"
     )
-      .sort("-marckupCnt")
+      .sort("-markupCnt")
       .limit(4);
     const bestWriter = [];
     for (let i = 0; i < bestPost.length; i++) {
@@ -212,7 +212,7 @@ const artPost = async (req, res) => {
         postId,
         price,
         createdAt,
-        marckupCnt: 0,
+        markupCnt: 0,
         done: false,
         user,
         postSize,
@@ -363,7 +363,7 @@ const artdelete = async (req, res) => {
 };
 
 // 찜기능
-const marckupCnt = async (req, res) => {
+const markupCnt = async (req, res) => {
   try {
     const { postId } = req.params;
     const { user } = res.locals;
@@ -377,7 +377,7 @@ const marckupCnt = async (req, res) => {
           { user: user.userId },
           { $push: { myMarkup: postId } }
         );
-        await Post.findOneAndUpdate({ postId }, { $inc: { marckupCnt: +1 } });
+        await Post.findOneAndUpdate({ postId }, { $inc: { markupCnt: +1 } });
         // 해당 post 에 찜개수
         const artPost = await Post.findOne({ postId });
         res.status(200).json({
@@ -391,7 +391,7 @@ const marckupCnt = async (req, res) => {
           { user: user.userId },
           { $pull: { myMarkup: postId } }
         );
-        await Post.updateOne({ postId }, { $inc: { marckupCnt: -1 } });
+        await Post.updateOne({ postId }, { $inc: { markupCnt: -1 } });
         //개수
         const artPost = await Post.findOne({ postId });
         res.status(200).json({
@@ -416,5 +416,5 @@ module.exports = {
   artDetail,
   artUpdate,
   artdelete,
-  marckupCnt,
+  markupCnt,
 };
