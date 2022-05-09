@@ -34,49 +34,27 @@ const review = async (req, res) => {
 };
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
-  // middlewares유저정보 가져오기(닉네임,프로필이미지)
-  const { user } = res.locals;
-  const nickname = user.nickname;
-  const profileImage = user.profileImage;
-  console.log("user", user);
-  console.log("nickname", nickname);
-  console.log("profileImage", profileImage);
-
   try {
     const { reviewId } = req.params;
-    console.log(reviewId);
+    // console.log(reviewId);
 
-    // 내가 구매한 작품의 postId 찾기(1개)
-    let mybuy = await Review.findOne({ user }, "postId");
-    console.log("mybuy", mybuy);
+    //리뷰를 작성한 user 정보
+    //구매한 작품&작가 정보 찾기
+    let buyer = await Review.findOne({ reviewId });
+    console.log("buyer", buyer);
 
-    // 내가 구매한 작품의 정보 찾기
-    let myBuy = await Post.findOne(
-      { postId: mybuy.postId },
-      "postId postTitle price"
-    );
-    console.log("myBuy", myBuy);
-    console.log("mybuy.postId", mybuy.postId);
+    let userId = buyer.seller.user.userId;
+    console.log("userId", userId);
 
-    //내가 구매한 작가의 정보 찾기
-    let seller = await User.findOne(
-      { myPost: mybuy.postId },
-      "nickname profileImage myPost"
-    );
-    console.log("seller", seller);
-
+    //let userId = "2222434554";
     //내가 구매한 작가의 다른 작품들 찾기
     let defferent = await Post.find(
-      //find 사용하면 모두 추출됌.
-      { postId: seller.myPost },
+      { "user.userId": userId },
       "postId postTitle price"
     );
     console.log("defferent", defferent);
 
-    //let aaa = defferent.splice(0, 1);  //원하는 값만 추출
-
-    const review_detail = await Review.find({ reviewId }).sort("-createdAt");
-    res.json({ review_detail, seller, defferent });
+    res.json({ buyer, defferent });
   } catch (err) {
     console.error(err);
     next(err);
@@ -94,6 +72,12 @@ const review_write = async (req, res) => {
   const profileImage = user.profileImage;
   //console.log("profileImage", profileImage);
   const { postId } = req.params;
+  let seller = await Post.findOne(
+    { postId },
+    "postId postTitle price imageUrl user.userId user.nickname user.profileImage"
+  );
+
+  console.log("ss", seller);
   //작성한 정보 가져옴
   const { category, reviewTitle, reviewContent } = req.body;
   console.log(category, reviewTitle, reviewContent); //ok
@@ -109,9 +93,10 @@ const review_write = async (req, res) => {
   moment.tz.setDefault("Asia/Seoul");
   const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
   try {
+    console.log("Aaa");
     const ReviewList = await Review.create({
       reviewId,
-      postId,
+      seller,
       category,
       userId,
       nickname,
