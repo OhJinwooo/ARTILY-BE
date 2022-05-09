@@ -1,4 +1,6 @@
 const Review = require("../../schemas/review.schemas");
+const Post = require("../../schemas/post.schemas");
+const User = require("../../schemas/user.schemas");
 const express = require("express");
 const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
@@ -11,17 +13,17 @@ const uuid = () => {
   const tokens = v4().split("-");
   return tokens[2] + tokens[1] + tokens[3];
 };
+
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
+    const { user } = res.locals;
+    const { userId } = user;
     const data = req.body;
-    console.log(data);
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
     let page = Math.max(1, parseInt(data.page));
-    //console.log(page); //ok
     let limit = Math.max(1, parseInt(data.limit));
-    //console.log(limit); //ok
     //NaN일때 값지정 ??
     page = !isNaN(page) ? page : 1;
     limit = !isNaN(limit) ? limit : 6;
@@ -31,7 +33,6 @@ const review = async (req, res) => {
       .sort("-createdAt")
       .skip(skip)
       .limit(limit);
-    //const review = await Review.find({}).sort("-ceatedAt");
     res.json({ review });
   } catch (err) {
     console.error(err);
@@ -47,11 +48,42 @@ const review_detail = async (req, res) => {
   console.log("user", user);
   console.log("nickname", nickname);
   console.log("profileImage", profileImage);
+
   try {
     const { reviewId } = req.params;
     console.log(reviewId);
+
+    // 내가 구매한 작품의 postId 찾기(1개)
+    let mybuy = await Review.findOne({ user }, "postId");
+    console.log("mybuy", mybuy);
+
+    // 내가 구매한 작품의 정보 찾기
+    let myBuy = await Post.findOne(
+      { postId: mybuy.postId },
+      "postId postTitle price"
+    );
+    console.log("myBuy", myBuy);
+    console.log("mybuy.postId", mybuy.postId);
+
+    //내가 구매한 작가의 정보 찾기
+    let seller = await User.findOne(
+      { myPost: mybuy.postId },
+      "nickname profileImage myPost"
+    );
+    console.log("seller", seller);
+
+    //내가 구매한 작가의 다른 작품들 찾기
+    let defferent = await Post.find(
+      //find 사용하면 모두 추출됌.
+      { postId: seller.myPost },
+      "postId postTitle price"
+    );
+    console.log("defferent", defferent);
+
+    //let aaa = defferent.splice(0, 1);  //원하는 값만 추출
+
     const review_detail = await Review.find({ reviewId }).sort("-createdAt");
-    res.json({ review_detail, nickname, profileImage });
+    res.json({ review_detail, seller, defferent });
   } catch (err) {
     console.error(err);
     next(err);
@@ -61,13 +93,14 @@ const review_detail = async (req, res) => {
 const review_write = async (req, res) => {
   // middlewares유저정보 가져오기
   const { user } = res.locals;
-  console.log("user", user);
+  //console.log("user", user);
   const userId = user.userId;
-  console.log("userId", userId);
+  //console.log("userId", userId);
   const nickname = user.nickname;
-  console.log("nickname", nickname);
+  //console.log("nickname", nickname);
   const profileImage = user.profileImage;
-  console.log("profileImage", profileImage);
+  //console.log("profileImage", profileImage);
+  const { postId } = req.params;
   //작성한 정보 가져옴
   const { category, reviewTitle, reviewContent } = req.body;
   console.log(category, reviewTitle, reviewContent); //ok
@@ -85,6 +118,7 @@ const review_write = async (req, res) => {
   try {
     const ReviewList = await Review.create({
       reviewId,
+      postId,
       category,
       userId,
       nickname,
@@ -103,6 +137,7 @@ const review_write = async (req, res) => {
     res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
+
 //리뷰 수정
 const review_modify = async (req, res) => {
   try {
@@ -115,8 +150,9 @@ const review_modify = async (req, res) => {
     }
     // 이미지 수정
     const photo = await Review.find({ reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
-    //console.log("photo", photo); //ok
+    console.log("photo", photo); //ok
     const img = photo[0].imageUrl;
+    console.log("img", img);
     //key 값을 저장 array
     let deleteItems = [];
     //key값 추출위한 for문
@@ -170,50 +206,50 @@ const review_modify = async (req, res) => {
 //리뷰 삭제
 const review_delete = async (req, res) => {
   const { reviewId } = req.params;
-  //try {
-  // 이미지 URL 가져오기 위한 로직
-  const photo = await Review.find({ reviewId });
-  console.log("photo", photo); //ok
-  const img = photo[0].imageUrl;
-  console.log("img", img);
-  //const img = photo[0].imageUrl[0].location;
-  // 복수의 이미지를 삭제 변수(array)
-  let deleteItems = [];
-  //imageUrl이 array이 때문에 접근하기 위한 for문
-  for (let i = 0; i < img.length; i++) {
-    console.log("Aaa", img[i]);
-    // 추가하기 위한 코드(string으로 해야 접근 가능)
-    deleteItems.push({ Key: String(img[i].split("/")[3]) });
+  try {
+    // 이미지 URL 가져오기 위한 로직
+    const photo = await Review.find({ reviewId });
+    console.log("photo", photo); //ok
+    const img = photo[0].imageUrl;
+    console.log("img", img);
+    //const img = photo[0].imageUrl[0].location;
+    // 복수의 이미지를 삭제 변수(array)
+    let deleteItems = [];
+    //imageUrl이 array이 때문에 접근하기 위한 for문
+    for (let i = 0; i < img.length; i++) {
+      console.log("Aaa", img[i]);
+      // 추가하기 위한 코드(string으로 해야 접근 가능)
+      deleteItems.push({ Key: String(img[i].split("/")[3]) });
+    }
+    console.log("deleteItems", deleteItems);
+    //삭제를 위한 변수
+    let params = {
+      //bucket 이름
+      Bucket: "hyewonblog",
+      //delete를 위한 key값
+      Delete: {
+        Objects: deleteItems,
+        Quiet: false,
+      },
+    };
+    //복수의 delete를 위한 코드 변수(params를 받음)
+    s3.deleteObjects(params, function (err, data) {
+      if (err) console.log(err);
+      else console.log("Successfully deleted myBucket/myKey");
+    });
+    //delete
+    await Review.deleteOne({ reviewId });
+    res.status(200).send({
+      respons: "success",
+      msg: "삭제 완료",
+    });
+  } catch (error) {
+    res.status(400).send({
+      respons: "fail",
+      msg: "삭제 실패",
+    });
   }
-  console.log("deleteItems", deleteItems);
-  //삭제를 위한 변수
-  let params = {
-    //bucket 이름
-    Bucket: "hyewonblog",
-    //delete를 위한 key값
-    Delete: {
-      Objects: deleteItems,
-      Quiet: false,
-    },
-  };
-  //복수의 delete를 위한 코드 변수(params를 받음)
-  s3.deleteObjects(params, function (err, data) {
-    if (err) console.log(err);
-    else console.log("Successfully deleted myBucket/myKey");
-  });
-  //delete
-  await Review.deleteOne({ reviewId });
-  res.status(200).send({
-    respons: "success",
-    msg: "삭제 완료",
-  });
-  //} catch (error) {
-  // res.status(400).send({
-  //   respons: "fail",
-  //   msg: "삭제 실패",
-  // });
 };
-//};
 module.exports = {
   review,
   review_detail,

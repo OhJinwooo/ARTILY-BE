@@ -1,10 +1,16 @@
 const express = require("express");
 const http = require("http");
+const https = require('https')
 const app = express();
 const port = 3000;
 const server = http.createServer(app);
 const socket = require("socket.io");
 require("dotenv").config();
+
+/* const option = {
+  key:
+  cert:
+}; */
 
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
@@ -83,3 +89,6 @@ io.on("connection", (socket) => {
 https: server.listen(port, () => {
   console.log(port, "서버가 연결되었습니다.");
 });
+/* https.createServer(option, app).listen(port, () => {
+  console.log('https'+port+'server start')
+}) */

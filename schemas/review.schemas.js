@@ -20,6 +20,10 @@ const ReviewSchema = new mongoose.Schema({
     type: String,
     //  required: true,
   },
+  postId: {
+    type: String,
+    //  required: true,
+  },
   reviewTitle: {
     type: String,
     //  required: true,
