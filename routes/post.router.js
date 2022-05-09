@@ -17,10 +17,10 @@ const {
 router.get("/post", getHome);
 
 //스토어 조회
-router.get("/post/store",middleware, artStore);
+router.get("/post/store", artStore);
 
 //상세페이지 조회
-router.get("/post/:postId", middleware, artDetail);
+router.get("/post/:postId", artDetail);
 
 //작품 등록
 router.post("/post", middleware, upload.array("image", 10), artPost);

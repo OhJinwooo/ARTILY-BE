@@ -132,7 +132,6 @@ const artDetail = async (req, res) => {
   try {
     //파리미터 값받음
     const { postId } = req.params;
-    const { user } = res.locals;
     if (postId) {
       //상세 페이지 데이터
       const detail = await Post.findOne({ postId }).exec();
