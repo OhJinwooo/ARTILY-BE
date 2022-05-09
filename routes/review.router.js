@@ -16,7 +16,7 @@ router.get("/review/:reviewId", middleswares, review_detail);
 
 //리뷰작성
 router.post(
-  "/review",
+  "/review/:postId",
   middleswares,
   upload.array("imageUrl", 10),
   review_write
