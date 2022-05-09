@@ -1,3 +1,4 @@
+require("dotenv").config();
 const User = require("../../schemas/user.schemas");
 const Post = require("../../schemas/post.schemas");
 const Review = require("../../schemas/review.schemas");
@@ -27,7 +28,7 @@ const postProfile = async (req, res) => {
       console.log("이미지 있음");
       s3.deleteObject(
         {
-          Bucket: "hyewonblog",
+          Bucket: process.env.BUCKETNAME,
           Key: delFileName,
         },
         (err, data) => {
@@ -133,7 +134,7 @@ const updateProfile = async (req, res) => {
       console.log("이미지 있음");
       s3.deleteObject(
         {
-          Bucket: "hyewonblog",
+          Bucket: process.env.BUCKETNAME,
           Key: delFileName,
         },
         (err, data) => {

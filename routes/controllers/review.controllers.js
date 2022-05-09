@@ -1,3 +1,4 @@
+require("dotenv").config();
 const Review = require("../../schemas/review.schemas");
 const Post = require("../../schemas/post.schemas");
 const User = require("../../schemas/user.schemas");
@@ -140,7 +141,7 @@ const review_modify = async (req, res) => {
     }
     // s3 delete를 위한 option
     let params = {
-      Bucket: "hyewonblog",
+      Bucket: process.env.BUCKETNAME,
       Delete: {
         Objects: deleteItems,
         Quiet: false,
@@ -203,7 +204,7 @@ const review_delete = async (req, res) => {
     //삭제를 위한 변수
     let params = {
       //bucket 이름
-      Bucket: "hyewonblog",
+      Bucket: process.env.BUCKETNAME,
       //delete를 위한 key값
       Delete: {
         Objects: deleteItems,

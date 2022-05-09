@@ -1,6 +1,7 @@
 // //multer-s3 미들웨어 연결
 //require("dotenv").config();
 //const authMiddleware = require("./middlewares/auth-middleware");
+require("dotenv").config();
 const s3 = require("../config/s3");
 
 let multer = require("multer");
@@ -10,7 +11,7 @@ let path = require("path");
 let upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "hyewonblog",
+    bucket: process.env.BUCKETNAME,
     key: function (req, file, cb) {
       //The name of the file
       let extension = path.extname(file.originalname);
