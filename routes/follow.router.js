@@ -8,7 +8,7 @@ const {
 } = require("./controllers/follow.controllers");
 
 //팔로우
-router.post("/follow/:followUser", middleware, addfollow);
+router.post("/follow/:followId", middleware, addfollow);
 
 //내 팔로우 리스트 조회
 router.get("/follow/followlist", middleware, getFollow);

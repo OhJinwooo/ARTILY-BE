@@ -3,8 +3,9 @@ const User = require("../../schemas/user.schemas");
 //follow
 const addfollow = async (req, res) => {
   //내가 팔로우 하려는 유저
-  const followUser = req.params;
-  const followUserId = followUser.followUser;
+  const followId = req.params;
+  console.log("followId", followId);
+  const followUserId = followId.followId;
   console.log("123123", followUserId);
   //내 유저 아이디
   const { user } = res.locals;
@@ -25,30 +26,17 @@ const addfollow = async (req, res) => {
       await myFollow.updateOne({ $inc: { followCnt: 1 } });
       await follower.updateOne({ $push: { follower: userId } });
       await follower.updateOne({ $inc: { followerCnt: 1 } });
-      // console.log("push", myFollow, follower);
-      // res.send({});
+
+      res.status(200).json({ respons: "success", msg: "팔로우" });
     } else {
       await myFollow.updateOne({ $pull: { follow: followUserId } });
       await myFollow.updateOne({ $inc: { followCnt: -1 } });
       await follower.updateOne({ $pull: { follower: userId } });
       await follower.updateOne({ $inc: { followerCnt: -1 } });
-      // console.log("pull", myFollow, follower);
-      // res.send({});
+
+      res.status(200).json({ respons: "success", msg: "팔로우 취소" });
     }
-    // 내가 팔로우한 최신 목록 조회
-    const newfollows = await User.findOne({ userId });
-    const follows = newfollows.follow;
-
-    // 내 팔로워 최신 목록 조회
-    const newfollowers = await User.findOne({ userId });
-    const followers = newfollows.follower;
-
-    // 팔로우 당한 사람의 최신 목록 조회
-    // const newfollowers = await User.findOne({ userId: followUserId });
-    // const followers = newfollowers.follower;
-
-    console.log("new", newfollows, newfollowers);
-    res.status(200).json({ success: true });
+    // res.status(200).json({ success: true });
   } catch {
     res.status(400).send("Error");
   }
@@ -59,12 +47,13 @@ const getFollow = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     const follow = await User.findOne({ userId });
-    const followlist = follow.follow;
-    console.log("followlist", followlist);
-    // const followlist = ["2221693614", "2222434554", "2222423044"];
+    const followId = follow.follow;
 
-    const followList = await User.find({ followlist }, "nickname");
-    console.log(123, followList);
+    let followList = [];
+    const followlist = await User.find({ userId: followId });
+    for (let i = 0; i < followlist.length; i++) {
+      followList.push(followlist[i].nickname);
+    }
     res.status(200).json({ followList });
   } catch (err) {
     res.status(400).send("팔로우 목록 조회 실패");
@@ -76,11 +65,13 @@ const getFollower = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     const follow = await User.findOne({ userId });
-    // const followlist = follow.follower;
-    const followerlist = ["2221693614", "2222434554", "2222423044"];
+    const followId = follow.follower;
 
-    const followerList = await User.find({ followerlist }, "nickname");
-    console.log(123, followerList);
+    let followerList = [];
+    const followerlist = await User.find({ userId: followId });
+    for (let i = 0; i < followerlist.length; i++) {
+      followerList.push(followerlist[i].nickname);
+    }
     res.status(200).json({ followerList });
   } catch (err) {
     res.status(400).send("팔로우 목록 조회 실패");

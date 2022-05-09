@@ -89,21 +89,21 @@ const getProfile = async (req, res) => {
       "userId nickname profileImage introduce followCnt followerCnt follow follower myPost myMarkup myReview myBuy snsUrl"
     );
     console.log(myprofile);
-    // const mypost = myprofile.myPost;
-    const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const mypost = myprofile.myPost;
+    // const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myPost = await Post.find(
       { postId: mypost },
       "postId imageUrl postTitle done"
     );
-    // const myreview = myprofile.myReview;
-    const myreview = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const myreview = myprofile.myReview;
+    // const myreview = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myReview = await Review.find(
       { postId: myreview },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
     );
 
-    // const mymarkup = myprofile.myMarkup;
-    const mymarkup = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const mymarkup = myprofile.myMarkup;
+    // const mymarkup = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myMarkup = await Post.find(
       { postId: mymarkup },
       "postId imageUrl postTitle price done markupCnt"
