@@ -55,8 +55,6 @@ const review_detail = async (req, res) => {
     let mybuy = await Review.findOne({ user }, "postId");
     console.log("mybuy", mybuy);
 
-    // let myPost = mybuy.postId;
-    // console.log("myPost", myPost);
     // 내가 구매한 작품의 정보 찾기
     let myBuy = await Post.findOne(
       { postId: mybuy.postId },
