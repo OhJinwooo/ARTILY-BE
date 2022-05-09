@@ -24,13 +24,20 @@ const uuid = () => {
 const getHome = async (req, res) => {
   try{
       //limt함수 사용 보여주는 데이터 숫자 제한
-      const artPost = await Post.find({}).sort('-marckupCnt').limit(4) ;
-      const artWriter = artPost.user;
-      const reviwPage = await Review.find({}).sort('-Likecount').limit(4); 
+      const bestPost = await Post.find({},
+        "postId postTitle imageUrl transaction price markupCnt user"
+        ).sort('-marckupCnt').limit(4) ;
+      const bestWriter = [];
+      for(let i = 0 ; i< bestPost.length; i++){
+          bestWriter.push(bestPost[i].user)
+      }
+      const bestReview = await Review.find({}, 
+        "reviewId imageUrl reviewTitle reviewContent likeCnt user"
+        ).sort('-Likecount').limit(4); 
       res.status(200).json({
         respons:'success',
         msg:'조회 성공',
-        data:{artPost,artWriter,reviwPage }
+        data:{bestPost,bestWriter,bestReview }
       });
   }catch(error){
     res.status(400).json({
@@ -52,22 +59,26 @@ const artStore = async(req,res)=>{
     const changeAddress = data.changeAddress;
     // 일반적인 상태(조건이 없을 때)
     if(
-        keyword &&
-          category &&
-          transaction &&
+        keyword === undefined&&
+          category === undefined&&
+          transaction === undefined&&
           changeAddress
         === undefined)
     {
       //infinite scroll 핸들링
       // 변수 선언 값이 정수로 표현
       let page = Math.max(1,parseInt(data.page));
+      console.log(data.page)
       let limit = Math.max(1,parseInt(data.limit));
       //NaN일때 값지정
       page = !isNaN(page)?page:1;
       limit = !isNaN(limit)?limit:6;
       //제외할 데이터 지정
       let skip = (page-1)*limit;
-      let artPost = await Post.find({}).sort("-createdAt").skip(skip).limit(limit);
+      console.log(skip)
+      const artPost = await Post.find({},
+      "postId postTitle imageUrl transaction price markupCnt user"
+      ).sort("-createdAt").skip(skip).limit(limit);
       res.status(200).json({
         respons:"success",
         msg:"스토어 조회 성공",
@@ -119,23 +130,29 @@ const artDetail = async(req,res) => {
   try{
       //파리미터 값받음
       const {postId} = req.params ;
+      const {user} = res.locals ;
     if(postId) 
     {
         //상세 페이지 데이터
       const detail = await Post.findOne({postId}).exec();
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({uesrId:detail.userId}).sort('-createdAt').limit(4);
-      req.status(200).json({
+      const getUser = await Post.find({uesr:detail.user},
+        "postId postTitle imageUrl transaction price markupCnt user"
+        )
+        .sort('-createdAt')
+        .limit(4);
+      res.status(200).json({
         respons:"success",
         msg:'상세페이지 조회 성공',
-        detail,getUser
+        data:{detail,getUser}
       });
     }
-    const {user} = res.locals;
-     if(user.userId){ 
+     /* const userPost = await Post.findOne({user , postId});
+     if(userPost.done === false){ 
       //user로 post  확인
       const artPost1 = await Post.findOne({user}).exec();
       const detail = await Post.findOne({postId}).exec();
+      console.log(artPost1)
       //작성 유저 인지 확인 조건
       if(detail.postId === artPost1.postId){
         //조건 통과시 true값으로 변환
@@ -145,9 +162,9 @@ const artDetail = async(req,res) => {
           msg:'판매 완료',
           data: data.done
         });
-      };}
+      }; */
   }catch(error){
-    req.status(200).json({
+    res.status(200).json({
       respons:"fail",
       msg:'상세페이지 조회 실패',
     })
@@ -156,7 +173,7 @@ const artDetail = async(req,res) => {
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
-  try {
+   try {
     const { user } = res.locals;
 
     //req.body를 받음
@@ -167,7 +184,7 @@ const artPost = async (req, res) => {
       transaction,
       changeAddress,
       price,
-      postSize,
+      postSize
     } = req.body;
     //여러장 이미지 저장
     let imageUrl = new Array();
@@ -213,7 +230,7 @@ const artPost = async (req, res) => {
 
 //api 수정(구현완료)
 const artUpdate = async (req, res) => {
-  try {
+   try {
     const { user } = res.locals;
     //수정할 파라미터 값
     const { postId } = req.params;
@@ -228,7 +245,7 @@ const artUpdate = async (req, res) => {
       postSize
     } = req.body;
     const userPost = await Post.findOne({user,postId}).exec();
-if(userPost.length > 0){
+ if(userPost){
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //이미지 수정
@@ -244,7 +261,7 @@ if(userPost.length > 0){
     }
     // s3 delete를 위한 option
     let params = {
-      Bucket: "artvb",
+      Bucket: "hyewonblog",
       Delete: {
         Objects: deleteItems,
         Quiet: false,
@@ -283,7 +300,7 @@ if(userPost.length > 0){
         respons: "success",
         msg: "수정 완료",
       });
-    }
+     }
   } catch (error) {
     res.status(400).send({
       respons: "fail",
@@ -300,7 +317,7 @@ const artdelete = async (req, res) => {
     // user 정보 일치
     const { user } = res.locals;
     //해당 유저 비교 조건 변수
-    const postUser = await Post.findOne({ user:user.uesrId, postId }).exec();
+    const postUser = await Post.findOne({ user, postId }).exec();
     if (postUser) {
       //이미지 URL 가져오기 위한 로직
       const artPostimg = await Post.find({ postId });
@@ -315,7 +332,7 @@ const artdelete = async (req, res) => {
       //삭제를 위한 변수
       let params = {
         //bucket 이름
-        Bucket: "artvb",
+        Bucket: "hyewonblog",
         //delete를 위한 key값
         Delete: {
           Objects: deleteItems,
@@ -328,7 +345,7 @@ const artdelete = async (req, res) => {
         else console.log("Successfully deleted myBucket/myKey");
       });
       //delete
-      await Post.deleteOne({ postId, userId });
+      await Post.deleteOne({ postId, user });
       res.status(200).send({
         respons: "success",
         msg: "삭제 완료",
