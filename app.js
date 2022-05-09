@@ -1,6 +1,6 @@
 const express = require("express");
 const http = require("http");
-const https = require('https')
+const https = require("https");
 const app = express();
 const port = 3000;
 const server = http.createServer(app);
@@ -30,27 +30,28 @@ const followRouter = require("./routes/follow.router");
 
 const cors = require("cors");
 //접속로그 남기기
-const requestMiddleware = (req,res,next) => {
+const requestMiddleware = (req, res, next) => {
   console.log(
-  "ip:",
-  req.ip, 
-  "domain:", 
-  req.rawHeaders[1],
-  "method:",
-  req.method,
-  "Request URL:", 
-  req.originalUrl,
-  "-", new Date());
+    "ip:",
+    req.ip,
+    "domain:",
+    req.rawHeaders[1],
+    "method:",
+    req.method,
+    "Request URL:",
+    req.originalUrl,
+    "-",
+    new Date()
+  );
   next();
-  ;
-}
-
-
+};
 
 passportNaver();
 passportKakao();
 connect();
 
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
