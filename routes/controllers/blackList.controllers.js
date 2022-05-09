@@ -11,7 +11,7 @@ const blackList = async (req, res) => {
   console.log(userId);
 
   const blackListCheck = await User.find({ blacklist: ReviewUserId });
-  console.log("블랙리스트", blackListCheck[0].blacklist);
+  //console.log("블랙리스트", blackListCheck[0].blacklist);
 
   if (!blackListCheck.length) {
     await User.updateOne({ userId }, { $push: { blacklist: ReviewUserId } });
