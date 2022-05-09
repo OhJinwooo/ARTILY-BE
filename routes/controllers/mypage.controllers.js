@@ -27,7 +27,7 @@ const postProfile = async (req, res) => {
       console.log("이미지 있음");
       s3.deleteObject(
         {
-          Bucket: "myawsbukets",
+          Bucket: "hyewonblog",
           Key: delFileName,
         },
         (err, data) => {
@@ -133,7 +133,7 @@ const updateProfile = async (req, res) => {
       console.log("이미지 있음");
       s3.deleteObject(
         {
-          Bucket: "myawsbukets",
+          Bucket: "hyewonblog",
           Key: delFileName,
         },
         (err, data) => {
@@ -180,36 +180,40 @@ const updateProfile = async (req, res) => {
   }
 };
 
-//내가 구입한 상품
+//판매 작품 관리하기
 const getMyPost = async (req, res) => {
-  try {
-    const { user } = res.locals;
-    // console.log(user);
-    const userId = user.userId;
-    // const mybuy = await User.find({ userId }, "myPost");
-    // const mypost = await Post.find({ postId: "4027f67fbadd" }, "price");
-    const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
-    const myPost = await Post.find(
-      { postId: mypost },
-      "postId postTitle price done markupCnt imageUrl"
-    );
-    console.log(mypost);
-    res.status(200).json({ myPost });
-  } catch (err) {
-    res.status(400).send("조회 실패");
-  }
+  // try {
+  const { user } = res.locals;
+  // console.log(user);
+  const userId = user.userId;
+  const mypost = await User.find({ userId });
+  const Mypost = mypost.myPost;
+  console.log("mypost", Mypost);
+  // const mypost = await Post.find({ postId: "41ddbf16a19c" }, "price");
+  // const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+  const myPost = await Post.find(
+    { postId: Mypost },
+    "postId postTitle price done markupCnt imageUrl markupCnt"
+  );
+  console.log(mypost);
+  res.status(200).json({ myPost });
+  // } catch (err) {
+  //   res.status(400).send("조회 실패");
+  // }
 };
 
-//판매 작품 관리하기
+//내가 구입한 상품
 const getMyBuy = async (req, res) => {
   try {
     const { user } = res.locals;
     console.log(user);
     const userId = user.userId;
-    // const mybuy = await User.find({ userId }, "myBuy");
-    const mybuy = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const mybuy = await User.find({ userId });
+    const Mybuy = mybuy.myBuy;
+
+    // const mybuy = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myBuy = await Post.find(
-      { postId: mybuy },
+      { postId: Mybuy },
       "postId postTitle nickname imageUrl"
     );
     res.status(200).json({ myBuy });

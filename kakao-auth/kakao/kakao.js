@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const upload = require("../../routes/multer/uploads");
+require("dotenv").config();
 
 router.get(
   "/kakao",
@@ -22,7 +23,7 @@ const kakaoCallback = (req, res, next) => {
       nickname,
       type,
     } = user;
-    const token = jwt.sign({ userId: userId }, "ARTILY-secret-key");
+    const token = jwt.sign({ userId: userId }, process.env.JWTSECRETKEZY);
 
     result = {
       token,

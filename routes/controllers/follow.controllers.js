@@ -59,8 +59,9 @@ const getFollow = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     const follow = await User.findOne({ userId });
-    // const followlist = follow.follow;
-    const followlist = ["2221693614", "2222434554", "2222423044"];
+    const followlist = follow.follow;
+    console.log("followlist", followlist);
+    // const followlist = ["2221693614", "2222434554", "2222423044"];
 
     const followList = await User.find({ followlist }, "nickname");
     console.log(123, followList);
