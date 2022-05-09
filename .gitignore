@@ -1,3 +1,7 @@
 node_modules
 index.schemas
+<<<<<<< HEAD
 .env
+=======
+.env
+>>>>>>> 548ff9de2acc800e1a2256efc73bfd8c350af144

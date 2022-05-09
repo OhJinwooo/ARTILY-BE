@@ -26,14 +26,8 @@ const postSchema = new mongoose.Schema({
   postSize: {
     type: String,
   },
-  userId: {
-    type: String,
-  },
-  nickname: {
-    type: String,
-  },
-  profileImage: {
-    type: String,
+  user: {
+    type: Object,
   },
   changeAddress: {
     type: String,

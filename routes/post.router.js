@@ -17,19 +17,19 @@ const {
 router.get("/post", getHome);
 
 //스토어 조회
-router.get("/post/store", middleware, artStore);
+router.get("/post/store",middleware, artStore);
 
 //상세페이지 조회
 router.get("/post/:postId", middleware, artDetail);
 
 //작품 등록
-router.post("/post", middleware, upload.array("imageUrl", 10), artPost);
+router.post("/post", middleware, upload.array("image", 10), artPost);
 
 //작품 판매글 수정
 router.patch(
   "/post/:postId",
   middleware,
-  upload.array("imageUrl", 10),
+  upload.array("image", 10),
   artUpdate
 );
 
