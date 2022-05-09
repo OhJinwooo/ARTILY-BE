@@ -203,7 +203,7 @@ const review_modify = async (req, res) => {
 //리뷰 삭제
 const review_delete = async (req, res) => {
   const { reviewId } = req.params;
-  //try {
+  // try {
   // 이미지 URL 가져오기 위한 로직
   const photo = await Review.find({ reviewId });
   console.log("photo", photo); //ok
