@@ -160,11 +160,7 @@ const review_modify = async (req, res) => {
     }
     // s3 delete를 위한 option
     let params = {
-<<<<<<< HEAD
       Bucket: "hyewonblog",
-=======
-      Bucket: "artvb",
->>>>>>> 548ff9de2acc800e1a2256efc73bfd8c350af144
       Delete: {
         Objects: deleteItems,
         Quiet: false,
@@ -251,36 +247,6 @@ const review_delete = async (req, res) => {
       msg: "삭제 실패",
     });
   }
-<<<<<<< HEAD
-=======
-  console.log("deleteItems", deleteItems);
-  //삭제를 위한 변수
-  let params = {
-    //bucket 이름
-    Bucket: "artvb",
-    //delete를 위한 key값
-    Delete: {
-      Objects: deleteItems,
-      Quiet: false,
-    },
-  };
-  //복수의 delete를 위한 코드 변수(params를 받음)
-  s3.deleteObjects(params, function (err, data) {
-    if (err) console.log(err);
-    else console.log("Successfully deleted myBucket/myKey");
-  });
-  //delete
-  await Review.deleteOne({ reviewId });
-  res.status(200).send({
-    respons: "success",
-    msg: "삭제 완료",
-  });
-  //} catch (error) {
-  // res.status(400).send({
-  //   respons: "fail",
-  //   msg: "삭제 실패",
-  // });
->>>>>>> 548ff9de2acc800e1a2256efc73bfd8c350af144
 };
 module.exports = {
   review,
