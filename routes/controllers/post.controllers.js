@@ -233,83 +233,84 @@ const artPost = async (req, res) => {
 
 //api 수정(구현완료)
 const artUpdate = async (req, res) => {
-  try {
-    const { user } = res.locals;
-    //수정할 파라미터 값
-    const { postId } = req.params;
-    //바디로 받을 데이터
-    const {
-      postTitle,
-      postContent,
-      category,
-      transaction,
-      changeAddress,
-      price,
-      postSize,
-    } = req.body;
-    const userPost = await Post.findOne({ user, postId }).exec();
-    if (userPost) {
-      //moment를 이용하여 한국시간으로 날짜생성
-      const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
-      //이미지 수정
-      const artPostimg = await Post.find({ postId });
+  // try {
+  const { userId } = res.locals.user;
+  //수정할 파라미터 값
+  const { postId } = req.params;
+  //바디로 받을 데이터
+  const {
+    postTitle,
+    postContent,
+    category,
+    transaction,
+    changeAddress,
+    price,
+    postSize,
+  } = req.body;
+  const userPost = await Post.findOne({ userId, postId }).exec();
+  console.log(userPost);
+  if (userPost) {
+    //moment를 이용하여 한국시간으로 날짜생성
+    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+    //이미지 수정
+    const artPostimg = await Post.find({ postId });
 
-      const img = artPostimg[0].imageUrl;
-      //key 값을 저장 array
-      let deleteItems = [];
-      //key값 추출위한 for문
-      for (let i = 0; i < img.length; i++) {
-        //key값을 string으로 지정
-        deleteItems.push({ Key: String(img[i].split("/")[3]) });
-      }
-      // s3 delete를 위한 option
-      let params = {
-        Bucket: process.env.BUCKETNAME,
-        Delete: {
-          Objects: deleteItems,
-          Quiet: false,
-        },
-      };
-      //option을 참조 하여 delete 실행
-      s3.deleteObjects(params, function (err, data) {
-        if (err) console.log(err);
-        else console.log("Successfully deleted myBucket/myKey");
-      });
-
-      //여러장 이미지 저장
-      let imageUrl = new Array();
-      for (let i = 0; i < req.files.length; i++) {
-        imageUrl.push(req.files[i].location);
-      }
-
-      //업데이트
-      await Post.updateOne(
-        { postId },
-        {
-          $set: {
-            postTitle,
-            postContent,
-            category,
-            transaction,
-            changeAddress,
-            createdAt,
-            imageUrl,
-            price,
-            postSize,
-          },
-        }
-      );
-      res.status(200).send({
-        respons: "success",
-        msg: "수정 완료",
-      });
+    const img = artPostimg[0].imageUrl;
+    //key 값을 저장 array
+    let deleteItems = [];
+    //key값 추출위한 for문
+    for (let i = 0; i < img.length; i++) {
+      //key값을 string으로 지정
+      deleteItems.push({ Key: String(img[i].split("/")[3]) });
     }
-  } catch (error) {
-    res.status(400).send({
-      respons: "fail",
-      msg: "수정 실패",
+    // s3 delete를 위한 option
+    let params = {
+      Bucket: process.env.BUCKETNAME,
+      Delete: {
+        Objects: deleteItems,
+        Quiet: false,
+      },
+    };
+    //option을 참조 하여 delete 실행
+    s3.deleteObjects(params, function (err, data) {
+      if (err) console.log(err);
+      else console.log("Successfully deleted myBucket/myKey");
+    });
+
+    //여러장 이미지 저장
+    let imageUrl = new Array();
+    for (let i = 0; i < req.files.length; i++) {
+      imageUrl.push(req.files[i].location);
+    }
+
+    //업데이트
+    await Post.updateOne(
+      { postId },
+      {
+        $set: {
+          postTitle,
+          postContent,
+          category,
+          transaction,
+          changeAddress,
+          createdAt,
+          imageUrl,
+          price,
+          postSize,
+        },
+      }
+    );
+    res.status(200).send({
+      respons: "success",
+      msg: "수정 완료",
     });
   }
+  // } catch (error) {
+  //   res.status(400).send({
+  //     respons: "fail",
+  //     msg: "수정 실패",
+  //   });
+  // }
 };
 
 // 삭제(구현 완료)

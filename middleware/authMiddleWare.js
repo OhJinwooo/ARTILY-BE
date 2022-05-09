@@ -4,6 +4,7 @@ require("dotenv").config();
 
 module.exports = (req, res, next) => {
   //헤더의 이름 authorization 은 프론트와 얘기해야 함.
+
   const { authorization } = req.headers;
   const [tokenType, tokenValue] = authorization.split(" ");
   if (tokenType !== "Bearer") {
