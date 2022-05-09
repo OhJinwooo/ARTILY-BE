@@ -1,13 +1,8 @@
 const Review = require("../../schemas/review.schemas");
 const Post = require("../../schemas/post.schemas");
 const User = require("../../schemas/user.schemas");
-const express = require("express");
-const { create } = require("../../schemas/review.schemas");
 const moment = require("moment");
-const CryptoJS = require("crypto-js");
 const s3 = require("../config/s3");
-const sharp = require("sharp");
-const fs = require("fs");
 const { v4 } = require("uuid");
 const uuid = () => {
   const tokens = v4().split("-");
