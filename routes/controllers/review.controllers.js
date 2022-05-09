@@ -12,8 +12,6 @@ const uuid = () => {
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
-    const { user } = res.locals;
-    const { userId } = user;
     const data = req.body;
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
