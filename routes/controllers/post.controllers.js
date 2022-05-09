@@ -193,6 +193,7 @@ const artPost = async (req, res) => {
     for (let i = 0; i < req.files.length; i++) {
       imageUrl.push(req.files[i].location);
     }
+    console.log(req.files);
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //uuid를 사용하여 고유 값생성
