@@ -383,7 +383,7 @@ const marckupCnt = async (req, res) => {
         res.status(200).json({
           respons: "success",
           msg: "성공",
-          data: artPost.marckupCnt,
+          data: artPost.markupCnt,
         });
       } else {
         // 있을 시 삭제
@@ -397,7 +397,7 @@ const marckupCnt = async (req, res) => {
         res.status(200).json({
           respons: "success",
           msg: "취소",
-          data: artPost.marckupCnt,
+          data: artPost.markupCnt,
         });
       }
     }
