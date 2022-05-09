@@ -187,7 +187,9 @@ const artPost = async (req, res) => {
       changeAddress,
       price,
       postSize,
+      image,
     } = req.body;
+    console.log(image);
     //여러장 이미지 저장
     let imageUrl = new Array();
     for (let i = 0; i < req.files.length; i++) {
