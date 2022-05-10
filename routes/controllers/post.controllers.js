@@ -79,7 +79,7 @@ const artStore = async (req, res) => {
       console.log(skip);
       const artPost = await Post.find(
         {},
-        "postId postTitle imageUrl transaction price markupCnt changeAddress user"
+        "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
       )
         .sort("-createdAt")
         .skip(skip)
