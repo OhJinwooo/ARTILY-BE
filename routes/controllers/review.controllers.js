@@ -44,13 +44,12 @@ const review_detail = async (req, res) => {
     let buyer = await Review.findOne({ reviewId });
     console.log("buyer", buyer);
 
-    let userId = buyer.seller.user.userId;
-    console.log("userId", userId);
+    let s_userId = buyer.seller.user.userId;
+    console.log("s_userId", s_userId);
 
-    //let userId = "2222434554";
     //내가 구매한 작가의 다른 작품들 찾기
     let defferent = await Post.find(
-      { "user.userId": userId },
+      { "user.userId": s_userId },
       "postId postTitle price"
     );
     console.log("defferent", defferent);
