@@ -20,7 +20,7 @@ const getHome = async (req, res) => {
     //limt함수 사용 보여주는 데이터 숫자 제한
     const bestPost = await Post.find(
       {},
-      "postId postTitle imageUrl transaction price markupCnt user"
+      "postId postTitle imageUrl transaction price markupCnt changeAddress user"
     )
       .sort("-markupCnt")
       .limit(4);
@@ -57,7 +57,7 @@ const artStore = async (req, res) => {
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
-    const price = data.price ;
+    const price = data.price;
     // 일반적인 상태(조건이 없을 때)
     if (
       keyword === undefined &&
@@ -79,7 +79,7 @@ const artStore = async (req, res) => {
       console.log(skip);
       const artPost = await Post.find(
         {},
-        "postId postTitle imageUrl transaction price markupCnt user"
+        "postId postTitle imageUrl transaction price markupCnt changeAddress user"
       )
         .sort("-createdAt")
         .skip(skip)
@@ -114,9 +114,9 @@ const artStore = async (req, res) => {
       if (changeAddress !== undefined) {
         option.push({ changeAddress: changeAddress });
       }
-      if( price !== undefined){
-        option.push({price: price});
-      };
+      if (price !== undefined) {
+        option.push({ price: price });
+      }
       //search and filter = option
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
       res.status(200).json({
@@ -238,88 +238,88 @@ const artPost = async (req, res) => {
 
 //api 수정(구현완료)
 const artUpdate = async (req, res) => {
-try {
-  const { userId } = res.locals.user;
-  //수정할 파라미터 값
-  const { postId } = req.params;
-  //바디로 받을 데이터
-  const {
-    postTitle,
-    postContent,
-    category,
-    transaction,
-    changeAddress,
-    price,
-    postSize,
-    imgSave
-  } = req.body;
-  const userPost = await Post.findOne({ userId, postId }).exec();
-  if (userPost) {
-    //moment를 이용하여 한국시간으로 날짜생성
-    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
-    //이미지 수정
-    const artPostimg = await Post.find({ postId });
-    const img = artPostimg[0].imageUrl;
-    //key 값을 저장 array
-    let deleteItems = [];
-    //key값 추출위한 for문
-    for (let i = 0; i < img.length; i++) {
-      //key값을 string으로 지정
-      deleteItems.push({ Key: String(img[i].split("/")[3]) });
-    }
-    // 첫번째 값 삭제 
-    deleteItems.shift();
-    deleteItems.filter((i)=> i !== imgSave);
-    // s3 delete를 위한 option
-    let params = {
-      Bucket: process.env.BUCKETNAME,
-      Delete: {
-        Objects: deleteItems,
-        Quiet: false,
-      },
-    };
-    //option을 참조 하여 delete 실행
-    s3.deleteObjects(params, function (err, data) {
-      if (err) console.log(err);
-      else console.log("Successfully deleted myBucket/myKey");
-    }); 
-
-    //여러장 이미지 저장
-    let imageUrl = new Array();
-    for (let i = 0; i < req.files.length; i++) {
-      imageUrl.push(req.files[i].location);
-    }
-    //기존 첫번째 imageUrl 및 수정하지 않은 이미지 
-    imageUrl.push(img[0],imgSave)
-    //업데이트
-    await Post.updateOne(
-      { postId },
-      {
-        $set: {
-          postTitle,
-          postContent,
-          category,
-          transaction,
-          changeAddress,
-          createdAt,
-          imageUrl,
-          price,
-          postSize,
-        },
+  try {
+    const { userId } = res.locals.user;
+    //수정할 파라미터 값
+    const { postId } = req.params;
+    //바디로 받을 데이터
+    const {
+      postTitle,
+      postContent,
+      category,
+      transaction,
+      changeAddress,
+      price,
+      postSize,
+      imgSave,
+    } = req.body;
+    const userPost = await Post.findOne({ userId, postId }).exec();
+    if (userPost) {
+      //moment를 이용하여 한국시간으로 날짜생성
+      const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+      //이미지 수정
+      const artPostimg = await Post.find({ postId });
+      const img = artPostimg[0].imageUrl;
+      //key 값을 저장 array
+      let deleteItems = [];
+      //key값 추출위한 for문
+      for (let i = 0; i < img.length; i++) {
+        //key값을 string으로 지정
+        deleteItems.push({ Key: String(img[i].split("/")[3]) });
       }
-    );
-    return res.status(200).send({
-      respons: "success",
-      msg: "수정 완료",
+      // 첫번째 값 삭제
+      deleteItems.shift();
+      deleteItems.filter((i) => i !== imgSave);
+      // s3 delete를 위한 option
+      let params = {
+        Bucket: process.env.BUCKETNAME,
+        Delete: {
+          Objects: deleteItems,
+          Quiet: false,
+        },
+      };
+      //option을 참조 하여 delete 실행
+      s3.deleteObjects(params, function (err, data) {
+        if (err) console.log(err);
+        else console.log("Successfully deleted myBucket/myKey");
+      });
+
+      //여러장 이미지 저장
+      let imageUrl = new Array();
+      for (let i = 0; i < req.files.length; i++) {
+        imageUrl.push(req.files[i].location);
+      }
+      //기존 첫번째 imageUrl 및 수정하지 않은 이미지
+      imageUrl.push(img[0], imgSave);
+      //업데이트
+      await Post.updateOne(
+        { postId },
+        {
+          $set: {
+            postTitle,
+            postContent,
+            category,
+            transaction,
+            changeAddress,
+            createdAt,
+            imageUrl,
+            price,
+            postSize,
+          },
+        }
+      );
+      return res.status(200).send({
+        respons: "success",
+        msg: "수정 완료",
+      });
+    }
+    throw error;
+  } catch (error) {
+    res.status(400).send({
+      respons: "fail",
+      msg: "수정 실패",
     });
   }
-  throw error ;
- } catch (error) {
-     res.status(400).send({
-       respons: "fail",
-       msg: "수정 실패",
-     });
-   }
 };
 
 // 삭제(구현 완료)
@@ -392,7 +392,7 @@ const markupCnt = async (req, res) => {
         // 해당 post 에 찜개수
         res.status(200).json({
           respons: "success",
-          msg: "성공"
+          msg: "성공",
         });
       } else {
         // 있을 시 삭제
@@ -401,7 +401,7 @@ const markupCnt = async (req, res) => {
         //개수
         res.status(200).json({
           respons: "success",
-          msg: "취소"
+          msg: "취소",
         });
       }
     }
