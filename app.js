@@ -5,14 +5,21 @@ const https = require("https");
 const app = express();
 const port = process.env.PORT;
 const passport = require("passport");
+const cors = require("cors");
 const server = http.createServer(app);
 const socket = require("socket.io");
 // const passport = require("passport");
 
-/* const option = {
-  key:
-  cert:
-}; */
+// const whitelist = ["http://43.200.8.138", "https://localhost:3000"];
+// const corsOption = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not Allowed Origin"));
+//     }
+//   },
+// };
 
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
@@ -30,7 +37,6 @@ const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
 
-const cors = require("cors");
 //접속로그 남기기
 const requestMiddleware = (req, res, next) => {
   console.log(
