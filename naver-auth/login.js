@@ -42,7 +42,6 @@ module.exports = () => {
             accessToken: accessToken,
             userId: profile.id,
             provider: "naver",
-            type,
             profileImage,
             nickname,
             address,
