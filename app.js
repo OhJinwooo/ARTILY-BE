@@ -72,7 +72,7 @@ const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
 const { InMemorySessionStore } = require("./sessionStore");
 const sessionStore = new InMemorySessionStore();
-const io = new Server(server, {
+const io = socket(server, {
   cors: {
     origin: "http://localhost:3000",
     credentials: true,
