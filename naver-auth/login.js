@@ -35,7 +35,7 @@ module.exports = () => {
           let role = true;
           if (exUser) {
             console.log("로그인", exUser);
-            done(null, exUser);
+            return done(null, exUser);
           } else {
             const user = {
               userId: profile.id,
@@ -49,7 +49,7 @@ module.exports = () => {
             };
             await User.create(user);
 
-            done(null, user);
+            return done(null, user);
           }
         } catch {
           console.error(error);

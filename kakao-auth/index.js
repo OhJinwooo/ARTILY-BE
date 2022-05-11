@@ -32,7 +32,7 @@ module.exports = () => {
           let role = true;
           if (exUser) {
             console.log(99999999999, exUser);
-            done(null, exUser); // 로그인 인증 완료
+            return done(null, exUser); // 로그인 인증 완료
           } else {
             console.log("@@@@@@@@@@@@@@@@", process.env.KAKAOCLIENT_ID);
             const user = {
@@ -47,7 +47,7 @@ module.exports = () => {
             };
             // 가입되지 않는 유저면 회원가입 시키고 로그인을 시킨다
             await User.create(user);
-            done(null, user); // 회원가입하고 로그인 인증 완료
+            return done(null, user); // 회원가입하고 로그인 인증 완료
           }
         } catch (error) {
           console.error(error);
