@@ -21,13 +21,12 @@ const naverCallback = (req, res, next) => {
       token,
       userId,
       provider,
-      accessToken,
       profileImage,
       nickname,
       introduce,
       type,
     };
-    console.log(13121312312312, result);
+    console.log("result", result);
     res.send({ user: result });
   })(req, res, next);
 };
