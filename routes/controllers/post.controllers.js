@@ -69,14 +69,12 @@ const artStore = async (req, res) => {
       //infinite scroll 핸들링
       // 변수 선언 값이 정수로 표현
       let page = Math.max(1, parseInt(data.page));
-      console.log(data.page);
       let limit = Math.max(1, parseInt(data.limit));
       //NaN일때 값지정
       page = !isNaN(page) ? page : 1;
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log(skip);
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
@@ -198,7 +196,7 @@ const artPost = async (req, res) => {
     for (let i = 0; i < req.files.length; i++) {
       imageUrl.push(req.files[i].location);
     }
-    console.log(req.files);
+    // console.log(req.files);
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //uuid를 사용하여 고유 값생성
@@ -223,6 +221,10 @@ const artPost = async (req, res) => {
         postSize,
       });
       await artBrod.save();
+      await User.updateOne(
+        { userId: user.userId },
+        { $push: { myPost: postId } }
+      );
       res.status(200).json({
         respons: "success",
         msg: "판매글 생성 완료",
@@ -285,12 +287,11 @@ const artUpdate = async (req, res) => {
       });
 
       //여러장 이미지 저장
-      let imageUrl = new Array();
+      let imageUrl = new Array(img[0], imgSave);
       for (let i = 0; i < req.files.length; i++) {
         imageUrl.push(req.files[i].location);
       }
-      //기존 첫번째 imageUrl 및 수정하지 않은 이미지
-      imageUrl.push(img[0], imgSave);
+
       //업데이트
       await Post.updateOne(
         { postId },
@@ -324,52 +325,53 @@ const artUpdate = async (req, res) => {
 
 // 삭제(구현 완료)
 const artdelete = async (req, res) => {
-  try {
-    //파라미터 값
-    const postId = req.params.postId;
-    // user 정보 일치
-    const { user } = res.locals;
-    //해당 유저 비교 조건 변수
-    const postUser = await Post.findOne({ user, postId }).exec();
-    if (postUser) {
-      //이미지 URL 가져오기 위한 로직
-      const artPostimg = await Post.find({ postId });
-      const img = artPostimg[0].imageUrl;
-      // 복수의 이미지를 삭제 변수(array)
-      let deleteItems = [];
-      //imageUrl이 array이 때문에 접근하기 위한 for문
-      for (let i = 0; i < img.length; i++) {
-        // 추가하기 위한 코드(string으로 해야 접근 가능)
-        deleteItems.push({ Key: String(img[i].split("/")[3]) });
-      }
-      //삭제를 위한 변수
-      let params = {
-        //bucket 이름
-        Bucket: process.env.BUCKETNAME,
-        //delete를 위한 key값
-        Delete: {
-          Objects: deleteItems,
-          Quiet: false,
-        },
-      };
-      //복수의 delete를 위한 코드 변수(params를 받음)
-      s3.deleteObjects(params, function (err, data) {
-        if (err) console.log(err);
-        else console.log("Successfully deleted myBucket/myKey");
-      });
-      //delete
-      await Post.deleteOne({ postId, user });
-      res.status(200).send({
-        respons: "success",
-        msg: "삭제 완료",
-      });
+  // try {
+  //파라미터 값
+  const postId = req.params.postId;
+  // user 정보 일치
+  const { userId } = res.locals.user;
+  //해당 유저 비교 조건 변수
+  const postUser = await Post.findOne({ userId, postId }).exec();
+  if (postUser) {
+    //이미지 URL 가져오기 위한 로직
+    const artPostimg = await Post.find({ postId });
+    const img = artPostimg[0].imageUrl;
+    // 복수의 이미지를 삭제 변수(array)
+    let deleteItems = [];
+    //imageUrl이 array이 때문에 접근하기 위한 for문
+    for (let i = 0; i < img.length; i++) {
+      // 추가하기 위한 코드(string으로 해야 접근 가능)
+      deleteItems.push({ Key: String(img[i].split("/")[3]) });
     }
-  } catch (error) {
-    res.status(400).send({
-      respons: "fail",
-      msg: "삭제 실패",
+    //삭제를 위한 변수
+    let params = {
+      //bucket 이름
+      Bucket: process.env.BUCKETNAME,
+      //delete를 위한 key값
+      Delete: {
+        Objects: deleteItems,
+        Quiet: false,
+      },
+    };
+    //복수의 delete를 위한 코드 변수(params를 받음)
+    s3.deleteObjects(params, function (err, data) {
+      if (err) console.log(err);
+      else console.log("Successfully deleted myBucket/myKey");
+    });
+    //delete
+    await Post.deleteOne({ postId, userId });
+    await User.updateOne({ userId }, { $pull: { myPost: postId } });
+    res.status(200).send({
+      respons: "success",
+      msg: "삭제 완료",
     });
   }
+  // } catch (error) {
+  //   res.status(400).send({
+  //     respons: "fail",
+  //     msg: "삭제 실패",
+  //   });
+  // }
 };
 
 // 찜기능

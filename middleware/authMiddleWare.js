@@ -7,7 +7,9 @@ module.exports = (req, res, next) => {
 
   const { authorization } = req.headers;
   const [tokenType, tokenValue] = authorization.split(" ");
+  console.log("tokenType, tokenValue", tokenType, tokenValue);
   if (tokenType !== "Bearer") {
+    console.log("if", tokenType);
     res.status(401).send({
       errorMessage: "로그인 후 이용하세요!",
     });
@@ -15,6 +17,7 @@ module.exports = (req, res, next) => {
   }
   try {
     const { userId } = jwt.verify(tokenValue, process.env.JWTSECRETKEY);
+    console.log("userId", userId);
     User.findOne({ userId })
       .exec()
       .then((user) => {
@@ -22,6 +25,7 @@ module.exports = (req, res, next) => {
         next();
       });
   } catch (error) {
+    console.log(error);
     res.status(401).send({
       errorMessage: "로그인 후 이용하세요.",
     });

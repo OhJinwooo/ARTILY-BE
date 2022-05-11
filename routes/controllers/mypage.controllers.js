@@ -37,7 +37,6 @@ const postProfile = async (req, res) => {
           }
         }
       );
-      console.log(123);
       await User.updateOne(
         {
           userId,
@@ -79,11 +78,9 @@ const postProfile = async (req, res) => {
 
 // 프로필 조회
 const getProfile = async (req, res) => {
-  console.log(123);
   const { userId } = req.params;
   console.log(res.locals.user);
   try {
-    console.log("try");
     const myprofile = await User.findOne(
       { userId },
       "userId nickname profileImage introduce followCnt followerCnt follow follower myPost myMarkup myReview myBuy snsUrl"
@@ -92,11 +89,11 @@ const getProfile = async (req, res) => {
     const mypost = myprofile.myPost;
     const myPost = await Post.find(
       { postId: mypost },
-      "postId imageUrl postTitle done"
+      "postId imageUrl postTitle price done markupCnt"
     );
     const myreview = myprofile.myReview;
     const myReview = await Review.find(
-      { postId: myreview },
+      { reviewId: myreview },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
     );
 
@@ -106,7 +103,6 @@ const getProfile = async (req, res) => {
       "postId imageUrl postTitle price done markupCnt"
     );
 
-    console.log("더미", myPost, myReview, myMarkup);
     res.status(200).json({ myprofile, myPost, myReview, myMarkup });
   } catch (err) {
     res.send(err);
@@ -123,8 +119,6 @@ const updateProfile = async (req, res) => {
   try {
     const photo = await User.findOne({ userId });
     const url = photo.profileImage.split("/");
-    console.log("profileImage", profileImage);
-    console.log("url", url);
     const delFileName = url[url.length - 1];
 
     if (photo.profileImage) {
@@ -140,7 +134,6 @@ const updateProfile = async (req, res) => {
           }
         }
       );
-      console.log(123);
       await User.updateOne(
         {
           userId,
@@ -152,6 +145,29 @@ const updateProfile = async (req, res) => {
             address,
             introduce,
             snsUrl,
+          },
+        }
+      );
+      await Post.updateMany(
+        {
+          "user.userId": userId,
+        },
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+          },
+        }
+      );
+
+      await Review.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
           },
         }
       );
@@ -171,6 +187,29 @@ const updateProfile = async (req, res) => {
           },
         }
       );
+      await Post.updateMany(
+        {
+          "user.userId": userId,
+        },
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+          },
+        }
+      );
+
+      await Review.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
     }
     res.status(201).json({ success: true });
   } catch (error) {
@@ -180,31 +219,27 @@ const updateProfile = async (req, res) => {
 
 //판매 작품 관리하기
 const getMyPost = async (req, res) => {
-  // try {
-  const { user } = res.locals;
-  // console.log(user);
-  const userId = user.userId;
-  const mypost = await User.find({ userId });
-  const Mypost = mypost.myPost;
-  console.log("mypost", Mypost);
-  // const mypost = await Post.find({ postId: "41ddbf16a19c" }, "price");
-  // const mypost = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
-  const myPost = await Post.find(
-    { postId: Mypost },
-    "postId postTitle price done markupCnt imageUrl markupCnt"
-  );
-  console.log(mypost);
-  res.status(200).json({ myPost });
-  // } catch (err) {
-  //   res.status(400).send("조회 실패");
-  // }
+  try {
+    console.log(123123123);
+    const { userId } = res.locals.user;
+    const mypost = await User.findOne({ userId });
+    const Mypost = mypost.myPost;
+    const myPost = await Post.find(
+      { postId: Mypost },
+      "postId postTitle price done imageUrl markupCnt"
+    );
+    console.log("mypost", myPost);
+    res.status(200).json({ myPost });
+  } catch (err) {
+    res.status(400).send("조회 실패");
+  }
 };
 
 //내가 구입한 상품
 const getMyBuy = async (req, res) => {
   try {
     const { user } = res.locals;
-    console.log(user);
+    // console.log(user);
     const userId = user.userId;
     const mybuy = await User.find({ userId });
     const Mybuy = mybuy.myBuy;
@@ -212,8 +247,9 @@ const getMyBuy = async (req, res) => {
     // const mybuy = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
     const myBuy = await Post.find(
       { postId: Mybuy },
-      "postId postTitle nickname imageUrl"
+      "postId postTitle user.nickname imageUrl"
     );
+    console.log("myBuy", myBuy);
     res.status(200).json({ myBuy });
   } catch (err) {
     res.status(400).send("조회 실패");
