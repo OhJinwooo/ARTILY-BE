@@ -67,20 +67,22 @@ app.use("/api", [
 ]);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+const Chat = require("./schemas/chat.schemas");
 const crypto = require("crypto");
 const randomId = () => crypto.randomBytes(8).toString("hex");
 const { InMemorySessionStore } = require("./sessionStore");
 const sessionStore = new InMemorySessionStore();
-const io = socket(server, {
+const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
     credentials: true,
   },
 });
+
 io.use((socket, next) => {
   const sessionID = socket.handshake.auth.sessionID;
   const userInfo = socket.handshake.auth.userInfo;
-  console.log("use부분", sessionID, userInfo.profileImage); // tnwjd
+  console.log("use부분", sessionID, userInfo); // tnwjd
   if (sessionID) {
     // 어딘가의 저장소에서 찾고있음
     const session = sessionStore.findSession(userInfo.userId);
