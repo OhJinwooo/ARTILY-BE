@@ -53,6 +53,7 @@ module.exports = () => {
           }
         } catch {
           console.error(error);
+          done(error);
         }
       }
     )
