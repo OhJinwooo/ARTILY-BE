@@ -29,9 +29,9 @@ router.patch(
   updateProfile
 );
 //판매 작품 관리하기
-router.get("/profile/mypost", middleware, getMyPost);
+router.get("/mypost", middleware, getMyPost);
 
 //내가 구입한 상품
-router.get("/profile/mybuy", middleware, getMyBuy);
+router.get("/mybuy", middleware, getMyBuy);
 
 module.exports = router;
