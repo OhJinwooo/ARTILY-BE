@@ -69,14 +69,12 @@ const artStore = async (req, res) => {
       //infinite scroll 핸들링
       // 변수 선언 값이 정수로 표현
       let page = Math.max(1, parseInt(data.page));
-      console.log(data.page);
       let limit = Math.max(1, parseInt(data.limit));
       //NaN일때 값지정
       page = !isNaN(page) ? page : 1;
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log(skip);
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
@@ -285,12 +283,11 @@ const artUpdate = async (req, res) => {
       });
 
       //여러장 이미지 저장
-      let imageUrl = new Array();
+      let imageUrl = new Array(img[0],imgSave);
       for (let i = 0; i < req.files.length; i++) {
         imageUrl.push(req.files[i].location);
-      }
-      //기존 첫번째 imageUrl 및 수정하지 않은 이미지
-      imageUrl.push(img[0], imgSave);
+      };
+    
       //업데이트
       await Post.updateOne(
         { postId },
