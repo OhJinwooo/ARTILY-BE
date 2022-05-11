@@ -106,7 +106,7 @@ const review_write = async (req, res) => {
       reviewContent,
       createdAt,
     });
-    //res.send({ result: "success", ReviewList });
+    await User.updateOne({ userId }, { $push: { myReview: reviewId } });
     res.status(200).json({
       respons: "success",
       ReviewList,
@@ -184,6 +184,7 @@ const review_modify = async (req, res) => {
 //리뷰 삭제
 const review_delete = async (req, res) => {
   const { reviewId } = req.params;
+  const { userId } = res.locals.user;
   try {
     // 이미지 URL 가져오기 위한 로직
     const photo = await Review.find({ reviewId });
@@ -217,6 +218,7 @@ const review_delete = async (req, res) => {
     });
     //delete
     await Review.deleteOne({ reviewId });
+    await User.updateOne({ userId }, { $pull: { myReview: reviewId } });
     res.status(200).send({
       respons: "success",
       msg: "삭제 완료",
