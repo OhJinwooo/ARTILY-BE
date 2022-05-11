@@ -123,8 +123,6 @@ const updateProfile = async (req, res) => {
   try {
     const photo = await User.findOne({ userId });
     const url = photo.profileImage.split("/");
-    console.log("profileImage", profileImage);
-    console.log("url", url);
     const delFileName = url[url.length - 1];
 
     if (photo.profileImage) {
@@ -155,6 +153,29 @@ const updateProfile = async (req, res) => {
           },
         }
       );
+      await Post.updateMany(
+        {
+          "user.userId": userId,
+        },
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+          },
+        }
+      );
+
+      await Review.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
     } else {
       console.log("이미지 없음");
       await User.updateOne(
@@ -168,6 +189,29 @@ const updateProfile = async (req, res) => {
             address,
             introduce,
             snsUrl,
+          },
+        }
+      );
+      await Post.updateMany(
+        {
+          "user.userId": userId,
+        },
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+          },
+        }
+      );
+
+      await Review.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
           },
         }
       );
@@ -204,7 +248,7 @@ const getMyPost = async (req, res) => {
 const getMyBuy = async (req, res) => {
   try {
     const { user } = res.locals;
-    console.log(user);
+    // console.log(user);
     const userId = user.userId;
     const mybuy = await User.find({ userId });
     const Mybuy = mybuy.myBuy;
