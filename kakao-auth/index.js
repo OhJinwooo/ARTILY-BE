@@ -35,8 +35,6 @@ module.exports = () => {
           } else {
             console.log("@@@@@@@@@@@@@@@@", process.env.KAKAOCLIENT_ID);
             const user = {
-              accessToken: accessToken,
-              refreshToken: refreshToken,
               userId: profile.id,
               provider: "kakao",
               profileImage,

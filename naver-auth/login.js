@@ -38,8 +38,6 @@ module.exports = () => {
             done(null, exUser);
           } else {
             const user = {
-              refreshToken: refreshToken,
-              accessToken: accessToken,
               userId: profile.id,
               provider: "naver",
               profileImage,
