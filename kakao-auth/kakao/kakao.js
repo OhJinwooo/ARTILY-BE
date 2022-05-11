@@ -26,7 +26,7 @@ const kakaoCallback = (req, res, next) => {
       introduce,
       type,
     };
-    console.log(1, result);
+    console.log("result", result);
     res.send({ user: result });
   })(req, res, next);
 };
