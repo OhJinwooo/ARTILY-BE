@@ -92,11 +92,11 @@ const getProfile = async (req, res) => {
     const mypost = myprofile.myPost;
     const myPost = await Post.find(
       { postId: mypost },
-      "postId imageUrl postTitle done"
+      "postId imageUrl postTitle price done markupCnt"
     );
     const myreview = myprofile.myReview;
     const myReview = await Review.find(
-      { postId: myreview },
+      { reviewId: myreview },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
     );
 
@@ -106,7 +106,6 @@ const getProfile = async (req, res) => {
       "postId imageUrl postTitle price done markupCnt"
     );
 
-    console.log("더미", myPost, myReview, myMarkup);
     res.status(200).json({ myprofile, myPost, myReview, myMarkup });
   } catch (err) {
     res.send(err);
