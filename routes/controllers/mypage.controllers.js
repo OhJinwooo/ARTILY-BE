@@ -237,23 +237,23 @@ const getMyPost = async (req, res) => {
 
 //내가 구입한 상품
 const getMyBuy = async (req, res) => {
-  // try {
-  const { user } = res.locals;
-  // console.log(user);
-  const userId = user.userId;
-  const mybuy = await User.find({ userId });
-  const Mybuy = mybuy.myBuy;
+  try {
+    const { user } = res.locals;
+    // console.log(user);
+    const userId = user.userId;
+    const mybuy = await User.find({ userId });
+    const Mybuy = mybuy.myBuy;
 
-  // const mybuy = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
-  const myBuy = await Post.find(
-    { postId: Mybuy },
-    "postId postTitle user.nickname imageUrl"
-  );
-  console.log("myBuy", myBuy);
-  res.status(200).json({ myBuy });
-  // } catch (err) {
-  //   res.status(400).send("조회 실패");
-  // }
+    // const mybuy = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const myBuy = await Post.find(
+      { postId: Mybuy },
+      "postId postTitle user.nickname imageUrl"
+    );
+    console.log("myBuy", myBuy);
+    res.status(200).json({ myBuy });
+  } catch (err) {
+    res.status(400).send("조회 실패");
+  }
 };
 
 module.exports = {
