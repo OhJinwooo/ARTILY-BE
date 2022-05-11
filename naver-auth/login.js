@@ -48,7 +48,6 @@ module.exports = () => {
               role,
             };
             await User.create(user);
-
             return done(null, user);
           }
         } catch {
