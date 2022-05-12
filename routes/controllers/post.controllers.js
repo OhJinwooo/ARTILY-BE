@@ -271,7 +271,7 @@ const artUpdate = async (req, res) => {
         //key값을 string으로 지정
         deleteItems.push({ Key: String(img[i].split("/")[3]) });
       }
-      // 첫번째 값 삭제
+      // 첫번째 값 삭제..
       deleteItems.shift();
       deleteItems.filter((c) => {
         if(imgSave !== undefined && imgSave === []){ 
