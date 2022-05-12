@@ -102,24 +102,24 @@ const credentials = {
   ca: ca,
 };
 
-// HTTP 리다이렉션 하기
-// app_low : http전용 미들웨어
-app_low.use((req, res, next) => {
-  if (req.secure) {
-    next();
-  } else {
-    const to = `https://${req.hostname}:${httpsPort}${req.url}`;
-    console.log(to);
-    res.redirect(to);
-  }
-});
-
-// http: server.listen(port, () => {
-//   console.log(port, "서버가 연결되었습니다.");
+//HTTP 리다이렉션 하기
+//app_low : http전용 미들웨어
+// app_low.use((req, res, next) => {
+//   if (req.secure) {
+//     next();
+//   } else {
+//     const to = `https://${req.hostname}:${httpsPort}${req.url}`;
+//     console.log(to);
+//     res.redirect(to);
+//   }
 // });
-http.createServer(app_low).listen(httpPort, () => {
-  console.log("http " + httpPort + " server start");
+
+http: server.listen(httpPort, () => {
+  console.log(httpPort, "서버가 연결되었습니다.");
 });
-https.createServer(credentials, app).listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start");
-});
+// http.createServer(app_low).listen(httpPort, () => {
+//   console.log("http " + httpPort + " server start");
+// });
+// https.createServer(credentials, app).listen(httpsPort, () => {
+//   console.log("https " + httpsPort + " server start");
+// });
