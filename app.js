@@ -7,24 +7,18 @@ const app = express();
 const app_low = express(); //http
 const httpsPort = process.env.HTTPSPORT;
 const httpPort = process.env.PORT;
-const passport = require("passport");
 const server = http.createServer(app);
-const socket = require("socket.io");
-// const passport = require("passport");
-
+const socket = require("./socket");
 /* const option = {
   key:
   cert:
 }; */
-
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
 const naverRouter = require("./naver-auth/naver/naver");
 const passportNaver = require("./naver-auth/login");
 const { swaggerUi, specs } = require("./swagger/swagger");
-
 const connect = require("./schemas/index.schemas");
-
 const postRouter = require("./routes/post.router");
 const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
@@ -32,34 +26,29 @@ const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
-
 const cors = require("cors");
 //접속로그 남기기
-const requestMiddleware = (req, res, next) => {
-  console.log(
-    "ip:",
-    req.ip,
-    "domain:",
-    req.rawHeaders[1],
-    "method:",
-    req.method,
-    "Request URL:",
-    req.originalUrl,
-    "-",
-    new Date()
-  );
-  next();
-};
-
+// const requestMiddleware = (req, res, next) => {
+//   console.log(
+//     "ip:",
+//     req.ip,
+//     "domain:",
+//     req.rawHeaders[1],
+//     "method:",
+//     req.method,
+//     "Request URL:",
+//     req.originalUrl,
+//     "-",
+//     new Date()
+//   );
+//   next();
+// };
 passportNaver();
 passportKakao();
 connect();
-
-// app.use(passport.initialize());
-// app.use(passport.session());
 app.use(cors());
 app.use(express.json());
-app.use(requestMiddleware);
+// app.use(requestMiddleware);
 app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [
   userRouter,
@@ -70,38 +59,16 @@ app.use("/api", [
   postRouter,
   followRouter,
 ]);
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-
-const io = socket(server, {
-  cors: {
-    origin: process.env.CORSPORT,
-    credentials: true,
-  },
-});
-
-io.on("connection", (socket) => {
-  const users = [];
-  for (let [id, socket] of io.of("/").sockets) {
-    users.push({
-      userID: id,
-      username: socket.username,
-    });
-  }
-  socket.emit("users", users);
-  // ...
-});
-
 // 인증서 파트
-const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
-const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
-const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
-const credentials = {
-  key: privateKey,
-  cert: certificate,
-  ca: ca,
-};
-
+// const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
+// const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
+// const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
+// const credentials = {
+//   key: privateKey,
+//   cert: certificate,
+//   ca: ca,
+// };
 // HTTP 리다이렉션 하기
 // app_low : http전용 미들웨어
 app_low.use((req, res, next) => {
@@ -113,13 +80,16 @@ app_low.use((req, res, next) => {
     res.redirect(to);
   }
 });
-
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
 // });
-http.createServer(app_low).listen(httpPort, () => {
+// http.createServer(app_low).listen(httpPort, () => {
+//   console.log("http " + httpPort + " server start");
+// });
+// https.createServer(credentials, app).listen(httpsPort, () => {
+//   console.log("https " + httpsPort + " server start");
+// });
+// socket(server);
+server.listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
-});
-https.createServer(credentials, app).listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start");
 });
