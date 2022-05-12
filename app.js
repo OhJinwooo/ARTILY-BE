@@ -43,9 +43,17 @@ const cors = require("cors");
 //   );
 //   next();
 // };
+<<<<<<< HEAD
 passportNaver();
 passportKakao();
 connect();
+=======
+
+passportNaver();
+passportKakao();
+connect();
+
+>>>>>>> 71a4aa92f2a1b4176a1dc401dcaa353acbe0fca0
 app.use(cors());
 app.use(express.json());
 // app.use(requestMiddleware);
@@ -60,6 +68,10 @@ app.use("/api", [
   followRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 71a4aa92f2a1b4176a1dc401dcaa353acbe0fca0
 // 인증서 파트
 // const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
 // const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
@@ -69,6 +81,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 //   cert: certificate,
 //   ca: ca,
 // };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 71a4aa92f2a1b4176a1dc401dcaa353acbe0fca0
 // HTTP 리다이렉션 하기
 // app_low : http전용 미들웨어
 app_low.use((req, res, next) => {
@@ -89,7 +105,16 @@ app_low.use((req, res, next) => {
 // https.createServer(credentials, app).listen(httpsPort, () => {
 //   console.log("https " + httpsPort + " server start");
 // });
+<<<<<<< HEAD
 // socket(server);
 server.listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
 });
+=======
+
+socket(server);
+
+server.listen(httpPort, () => {
+  console.log("http " + httpPort + " server start");
+});
+>>>>>>> 71a4aa92f2a1b4176a1dc401dcaa353acbe0fca0
