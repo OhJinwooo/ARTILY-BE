@@ -3,7 +3,7 @@ const ChatSchema = new mongoose.Schema({
   roomName: {
     type: String,
   },
-  from: {
+  target: {
     type: String,
   },
   to: {
