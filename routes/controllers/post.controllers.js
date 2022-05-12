@@ -257,11 +257,13 @@ const artUpdate = async (req, res) => {
     } = req.body;
     const userPost = await Post.findOne({ userId, postId }).exec();
     if (userPost) {
+      console.log('여기는 왔니?')
       //moment를 이용하여 한국시간으로 날짜생성
       const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
       //이미지 수정
       const artPostimg = await Post.find({ postId });
       const img = artPostimg[0].imageUrl;
+      console.log('img',img)
       //key 값을 저장 array
       let deleteItems = [];
       //key값 추출위한 for문
@@ -271,7 +273,17 @@ const artUpdate = async (req, res) => {
       }
       // 첫번째 값 삭제
       deleteItems.shift();
-      deleteItems.filter((i) => i !== imgSave);
+      deleteItems.filter((c) => {
+        if(imgSave !== undefined && imgSave === []){ 
+          for(let i =0; i<imgSave.leng; i++){
+          c.Key !== imgSave[i].split('/')[3];
+        };
+      }
+      else{
+        c.Key !== imgSave.split('/')[3]
+      }
+      });
+      console.log("delete", deleteItems)
       // s3 delete를 위한 option
       let params = {
         Bucket: process.env.BUCKETNAME,
@@ -287,10 +299,28 @@ const artUpdate = async (req, res) => {
       });
 
       //여러장 이미지 저장
-      let imageUrl = new Array(img[0], imgSave);
-      for (let i = 0; i < req.files.length; i++) {
-        imageUrl.push(req.files[i].location);
+      let imageUrl = Array() ;
+      
+      if(imgSave !== undefined && imgSave === []){
+        imageUrl.push(img[0])
+        for(let i = 0; i < imgSave.length; i++){
+          imageUrl.push(imgSave[i])
+        };
+      }else if(imgSave !== undefined){
+        imageUrl.push(imgSave)
       }
+      if(imgSave === undefined){
+        for(let i=0; i<img.length; i++){
+          imageUrl.push(img[i])
+        };
+      };
+      console.log(imageUrl)
+      for (let i = 0; i < req.files.length; i++) {
+        imageUrl.push (req.files[i].location)
+      }
+      
+      
+      console.log('imageUrl',imageUrl)
 
       //업데이트
       await Post.updateOne(
