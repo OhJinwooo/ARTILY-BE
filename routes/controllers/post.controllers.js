@@ -244,6 +244,7 @@ const artUpdate = async (req, res) => {
     const { userId } = res.locals.user;
     //수정할 파라미터 값
     const { postId } = req.params;
+    console.log(postId)
     //바디로 받을 데이터
     const {
       postTitle,
@@ -257,6 +258,7 @@ const artUpdate = async (req, res) => {
     } = req.body;
     const userPost = await Post.findOne({ userId, postId }).exec();
     if (userPost) {
+      
       //moment를 이용하여 한국시간으로 날짜생성
       const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
       //이미지 수정
@@ -265,13 +267,27 @@ const artUpdate = async (req, res) => {
       //key 값을 저장 array
       let deleteItems = [];
       //key값 추출위한 for문
-      for (let i = 0; i < img.length; i++) {
+    //imgSave 값이 있을때 만 delete
+     if(imgSave){ 
+       for (let i = 0; i < img.length; i++) {
         //key값을 string으로 지정
         deleteItems.push({ Key: String(img[i].split("/")[3]) });
       }
-      // 첫번째 값 삭제
+      // 첫번째 값 제외 삭제..
       deleteItems.shift();
-      deleteItems.filter((i) => i !== imgSave);
+        //imgSave 제외
+      deleteItems.filter((c) => {
+        if(Array.isArray(imgSave) && imgSave.length > 0){ 
+          console.log("여기요")
+          for(let i =0; i<imgSave.leng; i++){
+          c.Key !== imgSave[i].split('/')[3];
+        };
+      }
+      else{
+        c.Key !== imgSave.split('/')[3]
+      }
+      });
+      console.log("delete", deleteItems)
       // s3 delete를 위한 option
       let params = {
         Bucket: process.env.BUCKETNAME,
@@ -285,12 +301,35 @@ const artUpdate = async (req, res) => {
         if (err) console.log(err);
         else console.log("Successfully deleted myBucket/myKey");
       });
-
+        };
+        console.log('여러장 저장')
       //여러장 이미지 저장
-      let imageUrl = new Array(img[0], imgSave);
-      for (let i = 0; i < req.files.length; i++) {
-        imageUrl.push(req.files[i].location);
+      let imageUrl = Array() ;
+      //imgSave 여러개 일때
+      if(Array.isArray(imgSave) && imgSave.length > 0){
+        imageUrl.push(img[0])
+        for(let i = 0; i < imgSave.length; i++){
+          imageUrl.push(imgSave[i])
+        };
       }
+      //단일 
+      else if(imgSave !== undefined){
+        imageUrl.push(img[0])
+        imageUrl.push(imgSave)
+      }
+      //추가만할 경우
+      if(imgSave === undefined){
+        for(let i=0; i<img.length; i++){
+          imageUrl.push(img[i])
+        };
+      };
+      console.log("saveimg",imageUrl)
+      for (let i = 0; i < req.files.length; i++) {
+        imageUrl.push (req.files[i].location)
+      }
+      
+      
+      console.log('imageUrl',imageUrl)
 
       //업데이트
       await Post.updateOne(
@@ -326,10 +365,9 @@ const artUpdate = async (req, res) => {
 // 삭제(구현 완료)
 const artdelete = async (req, res) => {
   // try {
-  //파라미터 값
-  const postId = req.params.postId;
-  // user 정보 일치
-  const { userId } = res.locals.user;
+    const { userId } = res.locals.user;
+    //수정할 파라미터 값
+    const { postId } = req.params;
   //해당 유저 비교 조건 변수
   const postUser = await Post.findOne({ userId, postId }).exec();
   if (postUser) {
