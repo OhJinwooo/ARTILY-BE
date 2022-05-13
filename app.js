@@ -29,7 +29,7 @@ const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
-
+const chatRouter = require("./routes/chat.router");
 const cors = require("cors");
 //접속로그 남기기
 // const requestMiddleware = (req, res, next) => {
@@ -64,6 +64,7 @@ app.use("/api", [
   blackListRouter,
   postRouter,
   followRouter,
+  chatRouter,
 ]);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
@@ -80,15 +81,15 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // HTTP 리다이렉션 하기
 // app_low : http전용 미들웨어
-app_low.use((req, res, next) => {
-  if (req.secure) {
-    next();
-  } else {
-    const to = `https://${req.hostname}:${httpsPort}${req.url}`;
-    console.log(to);
-    res.redirect(to);
-  }
-});
+// app_low.use((req, res, next) => {
+//   if (req.secure) {
+//     next();
+//   } else {
+//     const to = `https://${req.hostname}:${httpsPort}${req.url}`;
+//     console.log(to);
+//     res.redirect(to);
+//   }
+// });
 
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
