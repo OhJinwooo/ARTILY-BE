@@ -3,17 +3,17 @@ const ChatSchema = new mongoose.Schema({
   roomName: {
     type: String,
   },
-  from: {
-    type: String,
+  post: {
+    type: Object,
   },
-  to: {
-    type: String,
+  CreateUser: {
+    type: Object,
+  },
+  TargetUser: {
+    type: Object,
   },
   message: {
-    type: String,
-  },
-  time: {
-    type: String,
+    type: Array,
   },
 });
 module.exports = mongoose.model("Chat", ChatSchema);
