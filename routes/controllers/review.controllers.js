@@ -13,7 +13,7 @@ const uuid = () => {
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
-    const data = req.body;
+    const data = req.params;
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
     let page = Math.max(1, parseInt(data.page));
@@ -21,7 +21,7 @@ const review = async (req, res) => {
     //NaN일때 값지정 ??
     page = !isNaN(page) ? page : 1;
     limit = !isNaN(limit) ? limit : 6;
-    //제외할 데이터 지정
+    //제외할 데이터 지정 //다음 페이지 시작점
     let skip = (page - 1) * limit;
     let review = await Review.find({})
       .sort("-createdAt")
@@ -64,13 +64,9 @@ const review_detail = async (req, res) => {
 const review_write = async (req, res) => {
   // middlewares유저정보 가져오기
   const { user } = res.locals;
-  //console.log("user", user);
   const userId = user.userId;
-  //console.log("userId", userId);
   const nickname = user.nickname;
-  //console.log("nickname", nickname);
   const profileImage = user.profileImage;
-  //console.log("profileImage", profileImage);
   const { postId } = req.params;
   let seller = await Post.findOne(
     { postId },
@@ -79,8 +75,8 @@ const review_write = async (req, res) => {
 
   console.log("ss", seller);
   //작성한 정보 가져옴
-  const { category, reviewTitle, reviewContent } = req.body;
-  console.log(category, reviewTitle, reviewContent); //ok
+  const { reviewTitle, reviewContent } = req.body;
+  console.log(reviewTitle, reviewContent); //ok
   // 이미지에서 location정보만 저장해줌
   let imageUrl = new Array();
   for (let i = 0; i < req.files.length; i++) {
@@ -97,7 +93,6 @@ const review_write = async (req, res) => {
     const ReviewList = await Review.create({
       reviewId,
       seller,
-      category,
       userId,
       nickname,
       profileImage,
@@ -119,8 +114,10 @@ const review_write = async (req, res) => {
 //리뷰 수정
 const review_modify = async (req, res) => {
   try {
+    //수정할 reviewID 파라미터로 받음
     const { reviewId } = req.params;
-    const { category, reviewTitle, reviewContent } = req.body;
+    //수정할 값 body로 받음
+    const { reviewTitle, reviewContent, imgSave } = req.body;
     //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
     if (!reviewContent.length) {
       res.status(401).send({ msg: "게시글 내용을 입력해주세요." });
@@ -128,52 +125,86 @@ const review_modify = async (req, res) => {
     }
     // 이미지 수정
     const photo = await Review.find({ reviewId }); // 현재 URL에 전달된 id값을 받아서 db찾음
-    console.log("photo", photo); //ok
     const img = photo[0].imageUrl;
-    console.log("img", img);
     //key 값을 저장 array
     let deleteItems = [];
     //key값 추출위한 for문
-    for (let i = 0; i < img.length; i++) {
-      //key값을 string으로 지정
-      deleteItems.push({ Key: String(img[i].split("/")[3]) });
+    // imgSave 값이 있을때만 delete
+    if (imgSave) {
+      for (let i = 0; i < img.length; i++) {
+        //key값을 string으로 지정
+        deleteItems.push({ Key: String(img[i].split("/")[3]) });
+      }
+      // 첫번쨰값 제외하고 삭제함
+      deleteItems.shift();
+      //imgSave 제외
+      deleteItems.filter((c) => {
+        if (Array.isArray(imgSave) && imgSave.length > 0) {
+          console.log("여기요");
+          for (let i = 0; i < imgSave.length; i++) {
+            c.Key !== imgSave[i].split("/")[3];
+          }
+        } else {
+          c.Key !== imgSave.split("/")[3];
+        }
+      });
+      console.log("delete", deleteItems);
+      // s3 delete를 위한 option
+      let params = {
+        Bucket: process.env.BUCKETNAME,
+        Delete: {
+          Objects: deleteItems,
+          Quiet: false,
+        },
+      };
+      //option을 참조 하여 delete 실행
+      s3.deleteObjects(params, function (err, data) {
+        if (err) console.log(err);
+        else console.log("Successfully deleted myBucket/myKey");
+      });
     }
-    // s3 delete를 위한 option
-    let params = {
-      Bucket: process.env.BUCKETNAME,
-      Delete: {
-        Objects: deleteItems,
-        Quiet: false,
-      },
-    };
-    //option을 참조 하여 delete 실행
-    s3.deleteObjects(params, function (err, data) {
-      if (err) console.log(err);
-      else console.log("Successfully deleted myBucket/myKey");
-    });
     //여러장 이미지 저장
     let imageUrl = new Array();
+    //imgSave 여러개 일때
+    if (Array.isArray(imgSave) && imgSave.length > 0) {
+      imageUrl.push(img[0]);
+      for (let i = 0; i < imgSave.length; i++) {
+        imageUrl.push(imgSave[i]);
+      }
+    }
+    // 단일
+    else if (imgSave !== undefined) {
+      imageUrl.push(img[0]);
+      imageUrl.push(imgSave);
+    }
+    //추가만 할 경우
+    if (imgSave === undefined) {
+      for (let i = 0; i < img.length; i++) {
+        imageUrl.push(img[i]);
+      }
+    }
+    console.log("saving", imageUrl);
     for (let i = 0; i < req.files.length; i++) {
       imageUrl.push(req.files[i].location);
     }
-    if (reviewId) {
-      //업데이트
-      await Review.updateOne(
-        { reviewId },
-        {
-          $set: {
-            category,
-            reviewTitle,
-            reviewContent,
-            imageUrl,
-          },
-        }
-      );
-      res.status(200).send({
-        respons: "success",
-        msg: "수정 완료",
-      });
-    }
+
+    console.log("imageUrl", imageUrl);
+
+    //업데이트
+    await Review.updateOne(
+      { reviewId },
+      {
+        $set: {
+          reviewTitle,
+          reviewContent,
+          imageUrl,
+        },
+      }
+    );
+    res.status(200).send({
+      respons: "success",
+      msg: "수정 완료",
+    });
   } catch (error) {
     res.status(400).send({
       respons: "fail",
