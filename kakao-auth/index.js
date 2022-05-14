@@ -44,7 +44,7 @@ module.exports = () => {
           }
         } catch (error) {
           console.error(error);
-          done(error);
+          return done(error);
         }
       }
     )
