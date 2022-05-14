@@ -2,6 +2,7 @@ require("dotenv").config();
 const Post = require("../../schemas/post.schemas");
 const Review = require("../../schemas/review.schemas");
 const User = require("../../schemas/user.schemas");
+const MarkUp = require("../../schemas/markUp.schemas");
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -383,13 +384,10 @@ const markupCnt = async (req, res) => {
     console.log("userPost", userPost);
     if (userId !== userPost.uesr) {
       // 갇은 post에 찜했는 지 확인
-      const Cnt = await User.findOne({ userId, myMarkup: postId });
+      const Cnt = await MarkUp.findOne({ userId, postId });
       if (Cnt === null) {
         // 생성 로직
-        await User.findOneAndUpdate(
-          { userId },
-          { $push: { myMarkup: postId } }
-        );
+        await MarkUp.create({ userId, postId });
         await Post.findOneAndUpdate({ postId }, { $inc: { markupCnt: +1 } });
         // 해당 post 에 찜개수
         res.status(200).json({
@@ -398,7 +396,7 @@ const markupCnt = async (req, res) => {
         });
       } else {
         // 있을 시 삭제
-        await User.updateOne({ userId }, { $pull: { myMarkup: postId } });
+        await MarkUp.deleteOne({ userId, postId });
         await Post.updateOne({ postId }, { $inc: { markupCnt: -1 } });
         //개수
         res.status(200).json({

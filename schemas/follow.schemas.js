@@ -1,11 +1,17 @@
 const mongoose = require("mongoose");
 
 const followSchema = new mongoose.Schema({
-  myuserId: {
+  userId: {
     type: String,
   },
   followId: {
-    type: Array,
+    type: String,
+  },
+  followName: {
+    type: String,
+  },
+  profileImage: {
+    type: String,
   },
 });
 
