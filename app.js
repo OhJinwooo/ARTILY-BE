@@ -86,8 +86,12 @@ app_low.use((req, res, next) => {
     res.redirect(to);
   }
 });
+
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
+// });
+// server.listen(httpPort, () => {
+//   console.log("http " + httpPort + " server start");
 // });
 http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
@@ -95,7 +99,3 @@ http.createServer(app_low).listen(httpPort, () => {
 https.createServer(credentials, app).listen(httpsPort, () => {
   console.log("https " + httpsPort + " server start");
 });
-
-// server.listen(httpPort, () => {
-//   console.log("http " + httpPort + " server start");
-// });
