@@ -7,7 +7,6 @@ const PostImage = require("../../schemas/postImage.schemas");
 const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const s3 = require("../config/s3");
-const { post } = require("../mypage.router");
 
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
