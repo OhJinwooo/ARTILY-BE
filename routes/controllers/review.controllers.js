@@ -38,7 +38,7 @@ const review = async (req, res) => {
     for (let review of reviews) {
       const images = await ReviewImages.findOne({ reviewId: review.reviewId });
       console.log("images", images);
-      reviews.imageUrl = images;
+      review.imageUrl = images;
     }
     res.json({ reviews });
   } catch (err) {
