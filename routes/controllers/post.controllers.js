@@ -29,7 +29,7 @@ const getHome = async (req, res) => {
       .sort("-markupCnt")
       .limit(4);
     for(let i of bestPost){
-      const imges = await postImg.findOne({postId:bestPost.postId});
+      const imges = await postImg.findOne({postId:i.postId});
       i.imageUrl = imges
     }
     const bestWriter = [];
@@ -43,7 +43,7 @@ const getHome = async (req, res) => {
       .sort("-Likecount")
       .limit(4);
       for(let i of bestReview){
-        const imges = await reviewImg.findOne({reviewId:bestReview.reviewId});
+        const imges = await reviewImg.findOne({reviewId:i.reviewId});
         i.imageUrl = imges
       }
     res.status(200).json({
@@ -95,7 +95,7 @@ const artStore = async (req, res) => {
         .skip(skip)
         .limit(limit);
       for(let i of artPost){
-        const img = await postImg.findOne({postId:artPost.postId});
+        const img = await postImg.findOne({postId:i.postId});
         i.imageUrl = img
       }
       res.status(200).json({
@@ -134,7 +134,7 @@ const artStore = async (req, res) => {
       //search and filter = option
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
       for(let i of artPost){
-        const img = await postImg.findOne({postId:artPost.postId});
+        const img = await postImg.findOne({postId:i.postId});
         i.imageUrl = img
       }
       res.status(200).json({
