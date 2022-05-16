@@ -11,6 +11,7 @@ const {
   getHome,
   artdelete,
   markupCnt,
+  done
 } = require("./controllers/post.controllers");
 
 //홈 조회
@@ -27,6 +28,8 @@ router.post("/post", middleware, upload.array("image", 10), artPost);
 
 //작품 판매글 수정
 router.patch("/post/:postId", middleware, upload.array("image", 10), artUpdate);
+//작품 판매 완료
+router.patch("/post/done/:postId", middleware, done)
 
 //작품 판매글 삭제
 router.delete("/post/:postId", middleware, artdelete);

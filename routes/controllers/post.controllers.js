@@ -190,22 +190,7 @@ const artDetail = async (req, res) => {
         data: { detail, getUser },
       });
     }
-    /* const userPost = await Post.findOne({user , postId});
-     if(userPost.done === false){ 
-      //user로 post  확인
-      const artPost1 = await Post.findOne({user}).exec();
-      const detail = await Post.findOne({postId}).exec();
-      console.log(artPost1)
-      //작성 유저 인지 확인 조건
-      if(detail.postId === artPost1.postId){
-        //조건 통과시 true값으로 변환
-        const data = await Post.updateOne({postId},{$set:{done:true}})
-        res.status(200).send({
-          respons:'success',
-          msg:'판매 완료',
-          data: data.done
-        });
-      }; */
+    
   } catch (error) {
     res.status(200).json({
       respons: "fail",
@@ -213,7 +198,39 @@ const artDetail = async (req, res) => {
     });
   }
 };
-
+// 작품 상태 변환
+const done = async (req,res) => {
+  try{
+    const { postId } = req.params;
+    const { userId } = res.locals.user;
+    const userPost = await Post.findOne({userId , postId});
+    
+     if(userPost.done === false){ 
+       await Post.updateOne({postId},
+        {
+          $set:
+          {
+            done:true
+          }
+        }
+       )
+       res.status(200).send({
+          respons:"success",
+          msg:"판매 완료"
+       })
+    }else{
+      res.status(200).send({
+        respons:"success",
+        msg:"판매 완료 실패"
+     })
+    }
+  }catch(error){
+    res.status(400).json({
+      respons: "fail",
+      msg: "데이터를 찾을 수 없음",
+    });
+  };
+};
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
   try {
@@ -496,4 +513,5 @@ module.exports = {
   artUpdate,
   artdelete,
   markupCnt,
+  done
 };
