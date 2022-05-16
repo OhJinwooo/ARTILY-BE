@@ -11,10 +11,10 @@ const {
 } = require("./controllers/review.controllers");
 
 //리뷰조회
-router.get("/review", review);
+router.get("/review/:data/:userId", review);
 
-//리뷰상세조회;
-router.get("/review/:reviewId", review_detail);
+//리뷰상세조회
+router.get("/review/detail/:reviewId/:userId", review_detail);
 
 //리뷰작성
 router.post(

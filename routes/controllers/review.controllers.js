@@ -3,9 +3,11 @@ const Review = require("../../schemas/review.schemas");
 const ReviewImages = require("../../schemas/reviewImage.schemas");
 const Post = require("../../schemas/post.schemas");
 const User = require("../../schemas/user.schemas");
+const Like = require("../../schemas/like.schemas");
 const moment = require("moment");
 const s3 = require("../config/s3");
 const { v4 } = require("uuid");
+const { like } = require("./like.controllers");
 const uuid = () => {
   const tokens = v4().split("-");
   return tokens[2] + tokens[1] + tokens[3];
@@ -14,7 +16,7 @@ const uuid = () => {
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
-    const data = req.params;
+    const { data, userId } = req.params;
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
     let page = Math.max(1, parseInt(data.page));
@@ -26,6 +28,15 @@ const review = async (req, res) => {
     let skip = (page - 1) * limit;
 
     //다음페이지가 없으면 없다고 프론트에 전해주기
+
+    const like = await Like.find({ userId });
+    console.log("like", like);
+
+    const myLike = [];
+    for (let i = 0; i < like.length; i++) {
+      myLike.push(like[i].reviewId);
+    }
+    console.log("Aa", myLike);
 
     const reviews = await Review.find(
       {},
@@ -40,7 +51,7 @@ const review = async (req, res) => {
       console.log("images", images);
       review.imageUrl = images;
     }
-    res.json({ reviews });
+    res.json({ reviews, myLike });
   } catch (err) {
     console.error(err);
     next(err);
@@ -48,46 +59,50 @@ const review = async (req, res) => {
 };
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
-  try {
-    const { reviewId } = req.params;
-    // console.log(reviewId);
+  // try {
+  const { reviewId, userId } = req.params;
 
-    //리뷰를 작성한 user 정보
-    //구매한 작품&작가 정보 찾기
-    let buyer = await Review.find({ reviewId });
-    console.log("buyer", buyer);
+  const like = await Like.findOne({ reviewId, userId });
+  const myLike = like.reviewId;
+  console.log("like", like);
+  console.log("myLike", myLike);
 
-    for (let review of buyer) {
-      const images = await ReviewImages.find({ reviewId: review.reviewId });
-      console.log("images", images);
-      review.imageUrl = images;
-    }
+  //리뷰를 작성한 user 정보
+  //구매한 작품&작가 정보 찾기
+  let buyer = await Review.find({ reviewId });
+  console.log("buyer", buyer);
 
-    let s_userId = buyer[0].seller.user.userId;
-    console.log("s_userId", s_userId);
-
-    //내가 구매한 작가의 다른 작품들 찾기
-    let defferents = await Post.find(
-      { "user.userId": s_userId },
-      "postId postTitle price"
-    );
-    console.log("defferents", defferents);
-    // console.log("ggggg", buyer[0].seller.postId);
-
-    // 판매자의 물품들(postId)
-    let seller_postId = [];
-    for (let i = 0; i < defferents.length; i++) {
-      seller_postId.push(defferents[i].postId);
-    }
-    console.log("seller_postId", seller_postId);
-
-    let defferent = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
-
-    res.json({ buyer, defferent });
-  } catch (err) {
-    console.log("상제조회 에러");
-    res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
+  for (let review of buyer) {
+    const images = await ReviewImages.find({ reviewId: review.reviewId });
+    console.log("images", images);
+    review.imageUrl = images;
   }
+
+  let s_userId = buyer[0].seller.user.userId;
+  console.log("s_userId", s_userId);
+
+  //내가 구매한 작가의 다른 작품들 찾기
+  let defferents = await Post.find(
+    { "user.userId": s_userId },
+    "postId postTitle price"
+  );
+  console.log("defferents", defferents);
+  // console.log("ggggg", buyer[0].seller.postId);
+
+  // 판매자의 물품들(postId)
+  let seller_postId = [];
+  for (let i = 0; i < defferents.length; i++) {
+    seller_postId.push(defferents[i].postId);
+  }
+  console.log("seller_postId", seller_postId);
+
+  let defferent = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
+
+  res.json({ buyer, defferent, myLike });
+  // } catch (err) {
+  //   console.log("상제조회 에러");
+  //   res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
+  // }
 };
 //리뷰 작성
 const review_write = async (req, res) => {
@@ -313,7 +328,6 @@ const review_delete = async (req, res) => {
     const reviewUser = await Review.findOne({ userId, reviewId }).exec();
     if (reviewUser) {
       // 이미지 URL 가져오기 위한 로직
-      const reviewImg = await Review.find({ reviewId });
       const reviewImage = await ReviewImages.find({ reviewId });
       // 복수의 이미지를 삭제 변수(array)
       let deleteItems = [];
