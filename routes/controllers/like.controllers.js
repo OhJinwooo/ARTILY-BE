@@ -2,7 +2,7 @@ const express = require("express");
 const { create } = require("../../schemas/like.schemas");
 const Review = require("../../schemas/review.schemas");
 const Like = require("../../schemas/like.schemas");
-
+const User = require("../../schemas/user.schemas");
 // //좋아요 추가,삭제
 const like = async (req, res) => {
   try {
@@ -17,13 +17,14 @@ const like = async (req, res) => {
 
     //유저 정보가 있는 지 확인
     if (userId > 0) {
-      //사용유자가 같은 리뷰에 좋아요를 했는지 확인
+      //사용유저가 같은 리뷰에 좋아요를 했는지 확인
       const like = await Like.find({ reviewId, userId });
       console.log("like", like);
 
       if (like.length > 0) {
         //일치하는 값이 있으면 삭제
         await Like.deleteOne({ reviewId, userId });
+        await User.updateOne({ userId }, { $pull: { myLike: reviewId } });
         //남은 개수
         const totalLike = (await Like.find({ reviewId })).length;
         // Review 스키마에 likeCnt값 - 1 해줌.
@@ -33,6 +34,7 @@ const like = async (req, res) => {
 
       // 일치 하는 값이 없을 시 생성
       await Like.create({ userId, reviewId });
+      await User.findOneAndUpdate({ userId }, { $push: { myLike: reviewId } });
       // 총갯수
       const totalLike = (await Like.find({ reviewId })).length;
       // Review 스키마에 likeCnt값 + 1 해줌.

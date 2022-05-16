@@ -52,6 +52,9 @@ const UserSchema = new mongoose.Schema({
   myMarkup: {
     type: Array,
   },
+  myLike: {
+    type: Array,
+  },
   myBuy: {
     type: Array,
   },

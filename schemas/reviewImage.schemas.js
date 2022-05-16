@@ -10,6 +10,9 @@ const reviewImageSchema = new mongoose.Schema({
   imageUrl: {
     type: String,
   },
+  imageNumber: {
+    type: Number,
+  },
 });
 
 module.exports = mongoose.model("reviewImage", reviewImageSchema);
