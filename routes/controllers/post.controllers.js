@@ -158,44 +158,19 @@ const artDetail = async (req, res) => {
     const { postId } = req.params;
     if (postId) {
       //상세 페이지 데이터
-      const detail = await Post.find({ postId });
-      //배열 일때 동작
-      for(let i of detail){
-        //이미지 값
-        const images = await postImg.find({ postId:i.postId });
-        // detail.imageUrl 에 추가
-        i.imageUrl = images;
+      const detail = await Post.findOne({ postId });
+      let img = await postImg.find({postId})
+      for(let i = 0; i<img.length; i++){
+        detail.imageUrl.push(img[i])
       }
-      /* const detail = await Post.aggregate([
-        {$match:{postId:postId}},
-        {
-          $lookup: { 
-            from: 'postimages', 
-            let: { postId: "$postId" }, 
-            pipeline: [{ $match: 
-              { $expr: 
-                { $and: 
-                  [ {$eq: ["$postId", "$$postId"]} ] 
-                } 
-              } 
-            }], 
-            as: 'imageUrl' 
-          }, 
-          
-          }, 
-          { 
-            $match: { 'imageUrl': {$ne: []} }
-          }
-      ]); */
       
-      /* console.log(detail[0].imageUrl); */
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({user: detail[0].uesr})
+      const getUser = await Post.find({user: detail.uesr})
         .sort("-createdAt")
         .limit(4);
         console.log(getUser)
       for(let j of getUser){
-        const images = await postImg.find({ postId:getUser.postId });
+        const images = await postImg.find({ postId:j.postId });
         j.imageUrl = images
       }
       res.status(200).json({
@@ -295,7 +270,6 @@ const artUpdate = async (req, res) => {
     const { userId } = res.locals.user;
     //수정할 파라미터 값
     const { postId } = req.params;
-    console.log(postId)
     //바디로 받을 데이터
     const {
       postTitle,
@@ -376,7 +350,6 @@ const artUpdate = async (req, res) => {
     else {
       if(Array.isArray(imgDt) && imgDt.length > 0){
         for(let i = 0 ; i <imgDt.length; i++){
-          console.log(imgDt[i])
           await postImg.deleteOne({imageUrl:imgDt[i]});
         };
       }else{
