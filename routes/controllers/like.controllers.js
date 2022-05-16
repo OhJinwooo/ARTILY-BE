@@ -51,6 +51,36 @@ const like = async (req, res) => {
   }
 };
 
+//내가 좋아요한 reviewList 보내기
+const likeList = async (req, res) => {
+  try {
+    //유저 정보가 있는지 확인
+    const { user } = res.locals; //ok
+    const { userId } = user; //ok
+    console.log("userId", userId);
+    // 유저정보가 유효한지 확인
+    if (userId > 0) {
+      const like = await Like.find({ userId }, "reviewId");
+      const likeList = [];
+      for (let i = 0; i < like.length; i++) {
+        likeList.push(like[i].reviewId);
+      }
+      console.log("list", likeList);
+      return res.status(200).json({ result: "success", likeList });
+    }
+    return res.status(401).json({
+      response: "fail",
+      msg: "유효하지 않은 토큰입니다",
+    });
+  } catch (error) {
+    res.status(400).json({
+      response: "fail",
+      msg: "알수 없는 오류가 발생했습니다.",
+    });
+  }
+};
+
 module.exports = {
   like,
+  likeList,
 };
