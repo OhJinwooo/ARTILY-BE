@@ -79,20 +79,20 @@ module.exports = (server) => {
       // socketID: socket.id,
     });
 
-    socket.on("login", async (user) => {
-      const userPk = user.uid;
-      let id = socket.id;
-      // zscan 으로 전체 찾는 것 대신 가장 큰거 하나 찾아서 검증하는 zrevrange로 바꿈
-      // zmemebers가 아무도 없더라도 room, unchecked가 undefined이므로 0과의 비교가 false가 되어 검증 가능
-      const [room, unchecked] = await redis.zrevrange(
-        userPk + "",
-        0,
-        0,
-        "WITHSCORES"
-      );
-      if (unchecked > 0) await io.sockets.to(id).emit("unchecked");
-      if (userPk) await redis.hset(`currentOn`, userPk, id);
-    });
+    // socket.on("login", async (user) => {
+    //   const userPk = user.uid;
+    //   let id = socket.id;
+    //   // zscan 으로 전체 찾는 것 대신 가장 큰거 하나 찾아서 검증하는 zrevrange로 바꿈
+    //   // zmemebers가 아무도 없더라도 room, unchecked가 undefined이므로 0과의 비교가 false가 되어 검증 가능
+    //   const [room, unchecked] = await redis.zrevrange(
+    //     userPk + "",
+    //     0,
+    //     0,
+    //     "WITHSCORES"
+    //   );
+    //   if (unchecked > 0) await io.sockets.to(id).emit("unchecked");
+    //   if (userPk) await redis.hset(`currentOn`, userPk, id);
+    // });
 
     socket.on("join_room", async (roomName, targetUser, post) => {
       socket.join(roomName);
@@ -102,18 +102,6 @@ module.exports = (server) => {
       console.log("targetUser", targetUser);
       const target = await User.findOne({ userId: targetUser });
 
-      // const CreateUser = await chatData.findOne(
-      //   {
-      //     userId: socket.id,
-      //   },
-      //   "userId nickname profileImage"
-      // );
-      // const TargetUser = await chatData.findOne(
-      //   {
-      //     userId: targetUser,
-      //   },
-      //   "userId nickname profileImage"
-      // );
       console.log("타겟:", target);
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
