@@ -1,32 +1,44 @@
 const Chat = require("./schemas/chat.schemas");
 const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
-const crypto = require("crypto");
-const randomId = () => crypto.randomBytes(8).toString("hex");
-const { InMemorySessionStore } = require("./sessionStore");
-const sessionStore = new InMemorySessionStore();
 const socket = require("socket.io");
-const { fdatasyncSync, truncateSync } = require("fs");
+const { Server } = require("socket.io");
+const { createAdapter } = require("@socket.io/redis-adapter");
+const { redis } = require("./config/redis.cluster.config");
 
 module.exports = (server) => {
-  const io = socket(server, {
+  // const io = socket(server, {
+  //   cors: {
+  //     origin: "http://localhost:3000",
+  //     credentials: true,
+  //   },
+  // });
+  const io = new Server(server, {
     cors: {
       origin: "http://localhost:3000",
       credentials: true,
+      transports: ["websocket"],
     },
   });
+
+  const pubClient = redis;
+  const subClient = pubClient.duplicate();
+
+  io.adapter(createAdapter(pubClient, subClient));
+
   io.use(async (socket, next) => {
     const userInfo = socket.handshake.auth.user;
-    console.log("use부분", userInfo); // tnwjd
-    // 어딘가의 저장소에서 찾고있음
-    const session = await chatData.findOne({ userId: userInfo.userId });
-    console.log("세션", session);
-    const { userId, nickname, profileImage } = userInfo;
+    console.log("use부분", userInfo); // 수정
 
     // 비 회원 없음
     if (!userInfo) {
       return next(new Error("에러!!!!!!!"));
     }
+
+    // 어딘가의 저장소에서 찾고있음
+    const session = await redis.zrevrange({ userId: userInfo.userId });
+    console.log("세션", session);
+    const { userId, nickname, profileImage } = userInfo;
 
     //기존 사람 데이터가 있음
     if (session) {
@@ -34,7 +46,6 @@ module.exports = (server) => {
       socket.nickname = nickname;
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
-      await chatData.updateOne({ userId }, { $set: { connected: true } });
       return next();
     }
 
@@ -42,8 +53,7 @@ module.exports = (server) => {
     socket.nickname = nickname;
     socket.id = userId;
     socket.profileImage = profileImage; // tnwjd
-
-    await chatData.create({ userId, nickname, profileImage, connected: true });
+    await redis.hset(`user`, userId, nickname, profileImage);
     next();
   });
   io.on("connection", (socket) => {
@@ -67,6 +77,21 @@ module.exports = (server) => {
       nickname,
       connected,
       // socketID: socket.id,
+    });
+
+    socket.on("login", async (user) => {
+      const userPk = user.uid;
+      let id = socket.id;
+      // zscan 으로 전체 찾는 것 대신 가장 큰거 하나 찾아서 검증하는 zrevrange로 바꿈
+      // zmemebers가 아무도 없더라도 room, unchecked가 undefined이므로 0과의 비교가 false가 되어 검증 가능
+      const [room, unchecked] = await redis.zrevrange(
+        userPk + "",
+        0,
+        0,
+        "WITHSCORES"
+      );
+      if (unchecked > 0) await io.sockets.to(id).emit("unchecked");
+      if (userPk) await redis.hset(`currentOn`, userPk, id);
     });
 
     socket.on("join_room", async (roomName, targetUser, post) => {

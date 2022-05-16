@@ -3,7 +3,7 @@ const Review = require("../../schemas/review.schemas");
 const Post = require("../../schemas/post.schemas");
 const User = require("../../schemas/user.schemas");
 const moment = require("moment");
-const s3 = require("../config/s3");
+const s3 = require("../../config/s3");
 const { v4 } = require("uuid");
 const uuid = () => {
   const tokens = v4().split("-");
