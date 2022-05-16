@@ -37,27 +37,6 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  follow: {
-    type: Array,
-  },
-  follower: {
-    type: Array,
-  },
-  myPost: {
-    type: Array,
-  },
-  myReview: {
-    type: Array,
-  },
-  myMarkup: {
-    type: Array,
-  },
-  myLike: {
-    type: Array,
-  },
-  myBuy: {
-    type: Array,
-  },
   snsUrl: {
     type: Array,
   },
