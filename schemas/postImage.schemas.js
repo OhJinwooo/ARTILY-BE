@@ -7,6 +7,9 @@ const postImageSchema = new mongoose.Schema({
   imageId: {
     type: String,
   },
+  imageNumber: {
+    type: Number,
+  },
   imageUrl: {
     type: String,
   },
