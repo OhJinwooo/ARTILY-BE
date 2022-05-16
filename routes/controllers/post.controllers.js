@@ -2,7 +2,9 @@ require("dotenv").config();
 const Post = require("../../schemas/post.schemas");
 const Review = require("../../schemas/review.schemas");
 const User = require("../../schemas/user.schemas");
-const postImg = require('../../schemas/postImage.schemas')
+const postImg = require('../../schemas/postImage.schemas');
+const reviewImg =require('../../schemas/reviewImage.schemas')
+const MarkUp = require("../../schemas/markUp.schemas");
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -41,7 +43,7 @@ const getHome = async (req, res) => {
       .sort("-Likecount")
       .limit(4);
       for(let i of bestReview){
-        const imges = await postImg.findOne({reviewId:bestReview.reviewId});
+        const imges = await reviewImg.findOne({reviewId:bestReview.reviewId});
         i.imageUrl = imges
       }
     res.status(200).json({
