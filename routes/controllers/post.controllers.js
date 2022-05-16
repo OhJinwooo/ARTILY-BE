@@ -98,6 +98,12 @@ const artStore = async (req, res) => {
         const img = await postImg.findOne({postId:i.postId});
         i.imageUrl = img
       }
+      if(Array.isArray(artPost) && artPost.length === 0){
+        return res.status(200).json({
+          respons: "fail",
+          msg: "데이터 없음",
+        })
+      };
       res.status(200).json({
         respons: "success",
         msg: "스토어 조회 성공",
@@ -137,6 +143,12 @@ const artStore = async (req, res) => {
         const img = await postImg.findOne({postId:i.postId});
         i.imageUrl = img
       }
+      if(Array.isArray(artPost) && artPost.length === 0){
+        return res.status(200).json({
+          respons: "fail",
+          msg: "데이터 없음",
+        })
+      };
       res.status(200).json({
         respons: "success",
         msg: "filter complete",
@@ -161,14 +173,13 @@ const artDetail = async (req, res) => {
       const detail = await Post.findOne({ postId });
       let img = await postImg.find({postId})
       for(let i = 0; i<img.length; i++){
-        detail.imageUrl.push(img[i])
+        detail.imageUrl.push(img[i].imageUrl)
       }
       
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({user: detail.uesr})
         .sort("-createdAt")
         .limit(4);
-        console.log(getUser)
       for(let j of getUser){
         const images = await postImg.find({ postId:j.postId });
         j.imageUrl = images
