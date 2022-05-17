@@ -36,7 +36,7 @@ const ReviewSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  imageUrl: {
+  images: {
     type: Array,
   },
   createdAt: {

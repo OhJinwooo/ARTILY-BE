@@ -241,67 +241,68 @@ const done = async (req, res) => {
 };
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
-  try {
-    const { user } = res.locals;
+  // try {
+  const { user } = res.locals;
+  console.log(user);
 
-    //req.body를 받음
-    const {
+  //req.body를 받음
+  const {
+    postTitle,
+    postContent,
+    category,
+    transaction,
+    changeAddress,
+    price,
+    postSize,
+  } = req.body;
+
+  // console.log(req.files);
+  //moment를 이용하여 한국시간으로 날짜생성
+  const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+  //uuid를 사용하여 고유 값생성
+  const postId = uuid();
+  //검증 고유값중복 검증
+  const artPostId = await Post.find({ postId }).exec();
+  //여러장 이미지 저장
+  for (let i = 0; i < req.files.length; i++) {
+    await postImg.create({
+      postId,
+      imageUrl: req.files[i].location,
+      imageNumber: i,
+    });
+  }
+  //조건 postId
+  if (artPostId.postId !== postId) {
+    const artBrod = new Post({
       postTitle,
       postContent,
       category,
       transaction,
       changeAddress,
+      postId,
       price,
+      createdAt,
+      markupCnt: 0,
+      done: false,
+      user,
       postSize,
-    } = req.body;
-
-    // console.log(req.files);
-    //moment를 이용하여 한국시간으로 날짜생성
-    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
-    //uuid를 사용하여 고유 값생성
-    const postId = uuid();
-    //검증 고유값중복 검증
-    const artPostId = await Post.find({ postId }).exec();
-    //여러장 이미지 저장
-    for (let i = 0; i < req.files.length; i++) {
-      await postImg.create({
-        postId,
-        imageUrl: req.files[i].location,
-        imageNumber: i,
-      });
-    }
-    //조건 postId
-    if (artPostId.postId !== postId) {
-      const artBrod = new Post({
-        postTitle,
-        postContent,
-        category,
-        transaction,
-        changeAddress,
-        postId,
-        price,
-        createdAt,
-        markupCnt: 0,
-        done: false,
-        user,
-        postSize,
-      });
-      await artBrod.save();
-      await User.updateOne(
-        { userId: user.userId },
-        { $push: { myPost: postId } }
-      );
-      res.status(200).json({
-        respons: "success",
-        msg: "판매글 생성 완료",
-      });
-    }
-  } catch (error) {
-    res.status(400).json({
-      respons: "fail",
-      msg: "판매글 생성 실패",
+    });
+    await artBrod.save();
+    // await User.updateOne(
+    //   { userId: user.userId },
+    //   { $push: { myPost: postId } }
+    // );
+    res.status(200).json({
+      respons: "success",
+      msg: "판매글 생성 완료",
     });
   }
+  // } catch (error) {
+  //   res.status(400).json({
+  //     respons: "fail",
+  //     msg: "판매글 생성 실패",
+  //   });
+  // }
 };
 
 //api 수정(구현완료)

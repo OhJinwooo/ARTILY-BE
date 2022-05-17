@@ -29,18 +29,19 @@ const review = async (req, res) => {
 
     const reviews = await Review.find(
       {},
-      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt seller.category"
+      "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
     )
       .sort("-createdAt")
       .skip(skip)
       .limit(limit);
+
     if (reviews.length) {
       for (let review of reviews) {
-        const images = await ReviewImages.findOne({
+        const imgs = await ReviewImages.findOne({
           reviewId: review.reviewId,
         });
-        console.log("images", images);
-        review.imageUrl = images;
+        console.log("imgs", imgs);
+        review.images = imgs;
       }
     }
     res.json({ reviews });
