@@ -36,7 +36,6 @@ const getHome = async (req, res) => {
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
     }
-    console.log("aAA", a);
     // console.log("Bb", b);
     //console.log("aAA", a.sort());
 
