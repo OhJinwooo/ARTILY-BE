@@ -1,23 +1,26 @@
-const User = require("../../schemas/user.schemas");
+const BlackList = require("../../schemas/blackList.schemas");
 
 // 신고하기
 const blackList = async (req, res) => {
   const { ReviewUserId } = req.params; //
-  console.log(ReviewUserId);
+  console.log("A", ReviewUserId);
   const { user } = res.locals;
   const { userId } = user;
-  console.log(userId);
+  console.log("B", userId);
 
-  const blackListCheck = await User.find({ blacklist: ReviewUserId });
-  //console.log("블랙리스트", blackListCheck[0].blacklist);
+  const blackListCheck = await BlackList.findOne({
+    userId,
+    blackList: ReviewUserId,
+  });
+  console.log("블랙리스트", blackListCheck);
 
-  if (!blackListCheck.length) {
-    await User.updateOne({ userId }, { $push: { blacklist: ReviewUserId } });
+  if (!blackListCheck) {
+    await BlackList.create({ userId, blackList: ReviewUserId });
   } else {
     res.status(401).send({ errorMessage: "이미 신고되어있습니다!" });
     return;
   }
-  res.send("해당유저가 신고되었습니다.");
+  res.json("해당유저가 신고되었습니다.");
 };
 
 module.exports = {

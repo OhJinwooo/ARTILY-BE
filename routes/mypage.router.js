@@ -5,6 +5,7 @@ const middleware = require("../middleware/authMiddleWare");
 const {
   postProfile,
   getProfile,
+  myProfile,
   updateProfile,
   getMyPost,
   getMyBuy,
@@ -18,8 +19,11 @@ router.patch(
   postProfile
 );
 
-//프로필 조회 조회
+//상대 프로필 조회 조회
 router.get("/profile/:userId", getProfile);
+
+//내 프로필 조회 조회
+router.get("/myprofile", middleware, myProfile);
 
 //마이페이지 프로필 수정
 router.patch(

@@ -61,12 +61,17 @@ const getFollow = async (req, res) => {
 const getFollower = async (req, res) => {
   try {
     const { userId } = res.locals.user;
-    const follow = await Follow.find(
-      { followId: userId },
-      "followId followName profileImage"
+    const follow = await Follow.find({ followId: userId }, "userId");
+    followerlist = [];
+    for (let i = 0; i < follow.length; i++) {
+      followerlist.push(follow[i].userId);
+    }
+    const follower = await User.find(
+      { userId: followerlist },
+      "userId nickname profileImage"
     );
 
-    res.status(200).json({ success: true, data: follow });
+    res.status(200).json({ success: true, data: follower });
   } catch (err) {
     res.status(400).send("팔로우 목록 조회 실패");
   }

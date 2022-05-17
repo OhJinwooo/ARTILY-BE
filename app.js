@@ -97,4 +97,5 @@ http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
 });
 server.listen(httpsPort, () => {
-  console.lo
+  console.log("https " + httpsPort + " server start");
+});
