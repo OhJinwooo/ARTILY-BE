@@ -14,11 +14,6 @@ const postProfile = async (req, res) => {
 
   const { introduce, snsUrl, address, nickname } = req.body;
   const profileImage = req.file?.location;
-  if (!nickname) {
-    return res.send({ msg: "닉네임을 입력해주세요" });
-  } else if (!profileImage) {
-    return res.send({ msg: "프로필 사진을 설정해주세요" });
-  }
 
   try {
     await User.updateOne(
