@@ -158,25 +158,20 @@ const review_write = async (req, res) => {
 
 //리뷰 수정
 const review_modify = async (req, res) => {
-  //try {
-  //수정할 reviewID 파라미터로 받음
-  const { reviewId } = req.params;
-  //수정할 값 body로 받음
-  const { reviewTitle, reviewContent } = req.body;
-  //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
-  if (!reviewTitle || !reviewContent) {
-    return res.send({ msg: "내용을 입력해주세요" });
-  }
-  // 수정 이미지 URL 가져오기
-  const imageUrl = req.files;
-  console.log("수정이미지", imageUrl);
-  // 수정 이미지 하나씩 빼서 배열에 저장
-  let img_new = [];
-  for (let i = 0; i < imageUrl.length; i++) {
-    img_new.push(imageUrl[i].location);
-  }
-  console.log("img_new", img_new);
+  try {
+    //수정할 reviewID 파라미터로 받음
+    const { reviewId } = req.params;
+    //수정할 값 body로 받음
+    const { reviewTitle, reviewContent, imageId } = req.body;
+    //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
+    console.log("1", imageId);
+    if (!reviewTitle || !reviewContent) {
+      return res.send({ msg: "내용을 입력해주세요" });
+    }
+    // 수정 이미지 URL 가져오기
+    const imageUrl = req.files;
 
+<<<<<<< HEAD
   //기존에 있던 이미지 찾기
   let img = await ReviewImages.find({ reviewId });
   console.log("img", img);
@@ -214,27 +209,106 @@ const review_modify = async (req, res) => {
       imageId: uuid(),
       imageUrl: img_new[i],
     });
-  }
-  // 이미지를 제외한 값들 수정
-  await Review.updateOne(
-    { reviewId },
-    {
-      $set: {
-        reviewTitle,
-        reviewContent,
-      },
+=======
+    // 수정 이미지 하나씩 빼서 배열에 저장
+    let img_new = [];
+    for (let i = 0; i < imageUrl.length; i++) {
+      img_new.push(imageUrl[i].location);
     }
-  );
-  res.status(200).send({
-    respons: "success",
-    msg: "수정 완료",
-  });
-  // } catch (error) {
-  //   res.status(400).send({
-  //     respons: "fail",
-  //     msg: "수정 실패",
-  //   });
-  // }
+    console.log("img_new", img_new);
+
+    let img = await ReviewImages.find({ reviewId, imageId });
+    console.log("imglength", img.length, img);
+    let imgList = [];
+    for (let i = 0; i < img.length; i++) {
+      imgList.push(img[i].imageUrl);
+    }
+    console.log("imgList", imgList);
+
+    if (imageId === undefined) {
+      for (let i = 0; i < img_new.length; i++) {
+        await ReviewImages.create({
+          reviewId,
+          imageId: uuid(),
+          imageUrl: img_new[i],
+        });
+      }
+      await Review.updateOne(
+        { reviewId },
+        {
+          $set: {
+            reviewTitle,
+            reviewContent,
+          },
+        }
+      );
+      return res.status(200).send({
+        respons: "success",
+        msg: "수정 완료",
+      });
+    }
+
+    if (img.length) {
+      let deleteItems = [];
+      for (let i = 0; i < imgList.length; i++) {
+        //key값을 string으로 지정
+        deleteItems.push({ Key: String(imgList[i].split("/")[3]) });
+      }
+      console.log("deleteItems", deleteItems);
+      //s3에서 기존 이미지 삭제하기
+      let params = {
+        Bucket: process.env.BUCKETNAME,
+        Delete: {
+          Objects: deleteItems,
+          Quiet: false,
+        },
+      };
+      //s3 delete 실행
+      s3.deleteObjects(params, function (err, data) {
+        if (err) console.log(err);
+        else console.log("Successfully deleted myBucket/myKey");
+      });
+      //DB  삭제
+      if (img.length > 1) {
+        console.log("Array");
+        for (let i = 0; i < img.length; i++) {
+          console.log("imageId", imageId);
+          await ReviewImages.deleteOne({ imageId: imageId[i] });
+        }
+      } else if (img.length === 1) {
+        console.log("String");
+        await ReviewImages.deleteOne({ imageId });
+      }
+    }
+    for (let i = 0; i < img_new.length; i++) {
+      await ReviewImages.create({
+        reviewId,
+        imageId: uuid(),
+        imageUrl: img_new[i],
+      });
+    }
+
+    // 이미지를 제외한 값들 수정
+    await Review.updateOne(
+      { reviewId },
+      {
+        $set: {
+          reviewTitle,
+          reviewContent,
+        },
+      }
+    );
+    res.status(200).send({
+      respons: "success",
+      msg: "수정 완료",
+    });
+  } catch (error) {
+    res.status(400).send({
+      respons: "fail",
+      msg: "수정 실패",
+    });
+>>>>>>> eb952f7b1fce8acc4fa761ec194f919e3bd19941
+  }
 };
 
 //리뷰 삭제
