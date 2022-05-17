@@ -3,17 +3,16 @@ const BlackList = require("../../schemas/blackList.schemas");
 // 신고하기
 const blackList = async (req, res) => {
   const { ReviewUserId } = req.params; //
-  console.log("A", ReviewUserId);
   const { user } = res.locals;
   const { userId } = user;
-  console.log("B", userId);
 
+  //이미 신고한 유저인지 확인
   const blackListCheck = await BlackList.findOne({
     userId,
     blackList: ReviewUserId,
   });
-  console.log("블랙리스트", blackListCheck);
 
+  //신고했던 유저가 아니라면 블랙리스트db에 저장
   if (!blackListCheck) {
     await BlackList.create({ userId, blackList: ReviewUserId });
   } else {

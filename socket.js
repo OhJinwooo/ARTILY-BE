@@ -11,7 +11,7 @@ const { fdatasyncSync, truncateSync } = require("fs");
 module.exports = (server) => {
   const io = socket(server, {
     cors: {
-      origin: "http://localhost:3000",
+      origin: "https://artily-2b6be.web.app",
       credentials: true,
     },
   });

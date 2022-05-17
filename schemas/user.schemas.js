@@ -26,9 +26,6 @@ const UserSchema = new mongoose.Schema({
   address: {
     type: String,
   },
-  blacklist: {
-    type: Array,
-  },
   followCnt: {
     type: Number,
     default: 0,

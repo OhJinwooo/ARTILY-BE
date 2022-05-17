@@ -25,8 +25,6 @@ const review = async (req, res) => {
     //제외할 데이터 지정 == 다음 페이지 시작점
     let skip = (page - 1) * limit;
 
-    //다음페이지가 없으면 없다고 프론트에 전해주기
-
     const reviews = await Review.find(
       {},
       "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
@@ -179,24 +177,18 @@ const review_modify = async (req, res) => {
   }
   console.log("img_new", img_new);
 
-  // 기존 이미지 URL 가져오기
-  const reviewImage = await ReviewImages.find({ reviewId });
-  console.log("reviewImage", reviewImage); //ok
-  // 기존 이미지 하나씩 빼서 배열에 저장
-  let img = [];
-  for (let i = 0; i < reviewImage.length; i++) {
-    img.push(reviewImage[i].imageUrl);
-  }
+  //기존에 있던 이미지 찾기
+  let img = await ReviewImages.find({ reviewId });
   console.log("img", img);
-
   //기존 이미지들과 수정 이미지들의 값이 다르면 기존 이미지 삭제한 후 수정 이미지로 변경.
-  if (img_new !== img) {
-    //기존 이미지 삭제하기 위한 key값 추출
-    const deleteItems = [];
+  //기존 이미지 삭제하기 위한 key값 추출
+  if (img.length) {
+    let deleteItems = [];
     for (let i = 0; i < img.length; i++) {
       //key값을 string으로 지정
-      deleteItems.push({ Key: String(img[i].split("/")[3]) });
+      deleteItems.push({ Key: String(img[i].imageUrl.split("/")[3]) });
     }
+    console.log("deleteItems", deleteItems);
     //s3에서 기존 이미지 삭제하기
     let params = {
       Bucket: process.env.BUCKETNAME,
@@ -210,8 +202,18 @@ const review_modify = async (req, res) => {
       if (err) console.log(err);
       else console.log("Successfully deleted myBucket/myKey");
     });
-    //s3에 수정이미지 업데이트해주기
-    await ReviewImages.updateOne({ reviewId }, { $set: { img } });
+    // 몽고db에서 이미지 삭제
+    for (let i = 0; i < img.length; i++) {
+      await ReviewImages.deleteOne({ reviewId });
+    }
+  }
+  //s3에 수정이미지 업데이트해주기
+  for (let i = 0; i < img_new.length; i++) {
+    await ReviewImages.create({
+      reviewId,
+      imageId: uuid(),
+      imageUrl: img_new[i],
+    });
   }
   // 이미지를 제외한 값들 수정
   await Review.updateOne(
@@ -234,6 +236,7 @@ const review_modify = async (req, res) => {
   //   });
   // }
 };
+
 //리뷰 삭제
 const review_delete = async (req, res) => {
   const { reviewId } = req.params;
