@@ -5,9 +5,11 @@ const socket = require("socket.io");
 
 module.exports = (server) => {
   const io = socket(server, {
-    path: "/socket.io",
+    // path: "/socket.io",
     cors: {
-      origin: "*:*",
+      origin: "*",
+      // methods: ["GET", "POST"],
+      // credentials: true,
     },
   });
   console.log("socket 연결");
