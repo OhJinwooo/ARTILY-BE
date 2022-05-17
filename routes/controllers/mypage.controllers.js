@@ -14,11 +14,6 @@ const postProfile = async (req, res) => {
 
   const { introduce, snsUrl, address, nickname } = req.body;
   const profileImage = req.file?.location;
-  if (!nickname) {
-    return res.send({ msg: "닉네임을 입력해주세요" });
-  } else if (!profileImage) {
-    return res.send({ msg: "프로필 사진을 설정해주세요" });
-  }
 
   try {
     await User.updateOne(
@@ -82,8 +77,8 @@ const getProfile = async (req, res) => {
       }
     }
     const markUpPost = await Markup.find({ userId }, "postId");
-    const myMarkups = [];
-    const myMarkup = [];
+    let myMarkups = [];
+    let myMarkup = [];
     if (markUpPost.length) {
       for (let i = 0; i < markUpPost.length; i++) {
         myMarkup.push(markUpPost[i].postId);
@@ -96,7 +91,7 @@ const getProfile = async (req, res) => {
 
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
-        const images = await PostImage.findOne({ postId: markUp.postId });
+        let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.imageUrl = images;
       }
     }
@@ -147,8 +142,8 @@ const myProfile = async (req, res) => {
       }
     }
     const markUpPost = await Markup.find({ userId }, "postId");
-    const myMarkups = [];
-    const myMarkup = [];
+    let myMarkups = [];
+    let myMarkup = [];
     if (markUpPost.length) {
       for (let i = 0; i < markUpPost.length; i++) {
         myMarkup.push(markUpPost[i].postId);
@@ -161,7 +156,7 @@ const myProfile = async (req, res) => {
 
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
-        const images = await PostImage.findOne({ postId: markUp.postId });
+        let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.imageUrl = images;
       }
     }
