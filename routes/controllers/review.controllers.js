@@ -164,14 +164,16 @@ const review_modify = async (req, res) => {
   //수정할 reviewID 파라미터로 받음
   const { reviewId } = req.params;
   //수정할 값 body로 받음
-  const { reviewTitle, reviewContent } = req.body;
+  const { reviewTitle, reviewContent, imageId } = req.body;
   //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
   if (!reviewTitle || !reviewContent) {
     return res.send({ msg: "내용을 입력해주세요" });
   }
+
   // 수정 이미지 URL 가져오기
   const imageUrl = req.files;
   console.log("수정이미지", imageUrl);
+
   // 수정 이미지 하나씩 빼서 배열에 저장
   let img_new = [];
   for (let i = 0; i < imageUrl.length; i++) {
@@ -179,24 +181,17 @@ const review_modify = async (req, res) => {
   }
   console.log("img_new", img_new);
 
-  // 기존 이미지 URL 가져오기
-  const reviewImage = await ReviewImages.find({ reviewId });
-  console.log("reviewImage", reviewImage); //ok
-  // 기존 이미지 하나씩 빼서 배열에 저장
-  let img = [];
-  for (let i = 0; i < reviewImage.length; i++) {
-    img.push(reviewImage[i].imageUrl);
-  }
+  let img = await ReviewImages.find({ reviewId, imageId });
   console.log("img", img);
-
   //기존 이미지들과 수정 이미지들의 값이 다르면 기존 이미지 삭제한 후 수정 이미지로 변경.
-  if (img_new !== img) {
-    //기존 이미지 삭제하기 위한 key값 추출
-    const deleteItems = [];
-    for (let i = 0; i < img.length; i++) {
+  //기존 이미지 삭제하기 위한 key값 추출
+  if (img.length) {
+    let deleteItems = [];
+    for (let i = 0; i < img_new.length; i++) {
       //key값을 string으로 지정
-      deleteItems.push({ Key: String(img[i].split("/")[3]) });
+      deleteItems.push({ Key: String(img_new[i].split("/")[3]) });
     }
+    console.log("deleteItems", deleteItems);
     //s3에서 기존 이미지 삭제하기
     let params = {
       Bucket: process.env.BUCKETNAME,
@@ -211,8 +206,19 @@ const review_modify = async (req, res) => {
       else console.log("Successfully deleted myBucket/myKey");
     });
     //s3에 수정이미지 업데이트해주기
-    await ReviewImages.updateOne({ reviewId }, { $set: { img } });
+    for (let i = 0; i < img.length; i++) {
+      await ReviewImages.deleteOne({ imageId: imageId[i] });
+      console.log(img[i].imageId);
+    }
   }
+  for (let i = 0; i < img_new.length; i++) {
+    await ReviewImages.create({
+      reviewId,
+      imageId: uuid(),
+      imageUrl: img_new[i],
+    });
+  }
+
   // 이미지를 제외한 값들 수정
   await Review.updateOne(
     { reviewId },

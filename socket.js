@@ -2,29 +2,29 @@ const Chat = require("./schemas/chat.schemas");
 const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
-const { Server } = require("socket.io");
-const { createAdapter } = require("@socket.io/redis-adapter");
-const { redis } = require("./config/redis.cluster.config");
+// const { Server } = require("socket.io");
+// const { createAdapter } = require("@socket.io/redis-adapter");
+// const { redis } = require("./config/redis.cluster.config");
 
 module.exports = (server) => {
-  // const io = socket(server, {
-  //   cors: {
-  //     origin: "http://localhost:3000",
-  //     credentials: true,
-  //   },
-  // });
-  const io = new Server(server, {
+  const io = socket(server, {
     cors: {
       origin: "http://localhost:3000",
       credentials: true,
-      transports: ["websocket"],
     },
   });
+  // const io = new Server(server, {
+  //   cors: {
+  //     origin: "http://localhost:3000",
+  //     credentials: true,
+  //     transports: ["websocket"],
+  //   },
+  // });
 
-  const pubClient = redis;
-  const subClient = pubClient.duplicate();
+  // const pubClient = redis;
+  // const subClient = pubClient.duplicate();
 
-  io.adapter(createAdapter(pubClient, subClient));
+  // io.adapter(createAdapter(pubClient, subClient));
 
   io.use(async (socket, next) => {
     const userInfo = socket.handshake.auth.user;
