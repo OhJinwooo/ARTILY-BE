@@ -1,20 +1,16 @@
 const Chat = require("./schemas/chat.schemas");
 const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
-const crypto = require("crypto");
-const randomId = () => crypto.randomBytes(8).toString("hex");
-const { InMemorySessionStore } = require("./sessionStore");
-const sessionStore = new InMemorySessionStore();
 const socket = require("socket.io");
-const { fdatasyncSync, truncateSync } = require("fs");
 
 module.exports = (server) => {
   const io = socket(server, {
+    path: "/socket.io",
     cors: {
-      origin: "http://localhost:3000",
-      credentials: true,
+      origin: "*:*",
     },
   });
+  console.log("socket 연결");
   io.use(async (socket, next) => {
     const userInfo = socket.handshake.auth.user;
     console.log("use부분", userInfo); // tnwjd
