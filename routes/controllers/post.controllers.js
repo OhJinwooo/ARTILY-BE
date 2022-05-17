@@ -34,6 +34,7 @@ const getHome = async (req, res) => {
         i.imageUrl = imges;
       }
     }
+    console.log(bestPost[0].imageUrl);
     const bestWriter = [];
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
