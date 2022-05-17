@@ -28,21 +28,16 @@ const getHome = async (req, res) => {
     )
       .sort("-markupCnt")
       .limit(4);
-    for (let i of bestPost) {
-      const imges = await postImg.findOne({ postId: i.postId });
-      i.imageUrl = imges;
+    if (bestPost.length) {
+      for (let i of bestPost) {
+        const imges = await postImg.findOne({ postId: i.postId });
+        i.imageUrl = imges;
+      }
     }
     const bestWriter = [];
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
     }
-    // console.log("Bb", b);
-    //console.log("aAA", a.sort());
-
-    // const bestWriter = [];
-    // for (let i = 0; i < bestPost.length; i++) {
-    //   bestWriter.push(bestPost[i].user);
-    // }
 
     const bestReview = await Review.find(
       {},
@@ -50,9 +45,11 @@ const getHome = async (req, res) => {
     )
       .sort("-Likecount")
       .limit(4);
-    for (let i of bestReview) {
-      const imges = await reviewImg.findOne({ reviewId: i.reviewId });
-      i.imageUrl = imges;
+    if (bestReview.length) {
+      for (let i of bestReview) {
+        const imges = await reviewImg.findOne({ reviewId: i.reviewId });
+        i.imageUrl = imges;
+      }
     }
     res.status(200).json({
       respons: "success",
