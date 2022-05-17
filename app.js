@@ -7,7 +7,6 @@ const app = express();
 const app_low = express(); //http
 const httpsPort = process.env.HTTPSPORT;
 const httpPort = process.env.PORT;
-const server = http.createServer(app);
 const socket = require("./socket");
 /* const option = {
   key:
@@ -48,7 +47,6 @@ const requestMiddleware = (req, res, next) => {
 passportNaver();
 passportKakao();
 connect();
-socket(server);
 
 app.use(cors());
 app.use(express.json());
@@ -87,6 +85,8 @@ app_low.use((req, res, next) => {
   }
 });
 
+const server = https.createServer(credentials, app);
+socket(server);
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
 // });
@@ -96,6 +96,5 @@ app_low.use((req, res, next) => {
 http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
 });
-https.createServer(credentials, app).listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start");
-});
+server.listen(httpsPort, () => {
+  console.lo
