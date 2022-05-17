@@ -82,8 +82,8 @@ const getProfile = async (req, res) => {
       }
     }
     const markUpPost = await Markup.find({ userId }, "postId");
-    const myMarkups = [];
-    const myMarkup = [];
+    let myMarkups = [];
+    let myMarkup = [];
     if (markUpPost.length) {
       for (let i = 0; i < markUpPost.length; i++) {
         myMarkup.push(markUpPost[i].postId);
@@ -96,7 +96,7 @@ const getProfile = async (req, res) => {
 
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
-        const images = await PostImage.findOne({ postId: markUp.postId });
+        let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.imageUrl = images;
       }
     }
@@ -147,8 +147,8 @@ const myProfile = async (req, res) => {
       }
     }
     const markUpPost = await Markup.find({ userId }, "postId");
-    const myMarkups = [];
-    const myMarkup = [];
+    let myMarkups = [];
+    let myMarkup = [];
     if (markUpPost.length) {
       for (let i = 0; i < markUpPost.length; i++) {
         myMarkup.push(markUpPost[i].postId);
@@ -161,7 +161,7 @@ const myProfile = async (req, res) => {
 
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
-        const images = await PostImage.findOne({ postId: markUp.postId });
+        let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.imageUrl = images;
       }
     }
