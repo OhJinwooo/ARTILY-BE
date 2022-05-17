@@ -61,17 +61,15 @@ const getFollow = async (req, res) => {
 const getFollower = async (req, res) => {
   try {
     const { userId } = res.locals.user;
-    const follow = await Follow.find({ followId: userId }, "followId");
+    const follow = await Follow.find({ followId: userId }, "userId");
     followerlist = [];
     for (let i = 0; i < follow.length; i++) {
-      followerlist.push(follow[i].followId);
+      followerlist.push(follow[i].userId);
     }
-    console.log(followerlist);
     const follower = await User.find(
       { userId: followerlist },
       "userId nickname profileImage"
     );
-    console.log(follower);
 
     res.status(200).json({ success: true, data: follower });
   } catch (err) {
