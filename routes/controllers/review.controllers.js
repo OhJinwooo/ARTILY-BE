@@ -63,9 +63,9 @@ const review_detail = async (req, res) => {
     let s_userId = "";
     if (buyer.length) {
       for (let review of buyer) {
-        const images = await ReviewImages.find({ reviewId: review.reviewId });
-        console.log("images", images);
-        review.imageUrl = images;
+        const imgs = await ReviewImages.find({ reviewId: review.reviewId });
+        console.log("imgs", imgs);
+        review.images = imgs;
       }
       s_userId = buyer[0].seller.user.userId;
       console.log("s_userId", s_userId);
