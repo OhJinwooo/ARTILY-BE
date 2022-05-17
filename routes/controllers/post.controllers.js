@@ -29,13 +29,22 @@ const getHome = async (req, res) => {
       .sort("-markupCnt")
       .limit(4);
     for (let i of bestPost) {
-      const imges = await postImg.findOne({ postId: bestPost.postId });
+      const imges = await postImg.findOne({ postId: i.postId });
       i.imageUrl = imges;
     }
     const bestWriter = [];
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
     }
+    console.log("aAA", a);
+    // console.log("Bb", b);
+    //console.log("aAA", a.sort());
+
+    // const bestWriter = [];
+    // for (let i = 0; i < bestPost.length; i++) {
+    //   bestWriter.push(bestPost[i].user);
+    // }
+
     const bestReview = await Review.find(
       {},
       "reviewId imageUrl reviewTitle reviewContent likeCnt user"
@@ -43,7 +52,7 @@ const getHome = async (req, res) => {
       .sort("-Likecount")
       .limit(4);
     for (let i of bestReview) {
-      const imges = await reviewImg.findOne({ reviewId: bestReview.reviewId });
+      const imges = await reviewImg.findOne({ reviewId: i.reviewId });
       i.imageUrl = imges;
     }
     res.status(200).json({
@@ -95,8 +104,14 @@ const artStore = async (req, res) => {
         .skip(skip)
         .limit(limit);
       for (let i of artPost) {
-        const img = await postImg.findOne({ postId: artPost.postId });
+        const img = await postImg.findOne({ postId: i.postId });
         i.imageUrl = img;
+      }
+      if (Array.isArray(artPost) && artPost.length === 0) {
+        return res.status(200).json({
+          respons: "fail",
+          msg: "데이터 없음",
+        });
       }
       res.status(200).json({
         respons: "success",
@@ -134,8 +149,14 @@ const artStore = async (req, res) => {
       //search and filter = option
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
       for (let i of artPost) {
-        const img = await postImg.findOne({ postId: artPost.postId });
+        const img = await postImg.findOne({ postId: i.postId });
         i.imageUrl = img;
+      }
+      if (Array.isArray(artPost) && artPost.length === 0) {
+        return res.status(200).json({
+          respons: "fail",
+          msg: "데이터 없음",
+        });
       }
       res.status(200).json({
         respons: "success",
@@ -158,44 +179,18 @@ const artDetail = async (req, res) => {
     const { postId } = req.params;
     if (postId) {
       //상세 페이지 데이터
-      const detail = await Post.find({ postId });
-      //배열 일때 동작
-      for (let i of detail) {
-        //이미지 값
-        const images = await postImg.find({ postId: i.postId });
-        // detail.imageUrl 에 추가
-        i.imageUrl = images;
+      const detail = await Post.findOne({ postId });
+      let img = await postImg.find({ postId });
+      for (let i = 0; i < img.length; i++) {
+        detail.imageUrl.push(img[i].imageUrl);
       }
-      /* const detail = await Post.aggregate([
-        {$match:{postId:postId}},
-        {
-          $lookup: { 
-            from: 'postimages', 
-            let: { postId: "$postId" }, 
-            pipeline: [{ $match: 
-              { $expr: 
-                { $and: 
-                  [ {$eq: ["$postId", "$$postId"]} ] 
-                } 
-              } 
-            }], 
-            as: 'imageUrl' 
-          }, 
-          
-          }, 
-          { 
-            $match: { 'imageUrl': {$ne: []} }
-          }
-      ]); */
 
-      /* console.log(detail[0].imageUrl); */
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({ user: detail[0].uesr })
+      const getUser = await Post.find({ user: detail.uesr })
         .sort("-createdAt")
         .limit(4);
-      console.log(getUser);
       for (let j of getUser) {
-        const images = await postImg.find({ postId: getUser.postId });
+        const images = await postImg.find({ postId: j.postId });
         j.imageUrl = images;
       }
       res.status(200).json({
@@ -204,22 +199,6 @@ const artDetail = async (req, res) => {
         data: { detail, getUser },
       });
     }
-    /* const userPost = await Post.findOne({user , postId});
-     if(userPost.done === false){ 
-      //user로 post  확인
-      const artPost1 = await Post.findOne({user}).exec();
-      const detail = await Post.findOne({postId}).exec();
-      console.log(artPost1)
-      //작성 유저 인지 확인 조건
-      if(detail.postId === artPost1.postId){
-        //조건 통과시 true값으로 변환
-        const data = await Post.updateOne({postId},{$set:{done:true}})
-        res.status(200).send({
-          respons:'success',
-          msg:'판매 완료',
-          data: data.done
-        });
-      }; */
   } catch (error) {
     res.status(200).json({
       respons: "fail",
@@ -227,70 +206,103 @@ const artDetail = async (req, res) => {
     });
   }
 };
-
-//작성 api(구현 완료)
-const artPost = async (req, res) => {
+// 작품 상태 변환
+const done = async (req, res) => {
   try {
-    const { user } = res.locals;
+    const { postId } = req.params;
+    const { userId } = res.locals.user;
+    const userPost = await Post.findOne({ userId, postId });
 
-    //req.body를 받음
-    const {
-      postTitle,
-      postContent,
-      category,
-      transaction,
-      changeAddress,
-      price,
-      postSize,
-    } = req.body;
-
-    // console.log(req.files);
-    //moment를 이용하여 한국시간으로 날짜생성
-    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
-    //uuid를 사용하여 고유 값생성
-    const postId = uuid();
-    //검증 고유값중복 검증
-    const artPostId = await Post.find({ postId }).exec();
-    //여러장 이미지 저장
-    for (let i = 0; i < req.files.length; i++) {
-      await postImg.create({
-        postId,
-        imageUrl: req.files[i].location,
-        imageNumber: i,
-      });
-    }
-    //조건 postId
-    if (artPostId.postId !== postId) {
-      const artBrod = new Post({
-        postTitle,
-        postContent,
-        category,
-        transaction,
-        changeAddress,
-        postId,
-        price,
-        createdAt,
-        markupCnt: 0,
-        done: false,
-        user,
-        postSize,
-      });
-      await artBrod.save();
-      await User.updateOne(
-        { userId: user.userId },
-        { $push: { myPost: postId } }
+    if (userPost.done === false) {
+      await Post.updateOne(
+        { postId },
+        {
+          $set: {
+            done: true,
+          },
+        }
       );
-      res.status(200).json({
+      res.status(200).send({
         respons: "success",
-        msg: "판매글 생성 완료",
+        msg: "판매 완료",
+      });
+    } else {
+      res.status(200).send({
+        respons: "success",
+        msg: "판매 완료 실패",
       });
     }
   } catch (error) {
     res.status(400).json({
       respons: "fail",
-      msg: "판매글 생성 실패",
+      msg: "데이터를 찾을 수 없음",
     });
   }
+};
+//작성 api(구현 완료)
+const artPost = async (req, res) => {
+  // try {
+  const { user } = res.locals;
+  console.log(user);
+
+  //req.body를 받음
+  const {
+    postTitle,
+    postContent,
+    category,
+    transaction,
+    changeAddress,
+    price,
+    postSize,
+  } = req.body;
+
+  // console.log(req.files);
+  //moment를 이용하여 한국시간으로 날짜생성
+  const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+  //uuid를 사용하여 고유 값생성
+  const postId = uuid();
+  //검증 고유값중복 검증
+  const artPostId = await Post.find({ postId }).exec();
+  //여러장 이미지 저장
+  for (let i = 0; i < req.files.length; i++) {
+    await postImg.create({
+      postId,
+      imageUrl: req.files[i].location,
+      imageNumber: i,
+    });
+  }
+  //조건 postId
+  if (artPostId.postId !== postId) {
+    const artBrod = new Post({
+      postTitle,
+      postContent,
+      category,
+      transaction,
+      changeAddress,
+      postId,
+      price,
+      createdAt,
+      markupCnt: 0,
+      done: false,
+      user,
+      postSize,
+    });
+    await artBrod.save();
+    // await User.updateOne(
+    //   { userId: user.userId },
+    //   { $push: { myPost: postId } }
+    // );
+    res.status(200).json({
+      respons: "success",
+      msg: "판매글 생성 완료",
+    });
+  }
+  // } catch (error) {
+  //   res.status(400).json({
+  //     respons: "fail",
+  //     msg: "판매글 생성 실패",
+  //   });
+  // }
 };
 
 //api 수정(구현완료)
@@ -299,7 +311,6 @@ const artUpdate = async (req, res) => {
     const { userId } = res.locals.user;
     //수정할 파라미터 값
     const { postId } = req.params;
-    console.log(postId);
     //바디로 받을 데이터
     const {
       postTitle,
@@ -391,7 +402,6 @@ const artUpdate = async (req, res) => {
       else {
         if (Array.isArray(imgDt) && imgDt.length > 0) {
           for (let i = 0; i < imgDt.length; i++) {
-            console.log(imgDt[i]);
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
         } else {
@@ -527,4 +537,5 @@ module.exports = {
   artUpdate,
   artdelete,
   markupCnt,
+  done,
 };

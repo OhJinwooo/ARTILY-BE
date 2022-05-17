@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("../routes/multer/uploads");
+const upload = require("./multer/uploads");
 const middleswares = require("../middleware/authMiddleWare");
 const {
   review,
@@ -13,8 +13,8 @@ const {
 //리뷰조회
 router.get("/review", review);
 
-//리뷰상세조회;
-router.get("/review/:reviewId", review_detail);
+//리뷰상세조회
+router.get("/review/detail/:reviewId", review_detail);
 
 //리뷰작성
 router.post(
