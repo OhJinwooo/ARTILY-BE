@@ -112,10 +112,31 @@ const follower = async (req, res) => {
   }
 };
 
+//팔로워 삭제
+const deleteFollower = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const myId = res.locals.userId;
+    const followers = await Follow.findOne({ userId, followId: myId });
+    console.log(followers);
+    if (followers) {
+      await Follow.deleteOne({ userId, followId: myId });
+      await User.updateOne({ userId }, { $inc: { followCnt: -1 } });
+      await User.updateOne({ userId: myId }, { $inc: { followerCnt: -1 } });
+      return res.status(200).json({ success: true, msg: "삭제완료" });
+    } else {
+      return res.status(400).send({ msg: "이미 삭제되었습니다." });
+    }
+  } catch (err) {
+    res.status(400).send("팔로워 삭제 실패");
+  }
+};
+
 module.exports = {
   addfollow,
   follow,
   follower,
   myFollow,
   myFollower,
+  deleteFollower,
 };
