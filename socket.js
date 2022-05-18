@@ -72,8 +72,8 @@ module.exports = (server) => {
     });
 
     socket.on("join_room", async (roomName, targetUser, post) => {
-      const a = await io.sockets.manager.roomClients[socket.id];
-      console.log("@@@@@@@@@@@@", a);
+      // const a = await io.sockets.manager.roomClients[socket.id];
+      // console.log("@@@@@@@@@@@@", a);
       socket.join(roomName);
       console.log(socket.id, socket.nickname);
       // const { userId, nickname, profileImage } = socket;
