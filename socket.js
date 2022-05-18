@@ -59,6 +59,7 @@ module.exports = (server) => {
     //   const rooms = await Chat.find({}, "post");
     //   socket.emit("roomList", rooms);
     // });
+
     // const result = await chatData.find({ userId }, "enteringRoom");
     // for (let i = 0; i < result.length; i++) {
     //   socket.join(result[i].enteringRoom);
@@ -73,7 +74,7 @@ module.exports = (server) => {
 
     socket.on("join_room", async (roomName, targetUser, post) => {
       // const a = await io.sockets.manager.roomClients[socket.id];
-      // console.log("@@@@@@@@@@@@", a);
+      console.log("@@@@@@@@@@@@", roomName);
       socket.join(roomName);
       console.log(socket.id, socket.nickname);
       // const { userId, nickname, profileImage } = socket;
