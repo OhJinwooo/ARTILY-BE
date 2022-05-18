@@ -104,10 +104,18 @@ module.exports = (server) => {
       console.log("receive: ", receive);
       // 여기서 이미 존재하는 방인지 검사해서 없을때만 아래구문 실행해야함
       const existRoom = await Chat.findOne({ roomName: roomName });
+      const existRomms = await chatData.findOne({ enteringRoom: roomName });
+      console.log("existRomms", existRomms);
       // console.log("existRoom", existRoom);
       if (!existRoom) {
         await Chat.create(receive);
         socket.to(target.userId).emit("join_room", receive);
+      }
+      if (!existRomms) {
+        await chatData.updateOne(
+          { userId },
+          { $push: { enteringRoom: roomName } }
+        );
       }
     });
     socket.on("enter_room", (roomName) => {

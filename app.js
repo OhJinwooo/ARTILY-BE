@@ -85,17 +85,17 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 //   }
 // });
 
-const server = https.createServer(credentials, app);
-socket(server);
+// const server = https.createServer(credentials, app);
+// socket(server);
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
 // });
-// app.listen(httpPort, () => {
-//   console.log("http " + httpPort + " server start");
-// });
-http.createServer(app_low).listen(httpPort, () => {
+app.listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
 });
-server.listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start");
-});
+// http.createServer(app_low).listen(httpPort, () => {
+//   console.log("http " + httpPort + " server start");
+// });
+// server.listen(httpsPort, () => {
+//   console.log("https " + httpsPort + " server start");
+// });
