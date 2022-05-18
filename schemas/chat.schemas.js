@@ -6,9 +6,6 @@ const ChatSchema = new mongoose.Schema({
   post: {
     type: Object,
   },
-  CreateUser: {
-    type: Object,
-  },
   TargetUser: {
     type: Object,
   },

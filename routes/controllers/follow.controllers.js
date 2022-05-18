@@ -43,7 +43,7 @@ const addfollow = async (req, res) => {
 };
 
 //내 팔로잉 리스트 조회
-const getFollow = async (req, res) => {
+const myFollow = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     const follow = await Follow.find(
@@ -58,11 +58,31 @@ const getFollow = async (req, res) => {
 };
 
 //내 팔로워 리스트 조회
-const getFollower = async (req, res) => {
+const myFollower = async (req, res) => {
   try {
     const { userId } = res.locals.user;
+    const follow = await Follow.find({ followId: userId }, "userId");
+    followerlist = [];
+    for (let i = 0; i < follow.length; i++) {
+      followerlist.push(follow[i].userId);
+    }
+    const follower = await User.find(
+      { userId: followerlist },
+      "userId nickname profileImage"
+    );
+
+    res.status(200).json({ success: true, data: follower });
+  } catch (err) {
+    res.status(400).send("팔로우 목록 조회 실패");
+  }
+};
+
+//다른 유저 팔로잉 리스트 조회
+const follow = async (req, res) => {
+  try {
+    const { userId } = req.params;
     const follow = await Follow.find(
-      { followId: userId },
+      { userId },
       "followId followName profileImage"
     );
 
@@ -72,8 +92,30 @@ const getFollower = async (req, res) => {
   }
 };
 
+//다른 유저 팔로워 리스트 조회
+const follower = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const follow = await Follow.find({ followId: userId }, "userId");
+    followerlist = [];
+    for (let i = 0; i < follow.length; i++) {
+      followerlist.push(follow[i].userId);
+    }
+    const follower = await User.find(
+      { userId: followerlist },
+      "userId nickname profileImage"
+    );
+
+    res.status(200).json({ success: true, data: follower });
+  } catch (err) {
+    res.status(400).send("팔로우 목록 조회 실패");
+  }
+};
+
 module.exports = {
   addfollow,
-  getFollow,
-  getFollower,
+  follow,
+  follower,
+  myFollow,
+  myFollower,
 };

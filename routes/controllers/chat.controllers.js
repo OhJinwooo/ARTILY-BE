@@ -9,9 +9,10 @@ const chatData = async (req, res) => {
   let chatRoomName = [];
   for (let i = 0; i < roomUser.length; i++) {
     const a = roomUser[i].roomName;
+    const b = roomUser[i];
     chattingUser = a.includes(userId);
     if (chattingUser === true) {
-      chatRoomName.push(roomUser);
+      chatRoomName.push(b);
     }
     console.log("chattingUser", chattingUser);
     console.log("chatRoomName", chatRoomName);

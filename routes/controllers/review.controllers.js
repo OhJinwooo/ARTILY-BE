@@ -171,45 +171,6 @@ const review_modify = async (req, res) => {
     // 수정 이미지 URL 가져오기
     const imageUrl = req.files;
 
-<<<<<<< HEAD
-  //기존에 있던 이미지 찾기
-  let img = await ReviewImages.find({ reviewId });
-  console.log("img", img);
-  //기존 이미지들과 수정 이미지들의 값이 다르면 기존 이미지 삭제한 후 수정 이미지로 변경.
-  //기존 이미지 삭제하기 위한 key값 추출
-  if (img.length) {
-    let deleteItems = [];
-    for (let i = 0; i < img.length; i++) {
-      //key값을 string으로 지정
-      deleteItems.push({ Key: String(img[i].imageUrl.split("/")[3]) });
-    }
-    console.log("deleteItems", deleteItems);
-    //s3에서 기존 이미지 삭제하기
-    let params = {
-      Bucket: process.env.BUCKETNAME,
-      Delete: {
-        Objects: deleteItems,
-        Quiet: false,
-      },
-    };
-    //s3 delete 실행
-    s3.deleteObjects(params, function (err, data) {
-      if (err) console.log(err);
-      else console.log("Successfully deleted myBucket/myKey");
-    });
-    // 몽고db에서 이미지 삭제
-    for (let i = 0; i < img.length; i++) {
-      await ReviewImages.deleteOne({ reviewId });
-    }
-  }
-  //s3에 수정이미지 업데이트해주기
-  for (let i = 0; i < img_new.length; i++) {
-    await ReviewImages.create({
-      reviewId,
-      imageId: uuid(),
-      imageUrl: img_new[i],
-    });
-=======
     // 수정 이미지 하나씩 빼서 배열에 저장
     let img_new = [];
     for (let i = 0; i < imageUrl.length; i++) {
@@ -219,6 +180,7 @@ const review_modify = async (req, res) => {
 
     let img = await ReviewImages.find({ reviewId, imageId });
     console.log("imglength", img.length, img);
+
     let imgList = [];
     for (let i = 0; i < img.length; i++) {
       imgList.push(img[i].imageUrl);
@@ -307,7 +269,6 @@ const review_modify = async (req, res) => {
       respons: "fail",
       msg: "수정 실패",
     });
->>>>>>> eb952f7b1fce8acc4fa761ec194f919e3bd19941
   }
 };
 

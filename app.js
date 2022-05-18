@@ -90,18 +90,12 @@ socket(server);
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
 // });
-server.listen(httpPort, () => {
-  console.log("http " + httpPort + " server start");
-});
-<<<<<<< HEAD
-// http.createServer(app_low).listen(httpPort, () => {
+// app.listen(httpPort, () => {
 //   console.log("http " + httpPort + " server start");
 // });
-// https.createServer(credentials, app).listen(httpsPort, () => {
-//   console.log("https " + httpsPort + " server start");
-// });
-=======
+http.createServer(app_low).listen(httpPort, () => {
+  console.log("http " + httpPort + " server start");
+});
 server.listen(httpsPort, () => {
   console.log("https " + httpsPort + " server start");
 });
->>>>>>> eb952f7b1fce8acc4fa761ec194f919e3bd19941

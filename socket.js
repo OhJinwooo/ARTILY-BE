@@ -5,9 +5,11 @@ const socket = require("socket.io");
 
 module.exports = (server) => {
   const io = socket(server, {
-    path: "/socket.io",
+    // path: "/socket.io",
     cors: {
-      origin: "*:*",
+      origin: "*",
+      // methods: ["GET", "POST"],
+      // credentials: true,
     },
   });
   console.log("socket 연결");
@@ -79,18 +81,18 @@ module.exports = (server) => {
       //   },
       //   "userId nickname profileImage"
       // );
-      // const TargetUser = await chatData.findOne(
-      //   {
-      //     userId: targetUser,
-      //   },
-      //   "userId nickname profileImage"
-      // );
+      const TargetUser = await chatData.findOne(
+        {
+          userId: targetUser,
+        },
+        "userId nickname profileImage"
+      );
       console.log("타겟:", target);
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
         // CreateUser,
-        // TargetUser,
+        TargetUser,
         target: socket.userId,
         nickname: socket.nickname, // 상대의
         profileImage: socket.profileImage, // 상대의
