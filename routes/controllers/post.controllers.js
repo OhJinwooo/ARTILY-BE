@@ -240,7 +240,7 @@ const done = async (req, res) => {
 const artPost = async (req, res) => {
   // try {
   const { user } = res.locals;
-  console.log(user);
+  //console.log(user);
 
   //req.body를 받음
   const {
@@ -319,7 +319,7 @@ const artUpdate = async (req, res) => {
       postSize,
       imgDt,
     } = req.body;
-    const userPost = await Post.findOne({ postId,userId}).exec();
+    const userPost = await Post.findOne({ postId, userId }).exec();
     if (userPost) {
       //moment를 이용하여 한국시간으로 날짜생성
       const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
@@ -327,75 +327,84 @@ const artUpdate = async (req, res) => {
       //key 값을 저장 array
       let deleteItems = [];
       //key값 추출위한 for문
- if(imgDt) {
-    if(Array.isArray(imgDt) && imgDt.length > 0){
-       for (let i = 0; i < imgDt.length; i++) {
-        deleteItems.push({ Key: String(imgDt[i].split("/")[3]) });
+      if (imgDt) {
+        if (Array.isArray(imgDt) && imgDt.length > 0) {
+          for (let i = 0; i < imgDt.length; i++) {
+            deleteItems.push({ Key: String(imgDt[i].split("/")[3]) });
+          }
+        } else {
+          deleteItems.push({ Key: String(imgDt.split("/")[3]) });
+        }
+
+        // 첫번째 값 제외 삭제..
+        let params = {
+          Bucket: process.env.BUCKETNAME,
+          Delete: {
+            Objects: deleteItems,
+            Quiet: false,
+          },
+        };
+        //option을 참조 하여 delete 실행
+        s3.deleteObjects(params, function (err, data) {
+          if (err) console.log(err);
+          else console.log("Successfully deleted myBucket/myKey");
+        });
       }
-    }else {
-      deleteItems.push({ Key: String(imgDt.split("/")[3]) });
-    };
-      
-      // 첫번째 값 제외 삭제..
-       let params = {
-        Bucket: process.env.BUCKETNAME,
-        Delete: {
-          Objects: deleteItems,
-          Quiet: false,
-        },
-      };
-      //option을 참조 하여 delete 실행
-      s3.deleteObjects(params, function (err, data) {
-        if (err) console.log(err);
-        else console.log("Successfully deleted myBucket/myKey");
-      });
-     };
-    console.log('기기긱')
-    if(Array.isArray(imgDt) && imgDt.length > 0 && imgDt.length === req.files.length){
-      for(let i = 0; i<imgDt.length && i< req.files.length; i++){
-        await postImg.updateOne(
-          {imageUrl:imgDt[i]},
-          {
-            $set:
+      console.log("기기긱");
+      if (
+        Array.isArray(imgDt) &&
+        imgDt.length > 0 &&
+        imgDt.length === req.files.length
+      ) {
+        for (let i = 0; i < imgDt.length && i < req.files.length; i++) {
+          await postImg.updateOne(
+            { imageUrl: imgDt[i] },
             {
-              imageUrl:req.files[i].location
+              $set: {
+                imageUrl: req.files[i].location,
+              },
             }
-          }
           );
-      };
-    }else if(Array.isArray(imgDt) === false && req.files.length === 1){
-      console.log('ddddd')
+        }
+      } else if (Array.isArray(imgDt) === false && req.files.length === 1) {
+        console.log("ddddd");
         await postImg.updateOne(
-          {imageUrl:imgDt},
+          { imageUrl: imgDt },
           {
-            $set:{
-              imageUrl:req.files[0].location
-            }
+            $set: {
+              imageUrl: req.files[0].location,
+            },
           }
-          )
-    }
-    
-    else {
-      console.log('여기입니다')
-      if(Array.isArray(imgDt) === false){
-        await postImg.deleteOne({imageUrl:imgDt});
-      }else{
-        console.log('hrt')
-        for(let i = 0 ; i<imgDt.length; i++){
-          await postImg.deleteOne({imageUrl:imgDt[i]})
+        );
+      } else {
+        console.log("여기입니다");
+        if (Array.isArray(imgDt) === false) {
+          await postImg.deleteOne({ imageUrl: imgDt });
+        } else {
+          console.log("hrt");
+          for (let i = 0; i < imgDt.length; i++) {
+            await postImg.deleteOne({ imageUrl: imgDt[i] });
+          }
+        }
+        if (req.files.length > 0) {
+          console.log("ooo");
+          console.log(req.files);
+          const max = await postImg
+            .findOne({ postId })
+            .sort("-imageNumber")
+            .exec();
+          let num = max.imageNumber + 1;
+          for (let i = 0; i < req.files.length; i++) {
+            await postImg.create({
+              postId,
+              imageUrl: req.files[i].location,
+              imageNumber: (num += i),
+            });
+          }
         }
       }
-      if(req.files.length > 0){
-        console.log('ooo')
-        console.log(req.files)
-      const max = await postImg.findOne({postId}).sort('-imageNumber').exec();
-      let num = max.imageNumber + 1
-      for(let i = 0; i<req.files.length; i++){
-        await postImg.create({postId,imageUrl:req.files[i].location,imageNumber:num += i})
-      }}
-    }
-     
-         //업데이트
+
+      //업데이트
       await Post.updateOne(
         { postId },
         {
@@ -436,7 +445,7 @@ const artdelete = async (req, res) => {
     const postUser = await Post.findOne({ userId, postId }).exec();
     if (postUser) {
       //이미지 URL 가져오기 위한 로직
-      const image = await postImg.find({postId})
+      const image = await postImg.find({ postId });
       // 복수의 이미지를 삭제 변수(array)
       let deleteItems = [];
       //imageUrl이 array이 때문에 접근하기 위한 for문
