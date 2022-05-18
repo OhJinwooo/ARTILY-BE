@@ -42,9 +42,9 @@ const getHome = async (req, res) => {
 
     const bestReview = await Review.find(
       {},
-      "reviewId imageUrl reviewTitle reviewContent likeCnt user"
+      "reviewId imageUrl reviewTitle reviewContent likeCnt nickname profileImage"
     )
-      .sort("-Likecount")
+      .sort("-likeCnt")
       .limit(4);
     if (bestReview.length) {
       for (let i of bestReview) {
