@@ -44,14 +44,14 @@ const review = async (req, res) => {
       }
     }
 
-    if (seller.length) {
-      for (let sellerInfo of seller) {
-        const imgs = await PostImages.find({ postId: Post.postId });
-        console.log("imgs", imgs);
-        Post.imageUrl = imgs;
-      }
-      console.log("seller.imageUrl", seller.imageUrl);
-    }
+    // if (seller.length) {
+    //   for (let sellerInfo of seller) {
+    //     const imgs = await PostImages.find({ postId: sellerInfo.postId });
+    //     console.log("imgs", imgs);
+    //     sellerInfo.imageUrl = imgs;
+    //   }
+    //   console.log("seller.imageUrl", seller.imageUrl);
+    // }
     res.json({ reviews });
   } catch (err) {
     console.error(err);
