@@ -83,7 +83,6 @@ module.exports = (server) => {
       // const { userId, nickname, profileImage } = socket;
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
       console.log("targetUser", targetUser);
-      const target = await User.findOne({ userId: targetUser });
 
       // const CreateUser = await chatData.findOne(
       //   {
@@ -97,7 +96,6 @@ module.exports = (server) => {
         },
         "userId nickname profileImage"
       );
-      console.log("타겟:", target);
 
       const nowUser = {
         userId: socket.userId,
@@ -128,11 +126,15 @@ module.exports = (server) => {
       // console.log("existRoom", existRoom);
       if (!existRoom) {
         await Chat.create(saveData); // 유저정보 둘다 있는 데이터
-        socket.to(target.userId).emit("join_room", receive);
+        socket.to(TargetUser.userId).emit("join_room", receive);
       }
       if (!existRooms) {
         await chatData.updateOne(
           { userId },
+          { $push: { enteringRoom: roomName } }
+        );
+        await chatData.updateOne(
+          { userId: TargetUser.userId },
           { $push: { enteringRoom: roomName } }
         );
       }
@@ -142,15 +144,7 @@ module.exports = (server) => {
     });
     socket.on("send_message", async (messageData) => {
       console.log("send_message 받은거:", messageData.roomName);
-      const existRomms = await chatData.findOne({
-        enteringRoom: messageData.roomName,
-      });
-      if (!existRomms) {
-        await chatData.updateOne(
-          { userId },
-          { $push: { enteringRoom: messageData.roomName } }
-        );
-      }
+
       //메시지를 받을 때 마다 읽지않았을 때 +1
       //lastMessage 업데이트
       //lastTime 업데이트
