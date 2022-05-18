@@ -61,10 +61,12 @@ module.exports = (server) => {
     //   socket.emit("roomList", rooms);
     // });
 
-    // const result = await chatData.find({ userId }, "enteringRoom");
-    // for (let i = 0; i < result.length; i++) {
-    //   socket.join(result[i].enteringRoom);
-    // }
+    const result = await chatData.find({ userId }, "enteringRoom");
+    if (result.length > 0) {
+      for (let i = 0; i < result.length; i++) {
+        socket.join(result[i].enteringRoom);
+      }
+    }
 
     socket.broadcast.emit("user connected", {
       userId,
