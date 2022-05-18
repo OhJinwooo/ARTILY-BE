@@ -28,7 +28,7 @@ const review = async (req, res) => {
 
     const reviews = await Review.find(
       {},
-      "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category seller.imageUrl"
+      "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
     )
       .sort("-createdAt")
       .skip(skip)
@@ -43,15 +43,6 @@ const review = async (req, res) => {
         review.images = imgs;
       }
     }
-
-    // if (seller.length) {
-    //   for (let sellerInfo of seller) {
-    //     const imgs = await PostImages.find({ postId: sellerInfo.postId });
-    //     console.log("imgs", imgs);
-    //     sellerInfo.imageUrl = imgs;
-    //   }
-    //   console.log("seller.imageUrl", seller.imageUrl);
-    // }
     res.json({ reviews });
   } catch (err) {
     console.error(err);
