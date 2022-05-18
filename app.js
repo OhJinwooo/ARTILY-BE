@@ -87,10 +87,8 @@ app_low.use((req, res, next) => {
 
 const server = https.createServer(credentials, app);
 socket(server);
-// http: server.listen(port, () => {
-//   console.log(port, "서버가 연결되었습니다.");
-// });
-// server.listen(httpPort, () => {
+
+// app.listen(httpPort, () => {
 //   console.log("http " + httpPort + " server start");
 // });
 http.createServer(app_low).listen(httpPort, () => {

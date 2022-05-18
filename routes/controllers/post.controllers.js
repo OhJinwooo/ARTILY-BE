@@ -5,6 +5,8 @@ const User = require("../../schemas/user.schemas");
 const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
+const buyPost = require('../../schemas/buy.schemas');
+const chatpost = require('../../schemas/chat.schemas');
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -24,9 +26,9 @@ const getHome = async (req, res) => {
     //limt함수 사용 보여주는 데이터 숫자 제한
     const bestPost = await Post.find(
       {},
-      "postId postTitle imageUrl transaction price markupCnt changeAddress user"
+      "postId postTitle imageUrl transaction price markupCnt createdAt changeAddress user"
     )
-      .sort("-markupCnt")
+      .sort({createdAt:-1,markupCnt:-1})
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
@@ -34,7 +36,7 @@ const getHome = async (req, res) => {
         i.imageUrl = imges;
       }
     }
-    console.log(bestPost[0].imageUrl);
+    
     const bestWriter = [];
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
@@ -208,9 +210,12 @@ const done = async (req, res) => {
   try {
     const { postId } = req.params;
     const { userId } = res.locals.user;
+    const data = req.body
+    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
 
     if (userPost.done === false) {
+      await buyPost.create({createdAt,userId:data.userId,postId});
       await Post.updateOne(
         { postId },
         {
@@ -219,9 +224,11 @@ const done = async (req, res) => {
           },
         }
       );
+     const chat = await chatpost.find({CreateUser:data.userId});
       res.status(200).send({
         respons: "success",
         msg: "판매 완료",
+        chat
       });
     } else {
       res.status(200).send({
@@ -238,9 +245,8 @@ const done = async (req, res) => {
 };
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
-  // try {
+  try {
   const { user } = res.locals;
-  console.log(user);
 
   //req.body를 받음
   const {
@@ -278,7 +284,7 @@ const artPost = async (req, res) => {
       changeAddress,
       postId,
       price,
-      createdAt,
+      createdAt:createdAt,
       markupCnt: 0,
       done: false,
       user,
@@ -294,12 +300,12 @@ const artPost = async (req, res) => {
       msg: "판매글 생성 완료",
     });
   }
-  // } catch (error) {
-  //   res.status(400).json({
-  //     respons: "fail",
-  //     msg: "판매글 생성 실패",
-  //   });
-  // }
+  } catch (error) {
+    res.status(400).json({
+      respons: "fail",
+      msg: "판매글 생성 실패",
+    });
+  }
 };
 
 //api 수정(구현완료)
