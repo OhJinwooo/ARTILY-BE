@@ -75,12 +75,12 @@ module.exports = (server) => {
       console.log("targetUser", targetUser);
       const target = await User.findOne({ userId: targetUser });
 
-      const CreateUser = await chatData.findOne(
-        {
-          userId: socket.id,
-        },
-        "userId nickname profileImage"
-      );
+      // const CreateUser = await chatData.findOne(
+      //   {
+      //     userId: socket.id,
+      //   },
+      //   "userId nickname profileImage"
+      // );
       const TargetUser = await chatData.findOne(
         {
           userId: targetUser,
@@ -91,7 +91,7 @@ module.exports = (server) => {
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        CreateUser,
+        // CreateUser,
         TargetUser,
         target: socket.userId,
         nickname: socket.nickname, // 상대의
