@@ -1,6 +1,7 @@
 require("dotenv").config();
 const Review = require("../../schemas/review.schemas");
 const ReviewImages = require("../../schemas/reviewImage.schemas");
+const PostImages = require("../../schemas/postImage.schemas");
 const Post = require("../../schemas/post.schemas");
 const User = require("../../schemas/user.schemas");
 const moment = require("moment");
@@ -24,8 +25,6 @@ const review = async (req, res) => {
     limit = !isNaN(limit) ? limit : 6;
     //제외할 데이터 지정 == 다음 페이지 시작점
     let skip = (page - 1) * limit;
-
-    //다음페이지가 없으면 없다고 프론트에 전해주기
 
     const reviews = await Review.find(
       {},
@@ -56,8 +55,8 @@ const review_detail = async (req, res) => {
     const { reviewId } = req.params;
     // console.log(reviewId);
 
-    //리뷰를 작성한 user 정보
-    //구매한 작품&작가 정보 찾기
+    //buyer & seller
+    //리뷰를 작성한 user 정보 & 구매한 작품&작가 정보 찾기
     let buyer = await Review.find({ reviewId });
     console.log("buyer", buyer);
     let s_userId = "";
@@ -70,6 +69,13 @@ const review_detail = async (req, res) => {
       s_userId = buyer[0].seller.user.userId;
       console.log("s_userId", s_userId);
 
+      // seller의 imageUrl 찾아서 보내주기
+      const sellerPostId = buyer[0].seller.postId;
+      let seller_img = await PostImages.findOne({ postId: sellerPostId });
+      let sellerImg = seller_img.imageUrl;
+      buyer[0].seller.imageUrl = sellerImg;
+
+      //defferents
       //내가 구매한 작가의 다른 작품들 찾기
       let defferents = await Post.find(
         { "user.userId": s_userId },
@@ -78,18 +84,35 @@ const review_detail = async (req, res) => {
       console.log("defferents", defferents);
 
       // 판매자의 물품들(postId)
-      let seller_postId = [];
-      let defferent = "";
       if (defferents) {
+        let seller_postId = [];
         for (let i = 0; i < defferents.length; i++) {
           seller_postId.push(defferents[i].postId);
         }
-
         console.log("seller_postId", seller_postId);
 
-        defferent = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
+        //상단에 노출된 물품은 제외하고 추출
+        filtering = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
+        console.log("filtering", filtering);
+
+        let defferentInfo = await Post.find(
+          { postId: filtering },
+          "postId postTitle price imageUrl"
+        );
+        console.log("defferentInfo", defferentInfo);
+
+        //판매물품들 정보에 이미지 합치기
+        for (let info of defferentInfo) {
+          const imgs = await PostImages.findOne({ postId: info.postId });
+          console.log("info.postId", info.postId);
+          console.log("imgs.imageUrl", imgs.imageUrl);
+          info.imageUrl = imgs.imageUrl;
+        }
+        console.log("합치기", defferentInfo);
+        res.json({ buyer, defferentInfo });
+      } else {
+        res.json({ buyer });
       }
-      res.json({ buyer, defferents });
     } else {
       return res.send({ msg: "해당 게시글이 없습니다." });
     }
@@ -98,6 +121,7 @@ const review_detail = async (req, res) => {
     res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
   }
 };
+//};
 //리뷰 작성
 const review_write = async (req, res) => {
   // middlewares유저정보 가져오기
@@ -106,12 +130,8 @@ const review_write = async (req, res) => {
   const { nickname } = user;
   const { profileImage } = user;
   const { postId } = req.params;
-  let seller = await Post.findOne(
-    { postId },
-    "category postId postTitle price imageUrl user.userId user.nickname user.profileImage"
-  );
+  const reviewId = uuid();
 
-  console.log("ss", seller);
   //작성한 정보 가져옴
   const { reviewTitle, reviewContent } = req.body;
   if (!reviewTitle || !reviewContent) {
@@ -119,7 +139,16 @@ const review_write = async (req, res) => {
   }
   console.log(reviewTitle, reviewContent); //ok
 
-  const reviewId = uuid();
+  // 리뷰작성시각 생성
+  require("moment-timezone");
+  moment.tz.setDefault("Asia/Seoul");
+  const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
+
+  let seller = await Post.findOne(
+    { postId },
+    "category postId postTitle price imageUrl user.userId user.nickname user.profileImage"
+  );
+  console.log("ss", seller);
 
   // 이미지에서 location정보만 저장해줌
   if (req.files.length) {
@@ -132,11 +161,6 @@ const review_write = async (req, res) => {
       });
     }
   }
-
-  // 리뷰작성시각 생성
-  require("moment-timezone");
-  moment.tz.setDefault("Asia/Seoul");
-  const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
 
   try {
     const ReviewList = await Review.create({
@@ -182,6 +206,7 @@ const review_modify = async (req, res) => {
 
     let img = await ReviewImages.find({ reviewId, imageId });
     console.log("imglength", img.length, img);
+
     let imgList = [];
     for (let i = 0; i < img.length; i++) {
       imgList.push(img[i].imageUrl);
@@ -272,6 +297,7 @@ const review_modify = async (req, res) => {
     });
   }
 };
+
 //리뷰 삭제
 const review_delete = async (req, res) => {
   const { reviewId } = req.params;
