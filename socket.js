@@ -12,6 +12,7 @@ module.exports = (server) => {
       // credentials: true,
     },
   });
+
   console.log("socket 연결");
   io.use(async (socket, next) => {
     const userInfo = socket.handshake.auth.user;
@@ -95,27 +96,39 @@ module.exports = (server) => {
         "userId nickname profileImage"
       );
       console.log("타겟:", target);
+
+      const nowUser = {
+        userId: socket.userId,
+        nickname: socket.nickname,
+        profileImage: socket.profileImage,
+      };
+
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
         // CreateUser,
-        targetUser: TargetUser,
+        targetUser: nowUser,
         messages: [], //msgList
         newMessage: 0,
         lastMessage: "",
         lastTime: "",
       };
+
+      const saveData = {
+        ...receive,
+        targetUser2: TargetUser,
+      };
       console.log("receive: ", receive);
       // 여기서 이미 존재하는 방인지 검사해서 없을때만 아래구문 실행해야함
       const existRoom = await Chat.findOne({ roomName: roomName });
-      const existRomms = await chatData.findOne({ enteringRoom: roomName });
-      console.log("existRomms", existRomms);
+      const existRooms = await chatData.findOne({ enteringRoom: roomName });
+      console.log("existRooms", existRooms);
       // console.log("existRoom", existRoom);
       if (!existRoom) {
-        await Chat.create(receive);
+        await Chat.create(saveData); // 유저정보 둘다 있는 데이터
         socket.to(target.userId).emit("join_room", receive);
       }
-      if (!existRomms) {
+      if (!existRooms) {
         await chatData.updateOne(
           { userId },
           { $push: { enteringRoom: roomName } }
