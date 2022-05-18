@@ -154,16 +154,15 @@ module.exports = (server) => {
       const receive = {
         roomName: messageData.roomName,
         from: false,
-        // message: messageData.message,
-        // time: messageData.time,
-        message: existRoom.lastMessage,
-        time: existRoom.lastTime,
+        message: messageData.message,
+        time: messageData.time,
+        // message: existRoom.lastMessage,
+        // time: existRoom.lastTime,
       };
       socket.to(messageData.roomName).emit("receive_message", receive);
 
       const saveChat = {
         from: socket.id, // 보낸사람 유저아이디
-        target: messageData.postUser, // 타겟인 유저 아이디값 받아오기
         message: messageData.message,
         time: messageData.time,
       };

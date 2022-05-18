@@ -58,14 +58,8 @@ const chatData = async (req, res) => {
       console.log("last", lastMessage);
       console.log("lastMessage.message", lastMessage.message);
     }
-    await ChatData.updateOne(
-      { userId },
-      { $set: { lastMessage: lastMessage.message } }
-    );
-    await ChatData.updateOne(
-      { userId },
-      { $set: { lastMessage: lastMessage.time } }
-    );
+    await Chat.updateOne({}, { $set: { lastMessage: lastMessage.message } });
+    await Chat.updateOne({}, { $set: { lastTime: lastMessage.time } });
   }
   let chatRoomName = [];
   for (let i = 0; i < roomUser.length; i++) {
