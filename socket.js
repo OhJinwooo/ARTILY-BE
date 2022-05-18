@@ -59,7 +59,7 @@ module.exports = (server) => {
     //   const rooms = await Chat.find({}, "post");
     //   socket.emit("roomList", rooms);
     // });
-    const result = await chatData.find({}, "enteringRoom");
+    const result = await chatData.find({ userId }, "enteringRoom");
     for (let i = 0; i < result.length; i++) {
       socket.join(result[i].enteringRoom);
     }
@@ -124,7 +124,15 @@ module.exports = (server) => {
     });
     socket.on("send_message", async (messageData) => {
       console.log("send_message 받은거:", messageData.roomName);
-
+      const existRomms = await chatData.findOne({
+        enteringRoom: messageData.roomName,
+      });
+      if (!existRomms) {
+        await chatData.updateOne(
+          { userId },
+          { $push: { enteringRoom: messageData.roomName } }
+        );
+      }
       //메시지를 받을 때 마다 읽지않았을 때 +1
       //lastMessage 업데이트
       //lastTime 업데이트
@@ -146,6 +154,7 @@ module.exports = (server) => {
       // );
 
       const existRoom = await Chat.findOne({ roomName: messageData.roomName });
+      console.log("sendMessage_roomName", messageData.roomName);
       // const receiveMessage= await  Chat.find({userId})
       if (!existRoom) {
         throw new error();
