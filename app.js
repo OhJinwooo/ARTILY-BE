@@ -65,14 +65,14 @@ app.use("/api", [
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 인증서 파트
-// const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
-// const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
-// const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
-// const credentials = {
-//   key: privateKey,
-//   cert: certificate,
-//   ca: ca,
-// };
+const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
+const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
+const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca,
+};
 // HTTP 리다이렉션 하기
 // app_low : http전용 미들웨어
 app_low.use((req, res, next) => {
@@ -90,12 +90,12 @@ socket(server);
 // http: server.listen(port, () => {
 //   console.log(port, "서버가 연결되었습니다.");
 // });
-app.listen(httpPort, () => {
-  console.log("http " + httpPort + " server start");
-});
-// http.createServer(app_low).listen(httpPort, () => {
+// app.listen(httpPort, () => {
 //   console.log("http " + httpPort + " server start");
 // });
-// server.listen(httpsPort, () => {
-//   console.log("https " + httpsPort + " server start");
-// });
+http.createServer(app_low).listen(httpPort, () => {
+  console.log("http " + httpPort + " server start");
+});
+server.listen(httpsPort, () => {
+  console.log("https " + httpsPort + " server start");
+});
