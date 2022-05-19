@@ -62,7 +62,10 @@ const getProfile = async (req, res) => {
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
-        myPost.imageUrl = images;
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
       }
     }
 
@@ -76,7 +79,10 @@ const getProfile = async (req, res) => {
         const images = await ReviewImage.findOne({
           reviewId: myReview.reviewId,
         });
-        myReview.imageUrl = images;
+        myReview.images = images;
+        if (myReview.images === null) {
+          myReview.images = [""];
+        }
       }
     }
     const markUpPost = await Markup.find({ userId }, "postId");
@@ -95,7 +101,10 @@ const getProfile = async (req, res) => {
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
-        markUp.imageUrl = images;
+        markUp.images = images;
+        if (markUp.images === null) {
+          markUp.images = [""];
+        }
       }
     }
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
@@ -127,9 +136,9 @@ const myProfile = async (req, res) => {
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
-        myPost.imageUrl = images;
-        if (myPost.imageUrl === null) {
-          myPost.imageUrl = [""];
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
         }
       }
     }
@@ -144,9 +153,9 @@ const myProfile = async (req, res) => {
         const images = await ReviewImage.findOne({
           reviewId: myReview.reviewId,
         });
-        myReview.imageUrl = images;
-        if (myReview.imageUrl === null) {
-          myReview.imageUrl = [""];
+        myReview.images = images;
+        if (myReview.images === null) {
+          myReview.images = [""];
         }
       }
     }
@@ -167,9 +176,9 @@ const myProfile = async (req, res) => {
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
-        markUp.imageUrl = images;
-        if (markUp.imageUrl === null) {
-          markUp.imageUrl = [""];
+        markUp.images = images;
+        if (markUp.images === null) {
+          markUp.images = [""];
         }
       }
     }
@@ -398,9 +407,9 @@ const getMyPost = async (req, res) => {
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
-        myPost.imageUrl = images;
-        if (myPost.imageUrl === null) {
-          myPost.imageUrl = [""];
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
         }
       }
       res.status(200).json({ myPosts });
