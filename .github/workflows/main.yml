@@ -10,17 +10,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.REMOTE_IP }}
-          username: ${{ secrets.REMOTE_SSH_ID }}
-          key: ${{ secrets.REMOTE_SSH_KEY }}
-          port: ${{ secrets.REMOTE_SSH_PORT }}
-          script: |
-            cd /home/ubuntu/Project-BE
-            # git config --global --add safe.directory /home/ubuntu/HH99FinalProject_BE
-            sudo git pull
-            # sudo npm update
-            sudo npm install
-            sudo pm2 reload all
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.REMOTE_IP }}
+        username: ${{ secrets.REMOTE_SSH_ID }}
+        key: ${{ secrets.REMOTE_SSH_KEY }}
+        port: ${{ secrets.REMOTE_SSH_PORT }}
+        script: |
+          cd /home/ubuntu/Project-BE
+          # git config --global --add safe.directory /home/ubuntu/HH99FinalProject_BE
+          sudo git pull
+          # sudo npm update
+          sudo npm install
+          sudo pm2 reload all
