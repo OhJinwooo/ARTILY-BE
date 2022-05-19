@@ -92,7 +92,7 @@ socket(server);
 //   console.log("http " + httpPort + " server start");
 // });
 http.createServer(app_low).listen(httpPort, () => {
-  console.log("http " + httpPort + " server start@@@@@!!!!!!!!!!!!!");
+  console.log("http " + httpPort + " server start@@@@@!!!!!!!!!!!찐막!!");
 });
 server.listen(httpsPort, () => {
   console.log("https " + httpsPort + " server start@@@!!!!!!!!!!!!되라 좀");
