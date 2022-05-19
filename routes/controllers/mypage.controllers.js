@@ -307,6 +307,9 @@ const getMyPost = async (req, res) => {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
         myPost.imageUrl = images;
+        if (myPost.imageUrl === null) {
+          myPost.imageUrl = [""];
+        }
       }
       res.status(200).json({ myPosts });
     }
