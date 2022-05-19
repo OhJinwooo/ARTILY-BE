@@ -6,6 +6,9 @@ const Markup = require("../../schemas/markUp.schemas");
 const PostImage = require("../../schemas/postImage.schemas");
 const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
+const Follow = require("../../schemas/follow.schemas");
+const ChatData = require("../../schemas/chatData.schemas");
+const Chat = require("../../schemas/chat.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -246,6 +249,51 @@ const updateProfile = async (req, res) => {
           },
         }
       );
+
+      await Follow.updateOne(
+        {
+          followId: userId,
+        },
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
+
+      await ChatData.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "createUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "targetUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
     } else {
       console.log("이미지 없음");
       await User.updateOne(
@@ -280,6 +328,50 @@ const updateProfile = async (req, res) => {
       await Review.updateOne(
         {
           userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Follow.updateOne(
+        {
+          followId: userId,
+        },
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
+
+      await ChatData.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "createUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "targetUser.userId": userId,
         },
         {
           $set: {

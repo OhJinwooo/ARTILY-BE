@@ -150,10 +150,10 @@ module.exports = (server) => {
       //메시지를 받을 때 마다 읽지않았을 때 +1
       //lastMessage 업데이트
       //lastTime 업데이트
-      await Chat.updateOne(
-        { roomName: messageData.roomName },
-        { $inc: { newMessage: 1 } }
-      );
+      // await Chat.updateOne(
+      //   { roomName: messageData.roomName },
+      //   { $inc: { newMessage: 1 } }
+      // );
 
       // await Chat.updateOne(
       //   { roomName: messageData.roomName },
