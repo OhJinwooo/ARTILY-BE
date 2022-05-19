@@ -1,4 +1,5 @@
 const Chat = require("../../schemas/chat.schemas");
+const dayjs = require("dayjs");
 const chatData = async (req, res) => {
   // try {
   const { userId } = res.locals.user;
@@ -51,7 +52,8 @@ const chatData = async (req, res) => {
           newChat[i].createUser = newChat[i].targetUser;
         }
       }
-      newChat.sort((a, b) => b.lastTime - a.lastTime);
+      newChat.sort((a, b) => new dayjs(b.lastTime) - new dayjs(a.lastTime));
+      console.log("@@@@@@@@@@@@", newChat);
       // for (let i of newChat) {
       //   i.lastTime = dayjs(i.lastTime).format("YYYY-MM-DD HH:mm:ss");
       // }
