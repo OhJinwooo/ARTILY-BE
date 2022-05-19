@@ -98,7 +98,7 @@ module.exports = (server) => {
       );
 
       const nowUser = {
-        userId: targetUser.userId,
+        userId: targetUser,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
       };
