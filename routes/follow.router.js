@@ -7,6 +7,7 @@ const {
   follower,
   myFollow,
   myFollower,
+  deleteFollower,
 } = require("./controllers/follow.controllers");
 
 //팔로우
@@ -23,5 +24,8 @@ router.get("/follow/followlist/:userId", middleware, follow);
 
 //다른 유저 리스트 조회
 router.get("/follow/followerlist/:userId", middleware, follower);
+
+//팔로워 삭제
+router.delete("/follow/delete/:userId", middleware, deleteFollower);
 
 module.exports = router;
