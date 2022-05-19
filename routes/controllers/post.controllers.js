@@ -312,7 +312,6 @@ const artPost = async (req, res) => {
         changeAddress,
         postId,
         price,
-        images,
         createdAt: createdAt,
         markupCnt: 0,
         done: false,
