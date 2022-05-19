@@ -192,15 +192,22 @@ const artDetail = async (req, res) => {
     const { postId } = req.params;
     if (postId) {
       //상세 페이지 데이터
-      const detail = await Post.findOne({ postId });
+      const detail = await Post.find({ postId });
       let img = await postImg.find({ postId });
-      for (let i = 0; i < img.length; i++) {
-        detail.images.push(img[i].imageUrl);
+      // for (let i = 0; i < img.length; i++) {
+      //   detail.images.push(img[i].imageUrl);
+      // }
+      for (let j of detail) {
+        const images = await postImg.find({ postId: j.postId });
+        j.images = images;
+        if (j.images === null) {
+          j.images = [""];
+        }
       }
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail.user,
+        user: detail[0].user,
       })
         .sort("-createdAt")
         .limit(4);
