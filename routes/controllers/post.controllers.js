@@ -34,6 +34,9 @@ const getHome = async (req, res) => {
       for (let i of bestPost) {
         const imge = await postImg.findOne({ postId: i.postId });
         i.images = imge;
+        if (i.images === null) {
+          i.images = [""];
+        }
       }
     }
 
@@ -52,6 +55,9 @@ const getHome = async (req, res) => {
       for (let i of bestReview) {
         const imge = await reviewImg.findOne({ reviewId: i.reviewId });
         i.images = imge;
+        if (i.images === null) {
+          i.images = [""];
+        }
       }
     }
     res.status(200).json({
@@ -73,13 +79,13 @@ const artStore = async (req, res) => {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.query;
     const keyword = data.keyword;
-    
+
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
     const price = data.price;
-    
+
     // 일반적인 상태(조건이 없을 때)
     if (
       keyword === undefined &&
@@ -107,6 +113,9 @@ const artStore = async (req, res) => {
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
+        if (i.images === null) {
+          i.images = [""];
+        }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
         return res.status(200).json({
@@ -152,6 +161,9 @@ const artStore = async (req, res) => {
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
+        if (i.images === null) {
+          i.images = [""];
+        }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
         return res.status(200).json({
@@ -186,12 +198,18 @@ const artDetail = async (req, res) => {
         detail.images.push(img[i].imageUrl);
       }
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({postId:{$ne:postId},user:detail.user})
+      const getUser = await Post.find({
+        postId: { $ne: postId },
+        user: detail.user,
+      })
         .sort("-createdAt")
         .limit(4);
       for (let j of getUser) {
         const images = await postImg.find({ postId: j.postId });
         j.images = images;
+        if (j.images === null) {
+          j.images = [""];
+        }
       }
       res.status(200).json({
         respons: "success",
@@ -356,7 +374,7 @@ const artUpdate = async (req, res) => {
           else console.log("Successfully deleted myBucket/myKey");
         });
       }
-      
+
       if (
         Array.isArray(imgDt) &&
         imgDt.length > 0 &&
