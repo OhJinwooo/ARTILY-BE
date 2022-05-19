@@ -323,7 +323,7 @@ const getMyBuy = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     const buyPost = await Buy.find({ userId });
-    const myBuy = await post.find(
+    const myBuy = await Post.find(
       { "user.userId": buyPost },
       "postId postTitle user.nickname imageUrl"
     );
