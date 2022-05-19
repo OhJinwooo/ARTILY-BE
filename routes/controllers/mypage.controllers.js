@@ -127,6 +127,9 @@ const myProfile = async (req, res) => {
         myPost.imageUrl = images;
       }
     }
+    if (myPosts.imageUrl === null) {
+      myPosts.imageUrl = [""];
+    }
 
     const myReviews = await Review.find(
       { userId },
@@ -140,6 +143,9 @@ const myProfile = async (req, res) => {
         });
         myReview.imageUrl = images;
       }
+    }
+    if (myReviews.imageUrl === null) {
+      myReviews.imageUrl = [""];
     }
     const markUpPost = await Markup.find({ userId }, "postId");
     let myMarkups = [];
@@ -158,6 +164,9 @@ const myProfile = async (req, res) => {
         //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.imageUrl = images;
+      }
+      if (myMarkups.imageUrl === null) {
+        myMarkups.imageUrl = [""];
       }
     }
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
