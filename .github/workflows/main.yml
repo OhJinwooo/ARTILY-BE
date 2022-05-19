@@ -13,10 +13,10 @@ jobs:
     - name: Deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.REMOTE_IP }}
-        username: ${{ secrets.REMOTE_SSH_ID }}
-        key: ${{ secrets.REMOTE_SSH_KEY }}
-        port: ${{ secrets.REMOTE_SSH_PORT }}
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
         script: |
           cd /home/ubuntu/Project-BE
           # git config --global --add safe.directory /home/ubuntu/HH99FinalProject_BE
