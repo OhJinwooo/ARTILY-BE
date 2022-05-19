@@ -5,8 +5,8 @@ const User = require("../../schemas/user.schemas");
 const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
-const buyPost = require('../../schemas/buy.schemas');
-const chatpost = require('../../schemas/chat.schemas');
+const buyPost = require("../../schemas/buy.schemas");
+const chatpost = require("../../schemas/chat.schemas");
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -28,7 +28,7 @@ const getHome = async (req, res) => {
       {},
       "postId postTitle imageUrl transaction price markupCnt createdAt changeAddress user"
     )
-      .sort({createdAt:-1,markupCnt:-1})
+      .sort({ createdAt: -1, markupCnt: -1 })
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
@@ -36,7 +36,7 @@ const getHome = async (req, res) => {
         i.imageUrl = imges;
       }
     }
-    
+
     const bestWriter = [];
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
@@ -183,9 +183,9 @@ const artDetail = async (req, res) => {
       for (let i = 0; i < img.length; i++) {
         detail.imageUrl.push(img[i].imageUrl);
       }
-      console.log(detail.user.userId)
+      console.log(detail.user.nickname)
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({postId:{$ne:postId},$match:{user:{userId:detail.user.userId}}})
+      const getUser = await Post.find({postId:{$ne:postId},user:detail.user})
         .sort("-createdAt")
         .limit(4);
       for (let j of getUser) {
@@ -211,12 +211,12 @@ const done = async (req, res) => {
   try {
     const { postId } = req.params;
     const { userId } = res.locals.user;
-    const data = req.body
+    const data = req.body;
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
 
     if (userPost.done === false) {
-      await buyPost.create({createdAt,userId:data.userId,postId});
+      await buyPost.create({ createdAt, userId: data.userId, postId });
       await Post.updateOne(
         { postId },
         {
@@ -225,11 +225,11 @@ const done = async (req, res) => {
           },
         }
       );
-     
+
       res.status(200).send({
         respons: "success",
         msg: "판매 완료",
-        chat
+        chat,
       });
     } else {
       res.status(200).send({
@@ -248,56 +248,56 @@ const done = async (req, res) => {
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
   try {
-  const { user } = res.locals;
+    const { user } = res.locals;
 
-  //req.body를 받음
-  const {
-    postTitle,
-    postContent,
-    category,
-    transaction,
-    changeAddress,
-    price,
-    postSize,
-  } = req.body;
-
-  // console.log(req.files);
-  //moment를 이용하여 한국시간으로 날짜생성
-  const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
-  //uuid를 사용하여 고유 값생성
-  const postId = uuid();
-  //검증 고유값중복 검증
-  const artPostId = await Post.find({ postId }).exec();
-  //여러장 이미지 저장
-  for (let i = 0; i < req.files.length; i++) {
-    await postImg.create({
-      postId,
-      imageUrl: req.files[i].location,
-      imageNumber: i,
-    });
-  }
-  //조건 postId
-  if (artPostId.postId !== postId) {
-    const artBrod = new Post({
+    //req.body를 받음
+    const {
       postTitle,
       postContent,
       category,
       transaction,
       changeAddress,
-      postId,
       price,
-      createdAt:createdAt,
-      markupCnt: 0,
-      done: false,
-      user,
       postSize,
-    });
-    await artBrod.save();
-    res.status(200).json({
-      respons: "success",
-      msg: "판매글 생성 완료",
-    });
-  }
+    } = req.body;
+
+    // console.log(req.files);
+    //moment를 이용하여 한국시간으로 날짜생성
+    const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
+    //uuid를 사용하여 고유 값생성
+    const postId = uuid();
+    //검증 고유값중복 검증
+    const artPostId = await Post.find({ postId }).exec();
+    //여러장 이미지 저장
+    for (let i = 0; i < req.files.length; i++) {
+      await postImg.create({
+        postId,
+        imageUrl: req.files[i].location,
+        imageNumber: i,
+      });
+    }
+    //조건 postId
+    if (artPostId.postId !== postId) {
+      const artBrod = new Post({
+        postTitle,
+        postContent,
+        category,
+        transaction,
+        changeAddress,
+        postId,
+        price,
+        createdAt: createdAt,
+        markupCnt: 0,
+        done: false,
+        user,
+        postSize,
+      });
+      await artBrod.save();
+      res.status(200).json({
+        respons: "success",
+        msg: "판매글 생성 완료",
+      });
+    }
   } catch (error) {
     res.status(400).json({
       respons: "fail",
@@ -526,6 +526,34 @@ const markupCnt = async (req, res) => {
   }
 };
 
+//내가 좋아요한 markupList 보내기
+const markupList = async (req, res) => {
+  try {
+    //유저 정보가 있는지 확인
+    const { user } = res.locals; //ok
+    const { userId } = user; //ok
+    console.log("userId", userId);
+    // 유저정보가 유효한지 확인
+    if (userId > 0) {
+      const markUp = await MarkUp.find({ userId }, "postId");
+      const markUpList = [];
+      for (let i = 0; i < markUp.length; i++) {
+        markUpList.push(markUp[i].postId);
+      }
+      console.log("markUpList", markUpList);
+      return res.status(200).json({ result: "success", markUpList });
+    }
+    return res.status(401).json({
+      response: "fail",
+      msg: "유효하지 않은 토큰입니다",
+    });
+  } catch (error) {
+    res.status(400).json({
+      response: "fail",
+      msg: "알수 없는 오류가 발생했습니다.",
+    });
+  }
+};
 
 module.exports = {
   getHome,
@@ -535,5 +563,6 @@ module.exports = {
   artUpdate,
   artdelete,
   markupCnt,
+  markupList,
   done,
 };
