@@ -29,20 +29,23 @@ module.exports = (server) => {
 
     //기존 사람 데이터가 있음
     if (session) {
+      console.log("데이터가 있음");
       socket.userId = userId;
       socket.nickname = nickname;
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
       await chatData.updateOne({ userId }, { $set: { connected: true } });
+      console.log("db 업데이트");
       return next();
     }
-
+    console.log("데이터가 없음");
     socket.userId = userId;
     socket.nickname = nickname;
     socket.id = userId;
     socket.profileImage = profileImage; // tnwjd
 
     await chatData.create({ userId, nickname, profileImage, connected: true });
+    console.log("DB 생성");
     next();
   });
   io.on("connection", async (socket) => {
