@@ -84,12 +84,12 @@ module.exports = (server) => {
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
       console.log("targetUser", targetUser);
 
-      // const CreateUser = await chatData.findOne(
-      //   {
-      //     userId: socket.id,
-      //   },
-      //   "userId nickname profileImage"
-      // );
+      const createUser = await chatData.findOne(
+        {
+          userId: socket.id,
+        },
+        "userId nickname profileImage"
+      );
       const TargetUser = await chatData.findOne(
         {
           userId: targetUser,
@@ -106,7 +106,7 @@ module.exports = (server) => {
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        // CreateUser,
+        createUser,
         targetUser: nowUser,
         messages: [], //msgList
         newMessage: 0,
@@ -151,8 +151,6 @@ module.exports = (server) => {
       await Chat.updateOne(
         { roomName: messageData.roomName },
         { $inc: { newMessage: 1 } }
-        // { $set: { lastMessage: messageData.message } },
-        // { $set: { lastTime: messageData.time } }
       );
 
       // await Chat.updateOne(
