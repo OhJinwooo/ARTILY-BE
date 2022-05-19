@@ -15,9 +15,6 @@ const ChatSchema = new mongoose.Schema({
   messages: {
     type: Array,
   },
-  newMessage: {
-    type: Number,
-  },
   lastMessage: {
     type: String,
   },

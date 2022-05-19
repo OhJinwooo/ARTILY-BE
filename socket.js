@@ -97,26 +97,25 @@ module.exports = (server) => {
         "userId nickname profileImage"
       );
 
-      const nowUser = {
-        userId: targetUser,
-        nickname: socket.nickname,
-        profileImage: socket.profileImage,
-      };
+      // const nowUser = {
+      //   userId: targetUser,
+      //   nickname: socket.nickname,
+      //   profileImage: socket.profileImage,
+      // };
 
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        createUser,
-        targetUser: nowUser,
+        targetUser: createUser,
         messages: [], //msgList
-        newMessage: 0,
+        // newMessage: 0,
         lastMessage: "",
         lastTime: "",
       };
 
       const saveData = {
         ...receive,
-        targetUser2: TargetUser,
+        createUser: TargetUser,
       };
       console.log("receive: ", receive);
       // 여기서 이미 존재하는 방인지 검사해서 없을때만 아래구문 실행해야함

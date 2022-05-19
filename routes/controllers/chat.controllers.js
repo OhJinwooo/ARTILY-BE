@@ -23,7 +23,7 @@ const chatData = async (req, res) => {
         if (message.length !== 0) {
           lastMessage = message[message.length - 1];
         }
-        const a = await Chat.updateOne(
+        await Chat.updateOne(
           { roomName },
           { $set: { lastMessage: lastMessage.message } }
         );
@@ -45,18 +45,16 @@ const chatData = async (req, res) => {
           }
         }
         const myChat = [];
+        let target = new Boolean();
         for (let i = 0; i < newChat.length; i++) {
-          console.log("createUser", newChat[i].createUser.userId);
-          console.log("targetUser", newChat[i].targetUser.userId);
           if (newChat[i].createUser.userId === userId) {
-            console.log("@@@@@@@@@@@@@@@@", newChat[i].createUser.userId);
-            myChat.push(newChat[i].targetUser);
+            newChat[i].targetUser;
           } else if (newChat[i].targetUser.userId === userId) {
-            console.log("1111111111111", newChat[i].targetUser.userId);
-            myChat.push(newChat[i].createUser);
+            newChat[i].targetUser = newChat[i].createUser;
+            newChat[i].createUser = newChat[i].targetUser;
           }
         }
-        console.log("myChat", myChat);
+        console.log("myChat", newChat);
 
         return res.status(200).json({ newChat });
       } else {
