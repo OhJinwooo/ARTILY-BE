@@ -183,9 +183,9 @@ const artDetail = async (req, res) => {
       for (let i = 0; i < img.length; i++) {
         detail.imageUrl.push(img[i].imageUrl);
       }
-
+      console.log(detail.user.userId)
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({postId:{$ne:postId}, user: detail.uesr })
+      const getUser = await Post.find({postId:{$ne:postId},$match:{user:{userId:detail.user.userId}}})
         .sort("-createdAt")
         .limit(4);
       for (let j of getUser) {
@@ -205,6 +205,7 @@ const artDetail = async (req, res) => {
     });
   }
 };
+
 // 작품 상태 변환
 const done = async (req, res) => {
   try {
@@ -243,6 +244,7 @@ const done = async (req, res) => {
     });
   }
 };
+
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
   try {
@@ -493,7 +495,6 @@ const markupCnt = async (req, res) => {
     const { postId } = req.params;
     const { userId } = res.locals.user;
     const userPost = await Post.findOne({ postId }).exec();
-    console.log("userPost", userPost);
     if (userId !== userPost.uesr) {
       // 갇은 post에 찜했는 지 확인
       const Cnt = await MarkUp.findOne({ userId, postId });

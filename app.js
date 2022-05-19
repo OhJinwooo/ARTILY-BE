@@ -4,7 +4,7 @@ const fs = require("fs");
 const http = require("http");
 const https = require("https");
 const app = express();
-const app_low = express(); //http
+/* const app_low = express(); //http */
 const httpsPort = process.env.HTTPSPORT;
 const httpPort = process.env.PORT;
 const socket = require("./socket");
@@ -65,7 +65,7 @@ app.use("/api", [
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 인증서 파트
-const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
+/* const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
 const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
 const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
 const credentials = {
@@ -83,17 +83,19 @@ app_low.use((req, res, next) => {
     console.log(to);
     res.redirect(to);
   }
+}); */
+
+/* const server = https.createServer(credentials, app);
+socket(server); */
+http: /* server */app.listen(httpPort, () => {
+  console.log(httpPort, "서버가 연결되었습니다.");
 });
-
-const server = https.createServer(credentials, app);
-socket(server);
-
-// app.listen(httpPort, () => {
+// server.listen(httpPort, () => {
 //   console.log("http " + httpPort + " server start");
 // });
-http.createServer(app_low).listen(httpPort, () => {
+/* http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
 });
 server.listen(httpsPort, () => {
   console.log("https " + httpsPort + " server start");
-});
+}); */
