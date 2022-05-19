@@ -165,11 +165,12 @@ const myProfile = async (req, res) => {
         //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.imageUrl = images;
-        if (markUp[i].imageUrl === null) {
+        if (markUp.imageUrl === null) {
           markUp.imageUrl = [""];
         }
       }
     }
+    console.log("마지막", myPosts);
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
     res.send(err);
