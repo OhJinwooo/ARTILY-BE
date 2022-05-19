@@ -92,8 +92,8 @@ socket(server);
 //   console.log("http " + httpPort + " server start");
 // });
 http.createServer(app_low).listen(httpPort, () => {
-  console.log("http " + httpPort + " server start@@@@@!막!찐찐막!");
+  console.log("http " + httpPort + " server start");
 });
 server.listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start@ㄴ");
+  console.log("https " + httpsPort + " server start");
 });
