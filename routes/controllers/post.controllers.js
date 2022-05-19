@@ -171,7 +171,7 @@ const artStore = async (req, res) => {
   }
 };
 
-//상세조회(판매자가 판매완료 시 상태 변화 기능 추가)
+//상세조회
 const artDetail = async (req, res) => {
   try {
     //파리미터 값받음
@@ -185,7 +185,7 @@ const artDetail = async (req, res) => {
       }
 
       // 추가 데이터(상세 페이지 작가기준)
-      const getUser = await Post.find({ user: detail.uesr })
+      const getUser = await Post.find({postId:{$ne:postId}, user: detail.uesr })
         .sort("-createdAt")
         .limit(4);
       for (let j of getUser) {
@@ -224,7 +224,7 @@ const done = async (req, res) => {
           },
         }
       );
-     const chat = await chatpost.find({CreateUser:data.userId});
+     
       res.status(200).send({
         respons: "success",
         msg: "판매 완료",
@@ -291,10 +291,6 @@ const artPost = async (req, res) => {
       postSize,
     });
     await artBrod.save();
-    // await User.updateOne(
-    //   { userId: user.userId },
-    //   { $push: { myPost: postId } }
-    // );
     res.status(200).json({
       respons: "success",
       msg: "판매글 생성 완료",
@@ -528,6 +524,7 @@ const markupCnt = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getHome,
