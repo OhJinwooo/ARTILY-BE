@@ -210,11 +210,16 @@ module.exports = (server) => {
     });
     socket.on("disconnect", async () => {
       const user = await chatData.findOne({ userId: socket.id });
-      await chatData.updateOne(
+      const disUser = await chatData.updateOne(
         { userId: user.userId },
         { $set: { connected: false } }
       );
-      socket.broadcast.emit("user disconnected", user.userId, user.connected);
+      const newUser = await chatData.findOne({ userId: socket.id });
+      socket.broadcast.emit(
+        "user disconnected",
+        newUser.userId,
+        newUser.connected
+      );
     });
   });
 };
