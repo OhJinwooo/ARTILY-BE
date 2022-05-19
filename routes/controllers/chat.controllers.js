@@ -44,6 +44,19 @@ const chatData = async (req, res) => {
             newChat.push(b);
           }
         }
+        const myChat = [];
+        for (let i = 0; i < newChat.length; i++) {
+          console.log("createUser", newChat[i].createUser.userId);
+          console.log("targetUser", newChat[i].targetUser.userId);
+          if (newChat[i].createUser.userId === userId) {
+            console.log("@@@@@@@@@@@@@@@@", newChat[i].createUser.userId);
+            myChat.push(newChat[i].targetUser);
+          } else if (newChat[i].targetUser.userId === userId) {
+            console.log("1111111111111", newChat[i].targetUser.userId);
+            myChat.push(newChat[i].createUser);
+          }
+        }
+        console.log("myChat", myChat);
 
         return res.status(200).json({ newChat });
       } else {
