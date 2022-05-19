@@ -32,8 +32,8 @@ const getHome = async (req, res) => {
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
-        const imges = await postImg.findOne({ postId: i.postId });
-        i.imageUrl = imges;
+        const imge = await postImg.findOne({ postId: i.postId });
+        i.images = imge;
       }
     }
 
@@ -50,8 +50,8 @@ const getHome = async (req, res) => {
       .limit(4);
     if (bestReview.length) {
       for (let i of bestReview) {
-        const imges = await reviewImg.findOne({ reviewId: i.reviewId });
-        i.imageUrl = imges;
+        const imge = await reviewImg.findOne({ reviewId: i.reviewId });
+        i.images = imge;
       }
     }
     res.status(200).json({
@@ -71,13 +71,15 @@ const getHome = async (req, res) => {
 const artStore = async (req, res) => {
   try {
     //페이지의 시작 값을 받음(테이터의 총개수)
-    const data = req.body;
-    const keyword = req.query.keyword;
+    const data = req.query;
+    const keyword = data.keyword;
+    
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
     const price = data.price;
+    
     // 일반적인 상태(조건이 없을 때)
     if (
       keyword === undefined &&
@@ -104,7 +106,7 @@ const artStore = async (req, res) => {
         .limit(limit);
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
-        i.imageUrl = img;
+        i.images = img;
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
         return res.status(200).json({
@@ -140,7 +142,7 @@ const artStore = async (req, res) => {
         option.push({ transaction: transaction });
       }
       if (changeAddress !== undefined) {
-        option.push({ changeAddress: changeAddress });
+        option.push({ changeAddress: Number(changeAddress) });
       }
       if (price !== undefined) {
         option.push({ price: price });
@@ -149,7 +151,7 @@ const artStore = async (req, res) => {
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
-        i.imageUrl = img;
+        i.images = img;
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
         return res.status(200).json({
@@ -181,16 +183,15 @@ const artDetail = async (req, res) => {
       const detail = await Post.findOne({ postId });
       let img = await postImg.find({ postId });
       for (let i = 0; i < img.length; i++) {
-        detail.imageUrl.push(img[i].imageUrl);
+        detail.images.push(img[i].imageUrl);
       }
-      console.log(detail.user.nickname)
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({postId:{$ne:postId},user:detail.user})
         .sort("-createdAt")
         .limit(4);
       for (let j of getUser) {
         const images = await postImg.find({ postId: j.postId });
-        j.imageUrl = images;
+        j.images = images;
       }
       res.status(200).json({
         respons: "success",
@@ -286,6 +287,7 @@ const artPost = async (req, res) => {
         changeAddress,
         postId,
         price,
+        images,
         createdAt: createdAt,
         markupCnt: 0,
         done: false,
@@ -354,7 +356,7 @@ const artUpdate = async (req, res) => {
           else console.log("Successfully deleted myBucket/myKey");
         });
       }
-      console.log("기기긱");
+      
       if (
         Array.isArray(imgDt) &&
         imgDt.length > 0 &&
@@ -371,7 +373,6 @@ const artUpdate = async (req, res) => {
           );
         }
       } else if (Array.isArray(imgDt) === false && req.files.length === 1) {
-        console.log("ddddd");
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -381,18 +382,14 @@ const artUpdate = async (req, res) => {
           }
         );
       } else {
-        console.log("여기입니다");
         if (Array.isArray(imgDt) === false) {
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {
-          console.log("hrt");
           for (let i = 0; i < imgDt.length; i++) {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
         }
         if (req.files.length > 0) {
-          console.log("ooo");
-          console.log(req.files);
           const max = await postImg
             .findOne({ postId })
             .sort("-imageNumber")
