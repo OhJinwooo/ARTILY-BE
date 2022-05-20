@@ -34,29 +34,31 @@ const chatData = async (req, res) => {
       );
     }
 
-    const newRoomUser = await ChatData.find({});
-    let newChat = [];
-    if (newRoomUser.length > 0) {
-      for (let i = 0; i < newRoomUser.length; i++) {
-        const chatRoom = newRoomUser[i].chatRoom;
-        const b = newRoomUser[i];
-        for (let j = 0; j < chatRoom.length; j++) {
-          const roomName = chatRoom[j].roomName;
-          let chattingUser = roomName.includes(userId);
-          if (chattingUser === true) {
-            newChat.push(b);
-          }
-        }
-      }
-      console.log("newChat", newChat);
-      for (let i = 0; i < newChat.length; i++) {
-        if (newChat[i].userId === userId) {
-          newChat[i].chatRoom.targetUser;
-        } else if (newChat[i].userId === userId) {
-          newChat[i].chatRoom.targetUser = newChat[i].chatRoom.createUser;
-        }
-      }
-      newChat.sort((a, b) => new dayjs(b.lastTime) - new dayjs(a.lastTime));
+    const newChat = await ChatData.findOne({ userId });
+    // let newChat = [];
+    if (newChat.chatRoom.length > 0) {
+      // for (let i = 0; i < newRoomUser.length; i++) {
+      //   const chatRoom = newRoomUser[i].chatRoom;
+      //   const b = newRoomUser[i];
+      //   for (let j = 0; j < chatRoom.length; j++) {
+      //     const roomName = chatRoom[j].roomName;
+      //     let chattingUser = roomName.includes(userId);
+      //     if (chattingUser === true) {
+      //       newChat.push(b);
+      //     }
+      //   }
+      // }
+      // console.log("newChat", newChat);
+      // for (let i = 0; i < newChat.length; i++) {
+      //   if (newChat[i].userId === userId) {
+      //     newChat[i].chatRoom.targetUser;
+      //   } else if (newChat[i].userId === userId) {
+      //     newChat[i].chatRoom.targetUser = newChat[i].chatRoom.createUser;
+      //   }
+      // }
+      newChat.chatRoom.sort(
+        (a, b) => new dayjs(b.lastTime) - new dayjs(a.lastTime)
+      );
       console.log("@@@@@@@@@@@@", newChat);
       // for (let i of newChat) {
       //   i.lastTime = dayjs(i.lastTime).format("YYYY-MM-DD HH:mm:ss");
