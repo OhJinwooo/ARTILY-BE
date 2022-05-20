@@ -13,7 +13,7 @@ const ChatDataSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  enteringRoom: {
+  chatRoom: {
     type: Array,
   },
 });
