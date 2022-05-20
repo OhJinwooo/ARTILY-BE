@@ -287,7 +287,6 @@ const artPost = async (req, res) => {
         changeAddress,
         postId,
         price,
-        images,
         createdAt: createdAt,
         markupCnt: 0,
         done: false,
@@ -372,7 +371,8 @@ const artUpdate = async (req, res) => {
             }
           );
         }
-      } else if (Array.isArray(imgDt) === false && req.files.length === 1) {
+      } else if (Array.isArray(imgDt) === false&& imgDt && req.files.length === 1) {
+        
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -381,7 +381,8 @@ const artUpdate = async (req, res) => {
             },
           }
         );
-      } else {
+      } else if(imgDt || req.files) {
+        console.log('안녕')
         if (Array.isArray(imgDt) === false) {
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {
@@ -389,7 +390,7 @@ const artUpdate = async (req, res) => {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
         }
-        if (req.files.length > 0) {
+        if (req.files) {
           const max = await postImg
             .findOne({ postId })
             .sort("-imageNumber")
@@ -421,6 +422,8 @@ const artUpdate = async (req, res) => {
           },
         }
       );
+      const testimg = await postImg.find({postId})
+     console.log('test',testimg)
       return res.status(200).send({
         respons: "success",
         msg: "수정 완료",
