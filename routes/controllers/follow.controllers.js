@@ -116,7 +116,7 @@ const follower = async (req, res) => {
 const deleteFollower = async (req, res) => {
   try {
     const { userId } = req.params;
-    const myId = res.locals.userId;
+    const myId = res.locals.user.userId;
     const followers = await Follow.findOne({ userId, followId: myId });
     console.log(followers);
     if (followers) {

@@ -3,6 +3,9 @@ const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
 
+// 재배포 테스트 socket.js!!!!!!!!!!!!!!!!!!
+// 되라되라되라되라ddd
+
 module.exports = (server) => {
   const io = socket(server, {
     // path: "/socket.io",
@@ -30,18 +33,23 @@ module.exports = (server) => {
 
     //기존 사람 데이터가 있음
     if (session) {
+      console.log("데이터가 있음");
       socket.userId = userId;
       socket.nickname = nickname;
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
+      await chatData.updateOne({ userId }, { $set: { connected: true } });
+      console.log("db 업데이트");
       return next();
     }
-
+    console.log("데이터가 없음");
     socket.userId = userId;
     socket.nickname = nickname;
     socket.id = userId;
     socket.profileImage = profileImage; // tnwjd
-    await redis.hset(`user`, userId, nickname, profileImage);
+
+    await chatData.create({ userId, nickname, profileImage, connected: true });
+    console.log("DB 생성");
     next();
   });
   io.on("connection", async (socket) => {
@@ -98,12 +106,12 @@ module.exports = (server) => {
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
       console.log("targetUser", targetUser);
 
-      // const CreateUser = await chatData.findOne(
-      //   {
-      //     userId: socket.id,
-      //   },
-      //   "userId nickname profileImage"
-      // );
+      const createUser = await chatData.findOne(
+        {
+          userId: socket.id,
+        },
+        "userId nickname profileImage"
+      );
       const TargetUser = await chatData.findOne(
         {
           userId: targetUser,
@@ -111,26 +119,25 @@ module.exports = (server) => {
         "userId nickname profileImage"
       );
 
-      const nowUser = {
-        userId: socket.userId,
-        nickname: socket.nickname,
-        profileImage: socket.profileImage,
-      };
+      // const nowUser = {
+      //   userId: targetUser,
+      //   nickname: socket.nickname,
+      //   profileImage: socket.profileImage,
+      // };
 
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        // CreateUser,
-        targetUser: nowUser,
+        targetUser: createUser,
         messages: [], //msgList
-        newMessage: 0,
+        // newMessage: 0,
         lastMessage: "",
         lastTime: "",
       };
 
       const saveData = {
         ...receive,
-        targetUser2: TargetUser,
+        createUser: TargetUser,
       };
       console.log("receive: ", receive);
       // 여기서 이미 존재하는 방인지 검사해서 없을때만 아래구문 실행해야함
@@ -162,12 +169,10 @@ module.exports = (server) => {
       //메시지를 받을 때 마다 읽지않았을 때 +1
       //lastMessage 업데이트
       //lastTime 업데이트
-      await Chat.updateOne(
-        { roomName: messageData.roomName },
-        { $inc: { newMessage: 1 } }
-        // { $set: { lastMessage: messageData.message } },
-        // { $set: { lastTime: messageData.time } }
-      );
+      // await Chat.updateOne(
+      //   { roomName: messageData.roomName },
+      //   { $inc: { newMessage: 1 } }
+      // );
 
       // await Chat.updateOne(
       //   { roomName: messageData.roomName },
@@ -224,10 +229,15 @@ module.exports = (server) => {
     });
     socket.on("disconnect", async () => {
       const user = await chatData.findOne({ userId: socket.id });
-      socket.broadcast.emit("user disconnected", user.nickname);
-      await chatData.updateOne(
+      const disUser = await chatData.updateOne(
         { userId: user.userId },
         { $set: { connected: false } }
+      );
+      const newUser = await chatData.findOne({ userId: socket.id });
+      socket.broadcast.emit(
+        "user disconnected",
+        newUser.userId,
+        newUser.connected
       );
     });
   });

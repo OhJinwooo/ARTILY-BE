@@ -6,14 +6,14 @@ const ChatSchema = new mongoose.Schema({
   post: {
     type: Object,
   },
+  createUser: {
+    type: Object,
+  },
   targetUser: {
     type: Object,
   },
   messages: {
     type: Array,
-  },
-  newMessage: {
-    type: Number,
   },
   lastMessage: {
     type: String,

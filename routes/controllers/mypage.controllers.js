@@ -6,7 +6,10 @@ const Markup = require("../../schemas/markUp.schemas");
 const PostImage = require("../../schemas/postImage.schemas");
 const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
-const s3 = require("../../config/s3");
+const Follow = require("../../schemas/follow.schemas");
+const ChatData = require("../../schemas/chatData.schemas");
+const Chat = require("../../schemas/chat.schemas");
+const s3 = require("../config/s3");
 
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
@@ -53,27 +56,33 @@ const getProfile = async (req, res) => {
     const myPosts = await Post.find(
       { "user.userId": userId },
       "postId imageUrl postTitle price done markupCnt"
-    );
+    ).sort({ createdAt: -1 });
     const postCnt = myPosts.length;
 
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
-        myPost.imageUrl = images;
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
       }
     }
 
     const myReviews = await Review.find(
       { userId },
-      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
-    );
+      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt createdAt"
+    ).sort({ createdAt: -1 });
     if (myReviews.length) {
       for (let myReview of myReviews) {
         //myPost는 myPosts안에 있는 인덱스중 하나
         const images = await ReviewImage.findOne({
           reviewId: myReview.reviewId,
         });
-        myReview.imageUrl = images;
+        myReview.images = images;
+        if (myReview.images === null) {
+          myReview.images = [""];
+        }
       }
     }
     const markUpPost = await Markup.find({ userId }, "postId");
@@ -92,7 +101,10 @@ const getProfile = async (req, res) => {
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
-        markUp.imageUrl = images;
+        markUp.images = images;
+        if (markUp.images === null) {
+          markUp.images = [""];
+        }
       }
     }
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
@@ -117,30 +129,37 @@ const myProfile = async (req, res) => {
 
     const myPosts = await Post.find(
       { "user.userId": userId },
-      "postId imageUrl postTitle price done markupCnt"
-    );
+      "postId imageUrl postTitle price done markupCnt createdAt"
+    ).sort({ createdAt: -1 });
     const postCnt = myPosts.length;
 
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
-        myPost.imageUrl = images;
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
       }
     }
 
     const myReviews = await Review.find(
       { userId },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
-    );
+    ).sort({ createdAt: -1 });
     if (myReviews.length) {
       for (let myReview of myReviews) {
         //myPost는 myPosts안에 있는 인덱스중 하나
         const images = await ReviewImage.findOne({
           reviewId: myReview.reviewId,
         });
-        myReview.imageUrl = images;
+        myReview.images = images;
+        if (myReview.images === null) {
+          myReview.images = [""];
+        }
       }
     }
+
     const markUpPost = await Markup.find({ userId }, "postId");
     let myMarkups = [];
     let myMarkup = [];
@@ -157,9 +176,13 @@ const myProfile = async (req, res) => {
       for (let markUp of myMarkups) {
         //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
-        markUp.imageUrl = images;
+        markUp.images = images;
+        if (markUp.images === null) {
+          markUp.images = [""];
+        }
       }
     }
+    console.log("마지막", myPosts);
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
     res.send(err);
@@ -235,6 +258,51 @@ const updateProfile = async (req, res) => {
           },
         }
       );
+
+      await Follow.updateOne(
+        {
+          followId: userId,
+        },
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
+
+      await ChatData.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "createUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "targetUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
     } else {
       console.log("이미지 없음");
       await User.updateOne(
@@ -277,6 +345,50 @@ const updateProfile = async (req, res) => {
           },
         }
       );
+      await Follow.updateOne(
+        {
+          followId: userId,
+        },
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
+
+      await ChatData.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "createUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "targetUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
     }
     res.status(201).json({ success: true });
   } catch (error) {
@@ -290,12 +402,15 @@ const getMyPost = async (req, res) => {
     const { userId } = res.locals.user;
     const myPosts = await Post.find(
       { "user.userId": userId },
-      "postId postTitle price done imageUrl markupCnt"
-    );
+      "postId postTitle price done imageUrl markupCnt createdAt"
+    ).sort({ createdAt: -1 });
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
-        myPost.imageUrl = images;
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
       }
       res.status(200).json({ myPosts });
     }
@@ -309,7 +424,7 @@ const getMyBuy = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     const buyPost = await Buy.find({ userId });
-    const myBuy = await post.find(
+    const myBuy = await Post.find(
       { "user.userId": buyPost },
       "postId postTitle user.nickname imageUrl"
     );
