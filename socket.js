@@ -118,8 +118,8 @@ module.exports = (server) => {
         targetUser: nowUser,
         messages: [], //msgList
         // newMessage: 0,
-        lastMessage: "",
-        lastTime: "",
+        // lastMessage: "",
+        // lastTime: "",
       };
 
       const saveData = {
