@@ -56,7 +56,7 @@ const getProfile = async (req, res) => {
     const myPosts = await Post.find(
       { "user.userId": userId },
       "postId imageUrl postTitle price done markupCnt"
-    );
+    ).sort({ createdAt: -1 });
     const postCnt = myPosts.length;
 
     if (myPosts.length) {
@@ -71,8 +71,8 @@ const getProfile = async (req, res) => {
 
     const myReviews = await Review.find(
       { userId },
-      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
-    );
+      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt createdAt"
+    ).sort({ createdAt: -1 });
     if (myReviews.length) {
       for (let myReview of myReviews) {
         //myPost는 myPosts안에 있는 인덱스중 하나
