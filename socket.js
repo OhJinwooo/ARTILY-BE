@@ -4,7 +4,7 @@ const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
 
 // 재배포 테스트 socket.js!!!!!!!!!!!!!!!!!!
-// 되라되라되라되라
+// 되라되라되라되라ddd
 
 module.exports = (server) => {
   const io = socket(server, {
