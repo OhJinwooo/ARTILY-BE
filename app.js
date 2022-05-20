@@ -92,8 +92,12 @@ socket(server);
 //   console.log("http " + httpPort + " server start");
 // });
 http.createServer(app_low).listen(httpPort, () => {
-  console.log("http " + httpPort + " server start test test test test ");
+  console.log(
+    "http " + httpPort + " server start test test test test lasttest"
+  );
 });
 server.listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start test test test test ");
+  console.log(
+    "https " + httpsPort + " server start test test test test lasttest"
+  );
 });
