@@ -19,7 +19,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /home/ubuntu/Project-BE
-            # git config --global --add safe.directory /home/ubuntu/HH99FinalProject_BE
+            git config --global --add safe.directory /home/ubuntu/Project-BE
             sudo git pull
             sudo npm update
             sudo npm install
