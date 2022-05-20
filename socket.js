@@ -149,8 +149,8 @@ module.exports = (server) => {
       const chatRoom = {
         roomName: roomName,
         post: post,
-        lastMessage: null,
-        lastTime: null,
+        lastMessage: "",
+        lastTime: "",
         newMessage: 0,
         targetUser: nowUser,
         createUser: TargetUser,
