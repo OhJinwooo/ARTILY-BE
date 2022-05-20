@@ -20,7 +20,7 @@ jobs:
           script: |
             cd /home/ubuntu/Project_BE
             # git config --global --add safe.directory /home/ubuntu/HH99FinalProject_BE
-            sudo git pull
+            git pull
             sudo npm update
             sudo npm install
             sudo pm2 reload all
