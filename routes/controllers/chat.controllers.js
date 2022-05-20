@@ -66,10 +66,10 @@ const chatData = async (req, res) => {
 
       return res.status(200).json({ newChat });
     } else {
-      return res.status(204).send({ msg: "채팅 정보 없음" });
+      return res.status(204).send({ newChat, msg: "채팅 정보 없음" });
     }
   }
-  return res.status(204).send({ msg: "채팅 정보 없음" });
+  return res.status(204).send({ newChat, msg: "채팅 정보 없음" });
   // } catch {
   //   res.status(400).send("채팅 목록 조회 실패");
   // }
