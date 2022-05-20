@@ -93,11 +93,11 @@ socket(server);
 // });
 http.createServer(app_low).listen(httpPort, () => {
   console.log(
-    "http " + httpPort + " server start test test test test lasttest"
+    "http " + httpPort + " server start test test test test lasttest lasttest"
   );
 });
 server.listen(httpsPort, () => {
   console.log(
-    "https " + httpsPort + " server start test test test test lasttest"
+    "https " + httpsPort + " server start test test test test lasttest lasttest"
   );
 });
