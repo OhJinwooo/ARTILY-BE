@@ -129,8 +129,8 @@ const myProfile = async (req, res) => {
 
     const myPosts = await Post.find(
       { "user.userId": userId },
-      "postId imageUrl postTitle price done markupCnt"
-    );
+      "postId imageUrl postTitle price done markupCnt createdAt"
+    ).sort({ createdAt: -1 });
     const postCnt = myPosts.length;
 
     if (myPosts.length) {
@@ -146,7 +146,7 @@ const myProfile = async (req, res) => {
     const myReviews = await Review.find(
       { userId },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
-    );
+    ).sort({ createdAt: -1 });
     if (myReviews.length) {
       for (let myReview of myReviews) {
         //myPost는 myPosts안에 있는 인덱스중 하나
@@ -402,8 +402,8 @@ const getMyPost = async (req, res) => {
     const { userId } = res.locals.user;
     const myPosts = await Post.find(
       { "user.userId": userId },
-      "postId postTitle price done imageUrl markupCnt"
-    );
+      "postId postTitle price done imageUrl markupCnt createdAt"
+    ).sort({ createdAt: -1 });
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
