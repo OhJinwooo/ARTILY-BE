@@ -208,7 +208,7 @@ module.exports = (server) => {
       };
 
       console.log("saveChat", saveChat);
-      await Chat.updateOne(
+      await Message.updateOne(
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
       );
