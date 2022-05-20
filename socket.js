@@ -103,7 +103,7 @@ module.exports = (server) => {
         {
           userId: targetUser,
         },
-        "userId nickname profileImage"
+        "userId nickname profileImage connected"
       );
 
       const nowUser = {
