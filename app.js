@@ -85,8 +85,8 @@ app_low.use((req, res, next) => {
   }
 });
 
-// const server = https.createServer(credentials, app);
-// socket(server);
+const server = https.createServer(credentials, app);
+socket(server);
 
 // app.listen(httpPort, () => {
 //   console.log("http " + httpPort + " server start");
