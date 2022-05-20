@@ -3,6 +3,8 @@ const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
 
+// 재배포 테스트 socket.js
+
 module.exports = (server) => {
   const io = socket(server, {
     // path: "/socket.io",
