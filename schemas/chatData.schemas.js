@@ -13,5 +13,8 @@ const ChatDataSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  enteringRoom: {
+    type: Array,
+  },
 });
 module.exports = mongoose.model("ChatData", ChatDataSchema);

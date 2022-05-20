@@ -11,6 +11,8 @@ const {
   getHome,
   artdelete,
   markupCnt,
+  markupList,
+  done,
 } = require("./controllers/post.controllers");
 
 //홈 조회
@@ -28,10 +30,16 @@ router.post("/post", middleware, upload.array("image", 10), artPost);
 //작품 판매글 수정
 router.patch("/post/:postId", middleware, upload.array("image", 10), artUpdate);
 
+//작품 판매 완료
+router.patch("/done/:postId", middleware, done);
+
 //작품 판매글 삭제
 router.delete("/post/:postId", middleware, artdelete);
 
 //작품 찜하기
 router.post("/markup/:postId", middleware, markupCnt);
+
+//찜한 목록 불러오기
+router.get("/markup", middleware, markupList);
 
 module.exports = router;

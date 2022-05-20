@@ -36,9 +36,11 @@ const ReviewSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  images: {
+    type: Array,
+  },
   imageUrl: {
     type: Array,
-    default: 0,
   },
   createdAt: {
     type: String,
@@ -49,13 +51,4 @@ const ReviewSchema = new mongoose.Schema({
     //   required: true,
   },
 });
-
-// ReviewSchema.virtual("reviewId").get(function () {
-//   return this._id.toHexString();
-// });
-
-// ReviewSchema.set("toJSON", {
-//   virtuals: true,
-// });
-
 module.exports = mongoose.model("Review", ReviewSchema);

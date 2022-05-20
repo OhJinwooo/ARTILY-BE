@@ -6,14 +6,20 @@ const ChatSchema = new mongoose.Schema({
   post: {
     type: Object,
   },
-  CreateUser: {
+  createUser: {
     type: Object,
   },
-  TargetUser: {
+  targetUser: {
     type: Object,
   },
-  message: {
+  messages: {
     type: Array,
+  },
+  lastMessage: {
+    type: String,
+  },
+  lastTime: {
+    type: String,
   },
 });
 module.exports = mongoose.model("Chat", ChatSchema);

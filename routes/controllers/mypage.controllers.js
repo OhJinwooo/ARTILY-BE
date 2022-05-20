@@ -2,108 +2,188 @@ require("dotenv").config();
 const User = require("../../schemas/user.schemas");
 const Post = require("../../schemas/post.schemas");
 const Review = require("../../schemas/review.schemas");
+const Markup = require("../../schemas/markUp.schemas");
+const PostImage = require("../../schemas/postImage.schemas");
+const ReviewImage = require("../../schemas/reviewImage.schemas");
+const Buy = require("../../schemas/buy.schemas");
+const Follow = require("../../schemas/follow.schemas");
+const ChatData = require("../../schemas/chatData.schemas");
+const Chat = require("../../schemas/chat.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
-  const { user } = res.locals;
-  const userId = user.userId;
+  const { userId } = res.locals.user;
 
   const { introduce, snsUrl, address, nickname } = req.body;
-
   const profileImage = req.file?.location;
 
-  console.log("img", profileImage);
-
   try {
-    const photo = await User.findOne({ userId });
-    // console.log("photo", photo);
-    const url = photo.profileImage.split("/");
-    console.log("profileImage", profileImage);
-    console.log("url", url);
-    const delFileName = url[url.length - 1];
-    // console.log("delFileName", delFileName);
-
-    if (photo.profileImage) {
-      console.log("이미지 있음");
-      s3.deleteObject(
-        {
-          Bucket: process.env.BUCKETNAME,
-          Key: delFileName,
+    await User.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
+          address,
+          introduce,
+          snsUrl,
+          type: "member",
         },
-        (err, data) => {
-          if (err) {
-            throw err;
-          }
-        }
-      );
-      await User.updateOne(
-        {
-          userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-            address,
-            introduce,
-            snsUrl,
-            type: "member",
-          },
-        }
-      );
-    } else {
-      console.log("이미지 없음");
-      await User.updateOne(
-        {
-          userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-            address,
-            introduce,
-            snsUrl,
-            type: "member",
-          },
-        }
-      );
-    }
+      }
+    );
     res.status(201).json({ success: true });
   } catch (error) {
     res.status(400).send("작성 실패");
   }
 };
 
-// 프로필 조회
+// 상대 프로필 조회
 const getProfile = async (req, res) => {
   const { userId } = req.params;
-  console.log(res.locals.user);
+
   try {
-    const myprofile = await User.findOne(
+    const user = await User.findOne(
       { userId },
-      "userId nickname profileImage introduce followCnt followerCnt follow follower myPost myMarkup myReview myBuy snsUrl"
+      "userId nickname profileImage introduce followCnt followerCnt snsUrl"
     );
-    console.log(myprofile);
-    const mypost = myprofile.myPost;
-    const myPost = await Post.find(
-      { postId: mypost },
+    if (!user) {
+      return res.send({ msg: "유저 정보가 올바르지 않습니다." });
+    }
+
+    const myPosts = await Post.find(
+      { "user.userId": userId },
       "postId imageUrl postTitle price done markupCnt"
+    ).sort({ createdAt: -1 });
+    const postCnt = myPosts.length;
+
+    if (myPosts.length) {
+      for (let myPost of myPosts) {
+        const images = await PostImage.findOne({ postId: myPost.postId });
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
+      }
+    }
+
+    const myReviews = await Review.find(
+      { userId },
+      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt createdAt"
+    ).sort({ createdAt: -1 });
+    if (myReviews.length) {
+      for (let myReview of myReviews) {
+        //myPost는 myPosts안에 있는 인덱스중 하나
+        const images = await ReviewImage.findOne({
+          reviewId: myReview.reviewId,
+        });
+        myReview.images = images;
+        if (myReview.images === null) {
+          myReview.images = [""];
+        }
+      }
+    }
+    const markUpPost = await Markup.find({ userId }, "postId");
+    let myMarkups = [];
+    let myMarkup = [];
+    if (markUpPost.length) {
+      for (let i = 0; i < markUpPost.length; i++) {
+        myMarkup.push(markUpPost[i].postId);
+      }
+
+      myMarkups = await Post.find(
+        { postId: myMarkup },
+        "postId imageUrl postTitle price done markupCnt"
+      );
+
+      for (let markUp of myMarkups) {
+        //myPost는 myPosts안에 있는 인덱스중 하나
+        let images = await PostImage.findOne({ postId: markUp.postId });
+        markUp.images = images;
+        if (markUp.images === null) {
+          markUp.images = [""];
+        }
+      }
+    }
+    res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
+  } catch (err) {
+    res.send(err);
+  }
+};
+
+// 내 프로필 조회
+const myProfile = async (req, res) => {
+  const { userId } = res.locals.user;
+  console.log("userId", userId);
+
+  try {
+    const user = await User.findOne(
+      { userId },
+      "userId nickname profileImage introduce followCnt followerCnt snsUrl"
     );
-    const myreview = myprofile.myReview;
-    const myReview = await Review.find(
-      { reviewId: myreview },
+    if (!user) {
+      return res.send({ msg: "로그인 후 이용하세요." });
+    }
+
+    const myPosts = await Post.find(
+      { "user.userId": userId },
+      "postId imageUrl postTitle price done markupCnt createdAt"
+    ).sort({ createdAt: -1 });
+    const postCnt = myPosts.length;
+
+    if (myPosts.length) {
+      for (let myPost of myPosts) {
+        const images = await PostImage.findOne({ postId: myPost.postId });
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
+      }
+    }
+
+    const myReviews = await Review.find(
+      { userId },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
-    );
+    ).sort({ createdAt: -1 });
+    if (myReviews.length) {
+      for (let myReview of myReviews) {
+        //myPost는 myPosts안에 있는 인덱스중 하나
+        const images = await ReviewImage.findOne({
+          reviewId: myReview.reviewId,
+        });
+        myReview.images = images;
+        if (myReview.images === null) {
+          myReview.images = [""];
+        }
+      }
+    }
 
-    const mymarkup = myprofile.myMarkup;
-    const myMarkup = await Post.find(
-      { postId: mymarkup },
-      "postId imageUrl postTitle price done markupCnt"
-    );
+    const markUpPost = await Markup.find({ userId }, "postId");
+    let myMarkups = [];
+    let myMarkup = [];
+    if (markUpPost.length) {
+      for (let i = 0; i < markUpPost.length; i++) {
+        myMarkup.push(markUpPost[i].postId);
+      }
 
-    res.status(200).json({ myprofile, myPost, myReview, myMarkup });
+      myMarkups = await Post.find(
+        { postId: myMarkup },
+        "postId imageUrl postTitle price done markupCnt"
+      );
+
+      for (let markUp of myMarkups) {
+        //myPost는 myPosts안에 있는 인덱스중 하나
+        let images = await PostImage.findOne({ postId: markUp.postId });
+        markUp.images = images;
+        if (markUp.images === null) {
+          markUp.images = [""];
+        }
+      }
+    }
+    console.log("마지막", myPosts);
+    res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
     res.send(err);
   }
@@ -114,14 +194,18 @@ const updateProfile = async (req, res) => {
   const { user } = res.locals;
   const userId = user.userId;
   const { introduce, snsUrl, address, nickname } = req.body;
-  const profileImage = req.file?.location;
+  let profileImage = req.file?.location;
+
+  if (!profileImage) {
+    profileImage = "";
+  }
 
   try {
     const photo = await User.findOne({ userId });
-    const url = photo.profileImage.split("/");
-    const delFileName = url[url.length - 1];
-
     if (photo.profileImage) {
+      const url = photo.profileImage.split("/");
+      const delFileName = url[url.length - 1];
+
       console.log("이미지 있음");
       s3.deleteObject(
         {
@@ -156,6 +240,9 @@ const updateProfile = async (req, res) => {
           $set: {
             "user.nickname": nickname,
             "user.profileImage": profileImage,
+            "user.address": address,
+            "user.introduce": introduce,
+            "user.snsUrl": snsUrl,
           },
         }
       );
@@ -163,6 +250,51 @@ const updateProfile = async (req, res) => {
       await Review.updateOne(
         {
           userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+
+      await Follow.updateOne(
+        {
+          followId: userId,
+        },
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
+
+      await ChatData.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "createUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "targetUser.userId": userId,
         },
         {
           $set: {
@@ -195,6 +327,9 @@ const updateProfile = async (req, res) => {
           $set: {
             "user.nickname": nickname,
             "user.profileImage": profileImage,
+            "user.address": address,
+            "user.introduce": introduce,
+            "user.snsUrl": snsUrl,
           },
         }
       );
@@ -202,6 +337,50 @@ const updateProfile = async (req, res) => {
       await Review.updateOne(
         {
           userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Follow.updateOne(
+        {
+          followId: userId,
+        },
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
+
+      await ChatData.updateOne(
+        {
+          userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "createUser.userId": userId,
+        },
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Chat.updateOne(
+        {
+          "targetUser.userId": userId,
         },
         {
           $set: {
@@ -220,16 +399,21 @@ const updateProfile = async (req, res) => {
 //판매 작품 관리하기
 const getMyPost = async (req, res) => {
   try {
-    console.log(123123123);
     const { userId } = res.locals.user;
-    const mypost = await User.findOne({ userId });
-    const Mypost = mypost.myPost;
-    const myPost = await Post.find(
-      { postId: Mypost },
-      "postId postTitle price done imageUrl markupCnt"
-    );
-    console.log("mypost", myPost);
-    res.status(200).json({ myPost });
+    const myPosts = await Post.find(
+      { "user.userId": userId },
+      "postId postTitle price done imageUrl markupCnt createdAt"
+    ).sort({ createdAt: -1 });
+    if (myPosts.length) {
+      for (let myPost of myPosts) {
+        const images = await PostImage.findOne({ postId: myPost.postId });
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
+      }
+      res.status(200).json({ myPosts });
+    }
   } catch (err) {
     res.status(400).send("조회 실패");
   }
@@ -238,18 +422,13 @@ const getMyPost = async (req, res) => {
 //내가 구입한 상품
 const getMyBuy = async (req, res) => {
   try {
-    const { user } = res.locals;
-    // console.log(user);
-    const userId = user.userId;
-    const mybuy = await User.find({ userId });
-    const Mybuy = mybuy.myBuy;
-
-    // const mybuy = ["4027f67fbadd", "47f17da48d40", "4084c11588a2"];
+    const { userId } = res.locals.user;
+    const buyPost = await Buy.find({ userId });
     const myBuy = await Post.find(
-      { postId: Mybuy },
+      { "user.userId": buyPost },
       "postId postTitle user.nickname imageUrl"
     );
-    console.log("myBuy", myBuy);
+
     res.status(200).json({ myBuy });
   } catch (err) {
     res.status(400).send("조회 실패");
@@ -259,53 +438,8 @@ const getMyBuy = async (req, res) => {
 module.exports = {
   postProfile,
   getProfile,
+  myProfile,
   updateProfile,
   getMyPost,
   getMyBuy,
 };
-
-// console.log(123123);
-// const { user } = res.locals;
-// const { nickname, address, introduce, snsUrl } = req.body;
-// const userId = user.userId;
-// console.log(userId);
-// const profileImage = req.file?.location;
-// console.log("12312", profileImage);
-
-// try {
-//   if (profileImage) {
-//     s3.deleteObject(
-//       {
-//         Bucket: "myawsbucket",
-//         // Key: delFile
-//       },
-//       (err, data) => {
-//         if (err) {
-//           throw err;
-//         }
-//       }
-//     );
-//     await User.updateOne({ userId }, { $set: { profileImage } });
-//   } else {
-//     const photo = await User.find({ userId });
-//     const profileImage = photo[0].profileImage;
-//     await User.updateOne(
-//       {
-//         userId,
-//       },
-//       {
-//         $set: {
-//           nickname,
-//           address,
-//           introduce,
-//           profileImage,
-//           snsUrl,
-//         },
-//       }
-//     );
-//     res.status(201).json({ success: true });
-//   }
-// } catch (error) {
-//   res.sattus(400).send("수정 실패");
-// }
-// };

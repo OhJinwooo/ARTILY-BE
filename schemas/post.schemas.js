@@ -32,7 +32,7 @@ const postSchema = new mongoose.Schema({
   changeAddress: {
     type: String,
   },
-  imageUrl: {
+  images: {
     type: Array,
   },
   done: {

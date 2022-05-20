@@ -26,9 +26,6 @@ const UserSchema = new mongoose.Schema({
   address: {
     type: String,
   },
-  blacklist: {
-    type: Array,
-  },
   followCnt: {
     type: Number,
     default: 0,
@@ -37,27 +34,6 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  follow: {
-    type: Array,
-  },
-  follower: {
-    type: Array,
-  },
-  myPost: {
-    type: Array,
-  },
-  myReview: {
-    type: Array,
-  },
-  myMarkup: {
-    type: Array,
-  },
-  myLike: {
-    type: Array,
-  },
-  myBuy: {
-    type: Array,
-  },
   snsUrl: {
     type: Array,
   },
@@ -65,10 +41,4 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
 });
-// UserSchema.virtual("userId").get(function () {
-//   return this._id.toHexString();
-// });
-// UserSchema.set("toJSON", {
-//   virtuals: true,
-// });
 module.exports = mongoose.model("User", UserSchema);
