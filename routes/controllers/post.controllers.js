@@ -372,7 +372,6 @@ const artUpdate = async (req, res) => {
           );
         }
       } else if (Array.isArray(imgDt) === false&& imgDt && req.files.length === 1) {
-        
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -382,7 +381,6 @@ const artUpdate = async (req, res) => {
           }
         );
       } else if(imgDt || req.files) {
-        console.log('안녕')
         if (Array.isArray(imgDt) === false) {
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {
@@ -422,8 +420,6 @@ const artUpdate = async (req, res) => {
           },
         }
       );
-      const testimg = await postImg.find({postId})
-     console.log('test',testimg)
       return res.status(200).send({
         respons: "success",
         msg: "수정 완료",
