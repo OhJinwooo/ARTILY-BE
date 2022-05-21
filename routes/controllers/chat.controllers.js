@@ -78,7 +78,6 @@ const chatData = async (req, res) => {
 };
 
 const messages = async (req, res) => {
-  const { userId } = res.locals.user;
   const { roomName } = req.params;
 
   const roomUser = await Message.findOne({ roomName });
