@@ -77,9 +77,8 @@ const artStore = async (req, res) => {
   try {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.query;
+    console.log("req",req.query)
     const keyword = data.keyword;
-    console.log("이게",req.query)
-    console.log("ss",data.page)
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
@@ -212,7 +211,6 @@ const artDetail = async (req, res) => {
       })
         .sort("-createdAt")
         .limit(4);
-        console.log(getUser.length)
       for (let j of getUser) {
         const images = await postImg.find({ postId: j.postId });
         j.images = images;
@@ -564,7 +562,6 @@ const markupList = async (req, res) => {
     //유저 정보가 있는지 확인
     const { user } = res.locals; //ok
     const { userId } = user; //ok
-    console.log("userId", userId);
     // 유저정보가 유효한지 확인
     if (userId > 0) {
       const markUp = await MarkUp.find({ userId }, "postId");
@@ -572,7 +569,6 @@ const markupList = async (req, res) => {
       for (let i = 0; i < markUp.length; i++) {
         markUpList.push(markUp[i].postId);
       }
-      console.log("markUpList", markUpList);
       return res.status(200).json({ result: "success", markUpList });
     }
     return res.status(401).json({
