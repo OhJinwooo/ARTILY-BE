@@ -38,7 +38,7 @@ const chatData = async (req, res) => {
         { $set: { "chatRoom.$.lastTime": lastMessage.time } }
       );
     }
-
+    const newChat = await ChatData.findOne({ userId });
     // let newChat = [];
     if (newChat.chatRoom.length > 0) {
       // for (let i = 0; i < newRoomUser.length; i++) {
