@@ -20,6 +20,7 @@ const chatData = async (req, res) => {
         chatRoomName.push(b);
       }
     }
+
     let lastMessage = "";
 
     for (let i = 0; i < chatRoomName.length; i++) {
