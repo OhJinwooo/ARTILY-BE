@@ -34,6 +34,7 @@ module.exports = (server) => {
       socket.nickname = nickname;
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
+
       await chatData.updateOne({ userId }, { $set: { connected: true } });
       console.log("db 업데이트");
       return next();
@@ -46,8 +47,8 @@ module.exports = (server) => {
 
     await chatData.create({
       userId,
-      nickname,
-      profileImage,
+      // nickname,
+      // profileImage,
       connected: true,
       chatRoom: [],
     });
@@ -80,7 +81,7 @@ module.exports = (server) => {
     socket.broadcast.emit("user connected", {
       userId,
       nickname,
-      connected,
+      connected: true,
       // socketID: socket.id,
     });
 
