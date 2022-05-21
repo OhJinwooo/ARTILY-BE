@@ -16,6 +16,8 @@ const uuid = () => {
 const review = async (req, res) => {
   try {
     const data = req.query;
+    console.log(data.page);
+    console.log(data.limit);
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
     let page = Math.max(1, parseInt(data.page));
