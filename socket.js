@@ -122,7 +122,7 @@ module.exports = (server) => {
 
       const target = {
         userId: targetUser.userId,
-        nickname: targetUser.nockname,
+        nickname: targetUser.nickname,
         profileImage: targetUser.profileImage,
         targetConnected,
       };
