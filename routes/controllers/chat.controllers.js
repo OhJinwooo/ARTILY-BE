@@ -1,4 +1,4 @@
-const Chat = require("../../schemas/chat.schemas");
+/* const Chat = require("../../schemas/chat.schemas");
 const dayjs = require("dayjs");
 const chatData = async (req, res) => {
   // try {
@@ -71,3 +71,4 @@ const chatData = async (req, res) => {
 module.exports = {
   chatData,
 };
+ */
