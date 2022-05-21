@@ -194,7 +194,6 @@ const artDetail = async (req, res) => {
     if (postId) {
       //상세 페이지 데이터
       const detail = await Post.find({ postId });
-      let img = await postImg.find({ postId });
       // for (let i = 0; i < img.length; i++) {
       //   detail.images.push(img[i].imageUrl);
       // }
@@ -205,14 +204,14 @@ const artDetail = async (req, res) => {
           j.images = [""];
         }
       }
-      console.log(detail[0].user)
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail.user,
+        user: detail[0].user
       })
         .sort("-createdAt")
         .limit(4);
+        console.log(getUser.length)
       for (let j of getUser) {
         const images = await postImg.find({ postId: j.postId });
         j.images = images;
@@ -220,7 +219,6 @@ const artDetail = async (req, res) => {
           j.images = [""];
         }
       }
-      cons
       res.status(200).json({
         respons: "success",
         msg: "상세페이지 조회 성공",
