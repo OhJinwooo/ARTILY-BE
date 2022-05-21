@@ -256,6 +256,7 @@ module.exports = (server) => {
 
       //상대방에게 메세지를 보냈을때 숫자 1 증가
       if (messageData.from !== userId) {
+        console.log("조건문 들어옴");
         await chatData.updateOne(
           {
             userId: messageData.from,
@@ -264,6 +265,12 @@ module.exports = (server) => {
           { $inc: { "chatRoom.$.newMessage": 1 } }
         );
       }
+    });
+    socket.on("check_chat", async (roomName) => {
+      await chatData.updateOne(
+        { userId: userId, "chatRoom.roomName": roomName },
+        { $set: { "chatRoom.$.roomName": 0 } }
+      );
     });
     socket.on("upload", (data) => {
       console.log("upload 받은거:", data);
