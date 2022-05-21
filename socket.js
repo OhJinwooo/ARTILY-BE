@@ -161,7 +161,7 @@ module.exports = (server) => {
       // console.log("existRoom", existRoom);
       if (!existRoom) {
         await Message.create(saveData); // 유저정보 둘다 있는 데이터
-        socket.to(TargetUser.userId).emit("join_room", receive);
+        socket.to(targetUser.userId).emit("join_room", receive);
       }
       if (!existRooms) {
         await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
