@@ -259,7 +259,7 @@ module.exports = (server) => {
         console.log("조건문 들어옴");
         await chatData.updateOne(
           {
-            userId: messageData.from,
+            userId: messageData.to,
             "chatRoom.roomName": messageData.roomName,
           },
           { $inc: { "chatRoom.$.newMessage": 1 } }
