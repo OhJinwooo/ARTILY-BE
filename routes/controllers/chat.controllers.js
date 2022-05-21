@@ -21,24 +21,24 @@ const chatData = async (req, res) => {
         }
       }
 
-      let lastMessage = "";
+      // let lastMessage = "";
 
-      for (let i = 0; i < chatRoomName.length; i++) {
-        const message = chatRoomName[i].messages;
-        const roomName = chatRoomName[i].roomName;
-        if (message.length !== 0) {
-          lastMessage = message[message.length - 1];
-        }
-        await ChatData.updateOne(
-          { userId: userId, "chatRoom.roomName": roomName },
-          { $set: { "chatRoom.$.lastMessage": lastMessage.message } }
-        );
+      // for (let i = 0; i < chatRoomName.length; i++) {
+      //   const message = chatRoomName[i].messages;
+      //   const roomName = chatRoomName[i].roomName;
+      //   if (message.length !== 0) {
+      //     lastMessage = message[message.length - 1];
+      //   }
+      //   await ChatData.updateOne(
+      //     { userId: userId, "chatRoom.roomName": roomName },
+      //     { $set: { "chatRoom.$.lastMessage": lastMessage.message } }
+      //   );
 
-        await ChatData.updateOne(
-          { userId: userId, "chatRoom.roomName": roomName },
-          { $set: { "chatRoom.$.lastTime": lastMessage.time } }
-        );
-      }
+      //   await ChatData.updateOne(
+      //     { userId: userId, "chatRoom.roomName": roomName },
+      //     { $set: { "chatRoom.$.lastTime": lastMessage.time } }
+      //   );
+      // }
       const newChat = await ChatData.findOne({ userId });
       // let newChat = [];
       if (newChat.chatRoom.length > 0) {
@@ -80,12 +80,17 @@ const chatData = async (req, res) => {
 };
 
 const messages = async (req, res) => {
+  const { userId } = res.locals.user;
   const { roomName } = req.params;
 
   const roomUser = await Message.findOne({ roomName });
   try {
     if (roomUser.messages.length > 0) {
       console.log("roomUser", roomUser);
+      await chatData.updateOne(
+        { userId: userId, "chatRoom.roomName": roomName },
+        { $set: { "chatRoom.$.newMessage": 0 } }
+      );
       res.status(200).json({ roomUser });
     } else {
       res.status(200).send({ roomUser, msg: "메시지 정보가 없습니다." });

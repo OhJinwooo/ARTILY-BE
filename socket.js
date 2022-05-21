@@ -214,6 +214,24 @@ module.exports = (server) => {
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
       );
+      await chatData.updateOne(
+        { userId: userId, "chatRoom.roomName": messageData.roomName },
+        { $set: { "chatRoom.$.lastMessage": messageData.message } }
+      );
+      await chatData.updateOne(
+        { userId: userId, "chatRoom.roomName": messageData.roomName },
+        { $set: { "chatRoom.$.lastTime": messageData.time } }
+      );
+      // const newMessage = await chatData.findOne({ userId });
+      if (messageData.from !== userId) {
+        await chatData.updateOne(
+          {
+            userId: messageData.from,
+            "chatRoom.roomName": messageData.roomName,
+          },
+          { $inc: { "chatRoom.$.newMessage": 1 } }
+        );
+      }
     });
     socket.on("upload", (data) => {
       console.log("upload 받은거:", data);
