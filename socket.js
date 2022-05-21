@@ -7,7 +7,7 @@ module.exports = (server) => {
   const io = socket(server, {
     // path: "/socket.io",
     cors: {
-      origin: "*",
+      origin: "localhost:5000",
       // methods: ["GET", "POST"],
       // credentials: true,
     },
@@ -73,10 +73,11 @@ module.exports = (server) => {
 
     const result = await chatData.findOne({ userId }, "chatRoom");
     const chatRoom = result.chatRoom;
+    console.log("chatRoom", chatRoom);
     if (chatRoom.length > 0) {
       for (let i = 0; i < chatRoom.length; i++) {
         socket.join(chatRoom[i].roomName);
-        console.log("chatRoom[j].roomName", chatRoom[i].roomName);
+        console.log("chatRoom[i].roomName", chatRoom[i].roomName);
       }
     }
 
