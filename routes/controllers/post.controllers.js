@@ -6,7 +6,6 @@ const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
 const buyPost = require("../../schemas/buy.schemas");
-const chatpost = require("../../schemas/chat.schemas");
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -411,6 +410,7 @@ const artUpdate = async (req, res) => {
         );
       } else if (imgDt || req.files) {
         if (Array.isArray(imgDt) === false) {
+          console.log(imgDt);
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {
           for (let i = 0; i < imgDt.length; i++) {
@@ -422,7 +422,13 @@ const artUpdate = async (req, res) => {
             .findOne({ postId })
             .sort("-imageNumber")
             .exec();
-          let num = max.imageNumber + 1;
+
+          console.log("여기", max);
+          let num = 0;
+
+          if (max) {
+            num = max.imageNumber + 1;
+          }
           for (let i = 0; i < req.files.length; i++) {
             await postImg.create({
               postId,
@@ -432,7 +438,8 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-
+      const test = await postImg.find({ postId });
+      console.log("test", test);
       //업데이트
       await Post.updateOne(
         { postId },

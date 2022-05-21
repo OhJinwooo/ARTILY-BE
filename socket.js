@@ -1,10 +1,7 @@
-const Chat = require("./schemas/chat.schemas");
+const Message = require("./schemas/message.schemas");
 const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
-
-// 재배포 테스트 socket.js!!!!!!!!!!!!!!!!!!
-// 되라되라되라되라ddd
 
 module.exports = (server) => {
   const io = socket(server, {
@@ -37,6 +34,7 @@ module.exports = (server) => {
       socket.nickname = nickname;
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
+
       await chatData.updateOne({ userId }, { $set: { connected: true } });
       console.log("db 업데이트");
       return next();
@@ -47,7 +45,13 @@ module.exports = (server) => {
     socket.id = userId;
     socket.profileImage = profileImage; // tnwjd
 
-    await chatData.create({ userId, nickname, profileImage, connected: true });
+    await chatData.create({
+      userId,
+      // nickname,
+      // profileImage,
+      connected: true,
+      chatRoom: [],
+    });
     console.log("DB 생성");
     next();
   });
@@ -67,17 +71,23 @@ module.exports = (server) => {
     //   socket.emit("roomList", rooms);
     // });
 
-    const result = await chatData.find({ userId }, "enteringRoom");
+    const result = await chatData.find({ userId }, "chatRoom");
     if (result.length > 0) {
       for (let i = 0; i < result.length; i++) {
-        socket.join(result[i].enteringRoom);
+        const chatRoom = result[i].chatRoom;
+        for (let j = 0; j < chatRoom.length; j++) {
+          socket.join(chatRoom[j].roomName);
+          socket
+            .to(chatRoom[j].targetUser.userId, chatRoom[j].createdUser.userId)
+            .emit("join_room");
+        }
       }
     }
 
     socket.broadcast.emit("user connected", {
       userId,
       nickname,
-      connected,
+      connected: true,
       // socketID: socket.id,
     });
 
@@ -90,85 +100,87 @@ module.exports = (server) => {
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
       console.log("targetUser", targetUser);
 
-      const createUser = await chatData.findOne(
+      const createConnected = await chatData.findOne(
         {
           userId: socket.id,
         },
-        "userId nickname profileImage"
+        "connected"
       );
-      const TargetUser = await chatData.findOne(
+      const targetConnected = await chatData.findOne(
         {
-          userId: targetUser,
+          userId: targetUser.userId,
         },
-        "userId nickname profileImage"
+        "connected"
       );
 
-      // const nowUser = {
-      //   userId: targetUser,
-      //   nickname: socket.nickname,
-      //   profileImage: socket.profileImage,
-      // };
+      const nowUser = {
+        userId: socket.userId,
+        nickname: socket.nickname,
+        profileImage: socket.profileImage,
+        createConnected,
+      };
+
+      const target = {
+        userId: targetUser.userId,
+        nickname: targetUser.nockname,
+        profileImage: targetUser.profileImage,
+        targetConnected,
+      };
 
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        targetUser: createUser,
+        targetUser: nowUser,
         messages: [], //msgList
         // newMessage: 0,
-        lastMessage: "",
-        lastTime: "",
+        // lastMessage: "",
+        // lastTime: "",
       };
 
       const saveData = {
-        ...receive,
-        createUser: TargetUser,
+        roomName,
+        messages: [],
+      };
+
+      const chatRoom = {
+        roomName: roomName,
+        post: post,
+        lastMessage: null,
+        lastTime: null,
+        newMessage: 0,
+        targetUser: nowUser,
+        createUser: target,
       };
       console.log("receive: ", receive);
       // 여기서 이미 존재하는 방인지 검사해서 없을때만 아래구문 실행해야함
-      const existRoom = await Chat.findOne({ roomName: roomName });
-      const existRooms = await chatData.findOne({ enteringRoom: roomName });
+      const existRoom = await Message.findOne({ roomName: roomName });
+      const existRooms = await chatData.findOne({
+        "chatRoom.roomName": roomName,
+      });
       console.log("existRooms", existRooms);
       // console.log("existRoom", existRoom);
       if (!existRoom) {
-        await Chat.create(saveData); // 유저정보 둘다 있는 데이터
+        await Message.create(saveData); // 유저정보 둘다 있는 데이터
         socket.to(TargetUser.userId).emit("join_room", receive);
       }
       if (!existRooms) {
-        await chatData.updateOne(
-          { userId },
-          { $push: { enteringRoom: roomName } }
-        );
+        await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
         await chatData.updateOne(
           { userId: TargetUser.userId },
-          { $push: { enteringRoom: roomName } }
+          { $push: { chatRoom: chatRoom } }
         );
       }
     });
-    socket.on("enter_room", (roomName) => {
-      socket.join(roomName);
-    });
+    // newMessage
+    // socket.on("enter_room", async (roomName) => {
+    //   const a = await chatData.find({roomName})
+    // });
     socket.on("send_message", async (messageData) => {
       console.log("send_message 받은거:", messageData.roomName);
 
-      //메시지를 받을 때 마다 읽지않았을 때 +1
-      //lastMessage 업데이트
-      //lastTime 업데이트
-      // await Chat.updateOne(
-      //   { roomName: messageData.roomName },
-      //   { $inc: { newMessage: 1 } }
-      // );
-
-      // await Chat.updateOne(
-      //   { roomName: messageData.roomName },
-      //   { $set: { lastMessage: messageData.message } },
-      // );
-
-      // await Chat.updateOne(
-      //   { roomName: messageData.roomName },
-      //   { $set: { lastTime: messageData.time } }
-      // );
-
-      const existRoom = await Chat.findOne({ roomName: messageData.roomName });
+      const existRoom = await Message.findOne({
+        roomName: messageData.roomName,
+      });
       console.log("sendMessage_roomName", messageData.roomName);
       // const receiveMessage= await  Chat.find({userId})
       if (!existRoom) {
@@ -192,7 +204,7 @@ module.exports = (server) => {
       };
 
       console.log("saveChat", saveChat);
-      await Chat.updateOne(
+      await Message.updateOne(
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
       );

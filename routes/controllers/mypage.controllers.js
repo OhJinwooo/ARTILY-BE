@@ -8,7 +8,7 @@ const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
-const Chat = require("../../schemas/chat.schemas");
+const Message = require("../../schemas/message.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -56,7 +56,7 @@ const getProfile = async (req, res) => {
     const myPosts = await Post.find(
       { "user.userId": userId },
       "postId imageUrl postTitle price done markupCnt"
-    ).sort({ createdAt: -1 });
+    );
     const postCnt = myPosts.length;
 
     if (myPosts.length) {
@@ -71,8 +71,8 @@ const getProfile = async (req, res) => {
 
     const myReviews = await Review.find(
       { userId },
-      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt createdAt"
-    ).sort({ createdAt: -1 });
+      "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
+    );
     if (myReviews.length) {
       for (let myReview of myReviews) {
         //myPost는 myPosts안에 있는 인덱스중 하나
@@ -129,8 +129,8 @@ const myProfile = async (req, res) => {
 
     const myPosts = await Post.find(
       { "user.userId": userId },
-      "postId imageUrl postTitle price done markupCnt createdAt"
-    ).sort({ createdAt: -1 });
+      "postId imageUrl postTitle price done markupCnt"
+    );
     const postCnt = myPosts.length;
 
     if (myPosts.length) {
@@ -146,7 +146,7 @@ const myProfile = async (req, res) => {
     const myReviews = await Review.find(
       { userId },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
-    ).sort({ createdAt: -1 });
+    );
     if (myReviews.length) {
       for (let myReview of myReviews) {
         //myPost는 myPosts안에 있는 인덱스중 하나
@@ -281,7 +281,7 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-      await Chat.updateOne(
+      await Message.updateOne(
         {
           "createUser.userId": userId,
         },
@@ -292,7 +292,7 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-      await Chat.updateOne(
+      await Message.updateOne(
         {
           "targetUser.userId": userId,
         },
@@ -367,7 +367,7 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-      await Chat.updateOne(
+      await Message.updateOne(
         {
           "createUser.userId": userId,
         },
@@ -378,7 +378,7 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-      await Chat.updateOne(
+      await Message.updateOne(
         {
           "targetUser.userId": userId,
         },
@@ -402,8 +402,8 @@ const getMyPost = async (req, res) => {
     const { userId } = res.locals.user;
     const myPosts = await Post.find(
       { "user.userId": userId },
-      "postId postTitle price done imageUrl markupCnt createdAt"
-    ).sort({ createdAt: -1 });
+      "postId postTitle price done imageUrl markupCnt"
+    );
     if (myPosts.length) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
