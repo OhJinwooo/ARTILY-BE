@@ -175,6 +175,12 @@ module.exports = (server) => {
     // socket.on("enter_room", async (roomName) => {
     //   const a = await chatData.find({roomName})
     // });
+    socket.on("enter_room", async (roomName) => {
+      socket.join(roomName);
+      console.log("roomName", roomName);
+      // socket.to(chatRoom[i].userId).emit("enter_room", chatRoom[i].roomName);
+    });
+
     socket.on("send_message", async (messageData) => {
       console.log("send_message 받은거:", messageData.roomName);
 
