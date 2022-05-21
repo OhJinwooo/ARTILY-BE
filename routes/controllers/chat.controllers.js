@@ -8,6 +8,8 @@ const chatData = async (req, res) => {
   const { userId } = res.locals.user;
 
   const roomUser = await Message.find({});
+
+  const newChat = await ChatData.findOne({ userId });
   if (roomUser.length > 0) {
     let chatRoomName = [];
     for (let i = 0; i < roomUser.length; i++) {
@@ -36,7 +38,6 @@ const chatData = async (req, res) => {
         { $set: { "chatRoom.$.lastTime": lastMessage.time } }
       );
     }
-    const newChat = await ChatData.findOne({ userId });
 
     // let newChat = [];
     if (newChat.chatRoom.length > 0) {
@@ -71,7 +72,7 @@ const chatData = async (req, res) => {
       return res.status(200).send({ newChat, msg: "채팅 정보 없음" });
     }
   }
-  return res.status(200).send({ msg: "채팅 정보 없음" });
+  return res.status(200).send({ newChat, msg: "채팅 정보 없음" });
   // } catch {
   //   res.status(400).send("채팅 목록 조회 실패");
   // }
