@@ -117,14 +117,14 @@ module.exports = (server) => {
         userId: socket.userId,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
-        createConnected,
+        connected: createConnected.connected,
       };
 
       const target = {
         userId: targetUser.userId,
         nickname: targetUser.nickname,
         profileImage: targetUser.profileImage,
-        targetConnected,
+        connected: targetConnected.connected,
       };
 
       const receive = {
