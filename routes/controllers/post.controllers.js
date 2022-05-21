@@ -413,7 +413,7 @@ const artUpdate = async (req, res) => {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
         }
-        if (req.files.length > 0) {
+        if (req.files) {
           const max = await postImg
             .findOne({ postId })
             .sort("-imageNumber")
