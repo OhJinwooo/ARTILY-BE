@@ -208,7 +208,7 @@ const artDetail = async (req, res) => {
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail[0].user,
+        user: detail.user,
       })
         .sort("-createdAt")
         .limit(4);
