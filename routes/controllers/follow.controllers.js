@@ -16,6 +16,7 @@ const addfollow = async (req, res) => {
 
     const followUser = await User.findOne({ userId: followId });
     const followName = followUser.nickname;
+    git;
     const profileImage = followUser.profileImage;
     if (!found) {
       //팔로우 하려는 유저 정보 저장

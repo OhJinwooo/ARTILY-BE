@@ -24,6 +24,7 @@ const like = async (req, res) => {
       if (like.length > 0) {
         //일치하는 값이 있으면 삭제
         await Like.deleteOne({ reviewId, userId });
+        await User.updateOne({ userId }, { $pull: { myLike: reviewId } });
         //남은 개수
         const totalLike = (await Like.find({ reviewId })).length;
         // Review 스키마에 likeCnt값 - 1 해줌.
@@ -33,6 +34,7 @@ const like = async (req, res) => {
 
       // 일치 하는 값이 없을 시 생성
       await Like.create({ userId, reviewId });
+      await User.findOneAndUpdate({ userId }, { $push: { myLike: reviewId } });
       // 총갯수
       const totalLike = (await Like.find({ reviewId })).length;
       // Review 스키마에 likeCnt값 + 1 해줌.

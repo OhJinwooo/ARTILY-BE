@@ -7,7 +7,8 @@ const app = express();
 const app_low = express(); //http
 const httpsPort = process.env.HTTPSPORT;
 const httpPort = process.env.PORT;
-/* const socket = require("./socket"); */
+const server = http.createServer(app);
+const socket = require("./socket");
 /* const option = {
   key:
   cert:
@@ -47,6 +48,7 @@ const requestMiddleware = (req, res, next) => {
 passportNaver();
 passportKakao();
 connect();
+socket(server);
 
 app.use(cors());
 app.use(express.json());
@@ -65,17 +67,17 @@ app.use("/api", [
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 인증서 파트
-// const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
-// const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
-// const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
-// const credentials = {
-//   key: privateKey,
-//   cert: certificate,
-//   ca: ca,
-// };
-// HTTP 리다이렉션 하기
-// app_low : http전용 미들웨어
-/* app_low.use((req, res, next) => {
+const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
+const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
+const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca,
+};
+//HTTP 리다이렉션 하기
+//app_low : http전용 미들웨어
+app_low.use((req, res, next) => {
   if (req.secure) {
     next();
   } else {
@@ -83,17 +85,24 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
     console.log(to);
     res.redirect(to);
   }
-}); */
+}); 
 
 // const server = https.createServer(credentials, app);
 // socket(server);
 
-app.listen(httpPort, () => {
+/* app.listen(httpPort, () => {
+  console.log("http " + httpPort + " server start");
+}); */
+// http: server.listen(httpPort, () => {
+//   console.log(httpPort, "서버가 연결되었습니다.");
+// });
+http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start");
 });
-// http.createServer(app_low).listen(httpPort, () => {
-//   console.log("http " + httpPort + " server start test test");
-// });
-// server.listen(httpsPort, () => {
-//   console.log("https " + httpsPort + " server start test test");
-// });
+https.createServer(credentials, app).listen(httpsPort, () => {
+  console.log("https " + httpsPort + " server start");
+});
+
+server.listen(httpPort, () => {
+  console.log("http " + httpPort + " server start");
+});
