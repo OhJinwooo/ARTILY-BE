@@ -269,7 +269,7 @@ module.exports = (server) => {
     socket.on("check_chat", async (roomName) => {
       await chatData.updateOne(
         { userId: userId, "chatRoom.roomName": roomName },
-        { $set: { "chatRoom.$.roomName": 0 } }
+        { $set: { "chatRoom.$.newMessage": 0 } }
       );
     });
     socket.on("upload", (data) => {
