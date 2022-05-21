@@ -396,7 +396,11 @@ const artUpdate = async (req, res) => {
             }
           );
         }
-      } else if (Array.isArray(imgDt) === false&& imgDt && req.files.length === 1) {
+      } else if (
+        Array.isArray(imgDt) === false &&
+        imgDt &&
+        req.files.length === 1
+      ) {
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -405,7 +409,7 @@ const artUpdate = async (req, res) => {
             },
           }
         );
-      } else if(imgDt || req.files) {
+      } else if (imgDt || req.files) {
         if (Array.isArray(imgDt) === false) {
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {

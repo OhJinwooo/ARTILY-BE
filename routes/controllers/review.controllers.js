@@ -51,75 +51,76 @@ const review = async (req, res) => {
 };
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
-  try {
-    const { reviewId } = req.params;
-    // console.log(reviewId);
+  //try {
+  const { reviewId } = req.params;
+  // console.log(reviewId);
 
-    //buyer & seller
-    //리뷰를 작성한 user 정보 & 구매한 작품&작가 정보 찾기
-    let buyer = await Review.find({ reviewId });
-    console.log("buyer", buyer);
-    let s_userId = "";
-    if (buyer.length) {
-      for (let review of buyer) {
-        const imgs = await ReviewImages.find({ reviewId: review.reviewId });
-        console.log("imgs", imgs);
-        review.images = imgs;
-      }
-      s_userId = buyer[0].seller.user.userId;
-      console.log("s_userId", s_userId);
-
-      // seller의 imageUrl 찾아서 보내주기
-      const sellerPostId = buyer[0].seller.postId;
-      let seller_img = await PostImages.findOne({ postId: sellerPostId });
-      let sellerImg = seller_img.imageUrl;
-      buyer[0].seller.imageUrl = sellerImg;
-
-      //defferents
-      //내가 구매한 작가의 다른 작품들 찾기
-      let defferents = await Post.find(
-        { "user.userId": s_userId },
-        "postId postTitle price"
-      );
-      console.log("defferents", defferents);
-
-      // 판매자의 물품들(postId)
-      if (defferents) {
-        let seller_postId = [];
-        for (let i = 0; i < defferents.length; i++) {
-          seller_postId.push(defferents[i].postId);
-        }
-        console.log("seller_postId", seller_postId);
-
-        //상단에 노출된 물품은 제외하고 추출
-        filtering = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
-        console.log("filtering", filtering);
-
-        let defferentInfo = await Post.find(
-          { postId: filtering },
-          "postId postTitle price imageUrl"
-        );
-        console.log("defferentInfo", defferentInfo);
-
-        //판매물품들 정보에 이미지 합치기
-        for (let info of defferentInfo) {
-          const imgs = await PostImages.findOne({ postId: info.postId });
-          console.log("info.postId", info.postId);
-          console.log("imgs.imageUrl", imgs.imageUrl);
-          info.imageUrl = imgs.imageUrl;
-        }
-        console.log("합치기", defferentInfo);
-        res.json({ buyer, defferentInfo });
-      } else {
-        res.json({ buyer });
-      }
-    } else {
-      return res.send({ msg: "해당 게시글이 없습니다." });
+  //buyer & seller
+  //리뷰를 작성한 user 정보 & 구매한 작품&작가 정보 찾기
+  let buyer = await Review.find({ reviewId });
+  console.log("buyer", buyer);
+  let s_userId = "";
+  if (buyer.length) {
+    for (let review of buyer) {
+      const imgs = await ReviewImages.find({ reviewId: review.reviewId });
+      console.log("imgs", imgs);
+      review.images = imgs;
     }
-  } catch (err) {
-    console.log("상제조회 에러");
-    res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
+    s_userId = buyer[0].seller.user.userId;
+    console.log("s_userId", s_userId);
+
+    // seller의 imageUrl 찾아서 보내주기
+    const sellerPostId = buyer[0].seller.postId;
+    let seller_img = await PostImages.findOne({ postId: sellerPostId });
+    let sellerImg = seller_img.imageUrl;
+    buyer[0].seller.imageUrl = sellerImg;
+
+    //defferents
+    //내가 구매한 작가의 다른 작품들 찾기
+    let defferents = await Post.find(
+      { "user.userId": s_userId },
+      "postId postTitle price"
+    );
+    console.log("defferents", defferents);
+
+    // 판매자의 물품들(postId)
+    if (defferents) {
+      let seller_postId = [];
+      for (let i = 0; i < defferents.length; i++) {
+        seller_postId.push(defferents[i].postId);
+      }
+      console.log("seller_postId", seller_postId);
+
+      //상단에 노출된 물품은 제외하고 추출
+      filtering = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
+      //console.log("filtering", filtering);
+
+      //필터링된 판매물품 정보
+      let defferentInfo = await Post.find(
+        { postId: filtering },
+        "postId postTitle price imageUrl"
+      );
+      // console.log("defferentInfo", defferentInfo);
+
+      //판매물품들 정보에 이미지 합치기
+      for (let info of defferentInfo) {
+        const imgs = await PostImages.findOne({ postId: info.postId });
+        //console.log("info.postId", info.postId);
+        console.log("imgs", imgs);
+        info.images = imgs;
+      }
+      console.log("합치기", defferentInfo);
+      res.json({ buyer, defferentInfo });
+    } else {
+      res.json({ buyer });
+    }
+  } else {
+    return res.send({ msg: "해당 게시글이 없습니다." });
   }
+  // } catch (err) {
+  //   console.log("상제조회 에러");
+  //   res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
+  // }
 };
 //};
 //리뷰 작성
