@@ -235,7 +235,6 @@ const artDetail = async (req, res) => {
 const done = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { userId } = res.locals.user;
     const data = req.body;
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
@@ -269,6 +268,8 @@ const done = async (req, res) => {
     });
   }
 };
+
+
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
@@ -395,7 +396,7 @@ const artUpdate = async (req, res) => {
             }
           );
         }
-      } else if (Array.isArray(imgDt) === false && req.files.length === 1) {
+      } else if (Array.isArray(imgDt) === false && imgDt &&req.files.length === 1) {
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -406,7 +407,6 @@ const artUpdate = async (req, res) => {
         );
       } else {
         if (Array.isArray(imgDt) === false) {
-          console.log(imgDt)
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {
           for (let i = 0; i < imgDt.length; i++) {
@@ -418,8 +418,6 @@ const artUpdate = async (req, res) => {
             .findOne({ postId })
             .sort("-imageNumber")
             .exec();
-          
-          console.log('여기',max)
           let num = 0
           
           if(max){
