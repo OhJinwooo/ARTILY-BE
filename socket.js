@@ -210,18 +210,48 @@ module.exports = (server) => {
       };
 
       console.log("saveChat", saveChat);
+      //받은 메세지 저장
       await Message.updateOne(
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
       );
+      const data = await chatData.findOne({
+        userId: userId,
+        "chatRoom.roomName": messageData.roomName,
+      });
+      console.log("data", data);
+      console.log("messageData.from", messageData.from);
+      //마지막에 받은 메세지 업데이트
       await chatData.updateOne(
-        { userId: userId, "chatRoom.roomName": messageData.roomName },
+        {
+          userId: data.targetUser.userId,
+          "chatRoom.roomName": messageData.roomName,
+        },
         { $set: { "chatRoom.$.lastMessage": messageData.message } }
       );
       await chatData.updateOne(
-        { userId: userId, "chatRoom.roomName": messageData.roomName },
+        {
+          userId: data.targetUser.userId,
+          "chatRoom.roomName": messageData.roomName,
+        },
         { $set: { "chatRoom.$.lastTime": messageData.time } }
       );
+
+      await chatData.updateOne(
+        {
+          userId: data.createUser.userId,
+          "chatRoom.roomName": messageData.roomName,
+        },
+        { $set: { "chatRoom.$.lastMessage": messageData.message } }
+      );
+      await chatData.updateOne(
+        {
+          userId: data.createUser.userId,
+          "chatRoom.roomName": messageData.roomName,
+        },
+        { $set: { "chatRoom.$.lastTime": messageData.time } }
+      );
+
       // const newMessage = await chatData.findOne({ userId });
       if (messageData.from !== userId) {
         await chatData.updateOne(
