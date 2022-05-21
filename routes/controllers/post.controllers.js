@@ -6,7 +6,6 @@ const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
 const buyPost = require("../../schemas/buy.schemas");
-const chatpost = require("../../schemas/chat.schemas");
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -396,7 +395,7 @@ const artUpdate = async (req, res) => {
             }
           );
         }
-      } else if (Array.isArray(imgDt) === false&& imgDt && req.files.length === 1) {
+      } else if (Array.isArray(imgDt) === false && req.files.length === 1) {
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -405,7 +404,7 @@ const artUpdate = async (req, res) => {
             },
           }
         );
-      } else if(imgDt || req.files) {
+      } else {
         if (Array.isArray(imgDt) === false) {
           console.log(imgDt)
           await postImg.deleteOne({ imageUrl: imgDt });
@@ -414,7 +413,7 @@ const artUpdate = async (req, res) => {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
         }
-        if (req.files) {
+        if (req.files.length > 0) {
           const max = await postImg
             .findOne({ postId })
             .sort("-imageNumber")
