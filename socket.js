@@ -131,10 +131,9 @@ module.exports = (server) => {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
         targetUser: nowUser,
-        messages: [], //msgList
-        // newMessage: 0,
-        // lastMessage: "",
-        // lastTime: "",
+        newMessage: 0,
+        lastMessage: null,
+        lastTime: null,
       };
 
       const saveData = {
