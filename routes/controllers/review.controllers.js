@@ -299,6 +299,21 @@ const review_modify = async (req, res) => {
       msg: "수정 실패",
     });
   }
+  // 이미지를 제외한 값들 수정
+  await Review.updateOne(
+    { reviewId },
+    {
+      $set: {
+        reviewTitle,
+        reviewContent,
+      },
+    }
+  );
+
+  res.status(200).send({
+    respons: "success",
+    msg: "수정 완료",
+  });
 };
 
 //리뷰 삭제
