@@ -77,6 +77,9 @@ module.exports = (server) => {
         const chatRoom = result[i].chatRoom;
         for (let j = 0; j < chatRoom.length; j++) {
           socket.join(chatRoom[j].roomName);
+          socket
+            .to(chatRoom[j].targetUser.userId, chatRoom[j].createdUser.userId)
+            .emit("join_room");
         }
       }
     }
