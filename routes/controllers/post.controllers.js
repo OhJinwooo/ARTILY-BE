@@ -118,9 +118,10 @@ const artStore = async (req, res) => {
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
         console.log("데이터 없다.")
-        return res.status(200).send({
+        return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
+          data:[]
         });
       }else{
         res.status(200).json({
@@ -168,9 +169,10 @@ const artStore = async (req, res) => {
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
         console.log('없어요')
-        return res.status(200).send({
+        return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
+          data:[]
         });
       }else{
         res.status(200).json({
