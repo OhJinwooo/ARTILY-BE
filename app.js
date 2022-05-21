@@ -7,7 +7,6 @@ const app = express();
 const app_low = express(); //http
 const httpsPort = process.env.HTTPSPORT;
 const httpPort = process.env.PORT;
-const server = http.createServer(app);
 const socket = require("./socket");
 /* const option = {
   key:
@@ -48,7 +47,6 @@ const requestMiddleware = (req, res, next) => {
 passportNaver();
 passportKakao();
 connect();
-socket(server);
 
 app.use(cors());
 app.use(express.json());
@@ -75,8 +73,8 @@ const credentials = {
   cert: certificate,
   ca: ca,
 };
-//HTTP 리다이렉션 하기
-//app_low : http전용 미들웨어
+// HTTP 리다이렉션 하기
+// app_low : http전용 미들웨어
 app_low.use((req, res, next) => {
   if (req.secure) {
     next();
@@ -86,16 +84,16 @@ app_low.use((req, res, next) => {
     res.redirect(to);
   }
 });
-// http: server.listen(httpPort, () => {
-//   console.log(httpPort, "서버가 연결되었습니다.");
+
+const server = https.createServer(credentials, app);
+socket(server);
+
+// app.listen(httpPort, () => {
+//   console.log("http " + httpPort + " server start");
 // });
 http.createServer(app_low).listen(httpPort, () => {
-  console.log("http " + httpPort + " server start");
+  console.log("http " + httpPort + " server start test test");
 });
-https.createServer(credentials, app).listen(httpsPort, () => {
-  console.log("https " + httpsPort + " server start");
-});
-
-server.listen(httpPort, () => {
-  console.log("http " + httpPort + " server start");
+server.listen(httpsPort, () => {
+  console.log("https " + httpsPort + " server start test test");
 });
