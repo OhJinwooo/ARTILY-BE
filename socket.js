@@ -71,15 +71,11 @@ module.exports = (server) => {
     //   socket.emit("roomList", rooms);
     // });
 
-    const result = await chatData.find({ userId }, "chatRoom");
-    if (result.length > 0) {
-      for (let i = 0; i < result.length; i++) {
-        const chatRoom = result[i].chatRoom;
-        console.log("chatRoom_join", chatRoom);
-        for (let j = 0; j < chatRoom.length; j++) {
-          socket.join(chatRoom[j].roomName);
-          console.log("chatRoom[j].roomName", chatRoom[j].roomName);
-        }
+    const result = await chatData.findOne({ userId }, "chatRoom");
+    if (result.chatRoom.length > 0) {
+      for (let i = 0; i < result.chatRoom.length; i++) {
+        socket.join(result.chatRoom[i].roomName);
+        console.log("chatRoom[j].roomName", chatRoom[i].roomName);
       }
     }
 
