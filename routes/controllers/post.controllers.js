@@ -185,7 +185,7 @@ const artStore = async (req, res) => {
     });
   }
 };
-console.log('llll')
+
 //상세조회
 const artDetail = async (req, res) => {
   try {
