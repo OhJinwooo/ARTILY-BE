@@ -217,7 +217,7 @@ module.exports = (server) => {
       );
       const data = await chatData.findOne({
         userId: userId,
-        "chatRoom.roomName": [messageData.roomName],
+        chatRoom: [messageData.roomName],
       });
       console.log("data", data);
       console.log("messageData.from", messageData.from);
