@@ -34,6 +34,7 @@ module.exports = (server) => {
       socket.nickname = nickname;
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
+
       await chatData.updateOne({ userId }, { $set: { connected: true } });
       console.log("db 업데이트");
       return next();
@@ -46,8 +47,8 @@ module.exports = (server) => {
 
     await chatData.create({
       userId,
-      nickname,
-      profileImage,
+      // nickname,
+      // profileImage,
       connected: true,
       chatRoom: [],
     });
@@ -73,14 +74,20 @@ module.exports = (server) => {
     const result = await chatData.find({ userId }, "chatRoom");
     if (result.length > 0) {
       for (let i = 0; i < result.length; i++) {
-        socket.join(result[i].chatRoom.roomName);
+        const chatRoom = result[i].chatRoom;
+        for (let j = 0; j < chatRoom.length; j++) {
+          socket.join(chatRoom[j].roomName);
+          socket
+            .to(chatRoom[j].targetUser.userId, chatRoom[j].createdUser.userId)
+            .emit("join_room");
+        }
       }
     }
 
     socket.broadcast.emit("user connected", {
       userId,
       nickname,
-      connected,
+      connected: true,
       // socketID: socket.id,
     });
 

@@ -5,6 +5,6 @@ const { chatData, messages } = require("./controllers/chat.controllers");
 
 router.get("/chat/data", middleswares, chatData);
 
-router.get("/chat/messages", middleswares, messages);
+router.get("/chat/messages/:roomName", middleswares, messages);
 
 module.exports = router;
