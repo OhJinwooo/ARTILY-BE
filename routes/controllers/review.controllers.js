@@ -27,7 +27,7 @@ const review = async (req, res) => {
     limit = !isNaN(limit) ? limit : 6;
     //제외할 데이터 지정 == 다음 페이지 시작점
     let skip = (page - 1) * limit;
-
+    console.log('limt',limit)
     const reviews = await Review.find(
       {},
       "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"

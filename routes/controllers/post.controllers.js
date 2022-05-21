@@ -122,12 +122,13 @@ const artStore = async (req, res) => {
           respons: "fail",
           msg: "데이터 없음",
         });
+      }else{
+        res.status(200).json({
+          respons: "success",
+          msg: "스토어 조회 성공",
+          data: artPost,
+        });
       }
-      res.status(200).json({
-        respons: "success",
-        msg: "스토어 조회 성공",
-        data: artPost,
-      });
     } else {
       //infinite scroll 핸들링
       // 변수 선언 값이 정수로 표현
@@ -171,12 +172,13 @@ const artStore = async (req, res) => {
           respons: "fail",
           msg: "데이터 없음",
         });
-      }
-      res.status(200).json({
-        respons: "success",
-        msg: "filter complete",
-        data: artPost,
-      });
+      }else{
+        res.status(200).json({
+          respons: "success",
+          msg: "filter complete",
+          data: artPost,
+        });
+      } 
     }
   } catch (error) {
     res.status(400).json({
