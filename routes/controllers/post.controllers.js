@@ -78,7 +78,8 @@ const artStore = async (req, res) => {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.query;
     const keyword = data.keyword;
-
+    console.log("이게",req.query)
+    console.log("ss",data.page)
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
@@ -436,8 +437,7 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-      const test = await postImg.find({ postId });
-      console.log("test", test);
+      
       //업데이트
       await Post.updateOne(
         { postId },
