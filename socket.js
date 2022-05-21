@@ -75,8 +75,10 @@ module.exports = (server) => {
     if (result.length > 0) {
       for (let i = 0; i < result.length; i++) {
         const chatRoom = result[i].chatRoom;
+        console.log("chatRoom_join", chatRoom);
         for (let j = 0; j < chatRoom.length; j++) {
           socket.join(chatRoom[j].roomName);
+          console.log("chatRoom[j].roomName", chatRoom[j].roomName);
         }
       }
     }
