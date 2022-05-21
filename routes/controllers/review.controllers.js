@@ -45,6 +45,7 @@ const review = async (req, res) => {
         review.images = imgs;
       }
     }
+    console.log('rew',reviews.length)
     res.json({ reviews });
   } catch (err) {
     console.error(err);
