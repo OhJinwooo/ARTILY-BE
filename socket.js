@@ -255,7 +255,7 @@ module.exports = (server) => {
       // const newMessage = await chatData.findOne({ userId });
 
       //상대방에게 메세지를 보냈을때 숫자 1 증가
-      if (messageData.from !== userId) {
+      if (messageData.to) {
         console.log("조건문 들어옴");
         await chatData.updateOne(
           {
