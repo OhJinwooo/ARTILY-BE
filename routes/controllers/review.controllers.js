@@ -41,7 +41,7 @@ const review = async (req, res) => {
         const imgs = await ReviewImages.findOne({
           reviewId: review.reviewId,
         });
-        console.log("imgs", imgs);
+        //  console.log("imgs", imgs);
         review.images = imgs;
       }
     }
