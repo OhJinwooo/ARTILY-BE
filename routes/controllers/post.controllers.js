@@ -205,6 +205,7 @@ const artDetail = async (req, res) => {
           j.images = [""];
         }
       }
+      console.log(detail[0].user)
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
@@ -219,6 +220,7 @@ const artDetail = async (req, res) => {
           j.images = [""];
         }
       }
+      cons
       res.status(200).json({
         respons: "success",
         msg: "상세페이지 조회 성공",

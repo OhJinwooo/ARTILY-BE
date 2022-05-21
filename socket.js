@@ -72,16 +72,10 @@ module.exports = (server) => {
     // });
 
     const result = await chatData.findOne({ userId }, "chatRoom");
-<<<<<<< HEAD
-    if (result.chatRoom.length > 0) {
-      for (let i = 0; i < result.chatRoom.length; i++) {
-        socket.join(result.chatRoom[i].roomName);
-=======
     const chatRoom = result.chatRoom;
     if (chatRoom.length > 0) {
       for (let i = 0; i < chatRoom.length; i++) {
         socket.join(chatRoom[i].roomName);
->>>>>>> 4eb5717c3f7eaaf90c525aa881ae1e0f4efe834d
         console.log("chatRoom[j].roomName", chatRoom[i].roomName);
       }
     }
