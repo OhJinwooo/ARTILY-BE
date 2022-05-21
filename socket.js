@@ -71,16 +71,12 @@ module.exports = (server) => {
     //   socket.emit("roomList", rooms);
     // });
 
-    const result = await chatData.find({ userId }, "chatRoom");
-    if (result.length > 0) {
-      for (let i = 0; i < result.length; i++) {
-        const chatRoom = result[i].chatRoom;
-        for (let j = 0; j < chatRoom.length; j++) {
-          socket.join(chatRoom[j].roomName);
-          socket
-            .to(chatRoom[j].targetUser.userId, chatRoom[j].createdUser.userId)
-            .emit("join_room");
-        }
+    const result = await chatData.findOne({ userId }, "chatRoom");
+    const chatRoom = result.chatRoom;
+    if (chatRoom.length > 0) {
+      for (let i = 0; i < chatRoom.length; i++) {
+        socket.join(chatRoom[i].roomName);
+        console.log("chatRoom[j].roomName", chatRoom[i].roomName);
       }
     }
 
@@ -117,14 +113,14 @@ module.exports = (server) => {
         userId: socket.userId,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
-        createConnected,
+        connected: createConnected.connected,
       };
 
       const target = {
         userId: targetUser.userId,
-        nickname: targetUser.nockname,
+        nickname: targetUser.nickname,
         profileImage: targetUser.profileImage,
-        targetConnected,
+        connected: targetConnected.connected,
       };
 
       const receive = {
@@ -161,12 +157,12 @@ module.exports = (server) => {
       // console.log("existRoom", existRoom);
       if (!existRoom) {
         await Message.create(saveData); // 유저정보 둘다 있는 데이터
-        socket.to(TargetUser.userId).emit("join_room", receive);
+        socket.to(targetUser.userId).emit("join_room", receive);
       }
       if (!existRooms) {
         await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
         await chatData.updateOne(
-          { userId: TargetUser.userId },
+          { userId: targetUser.userId },
           { $push: { chatRoom: chatRoom } }
         );
       }
