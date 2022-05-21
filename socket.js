@@ -220,6 +220,7 @@ module.exports = (server) => {
       // });
       // console.log("data", data);
       console.log("messageData.from", messageData.from);
+      console.log("messageData.to", messageData.to);
       //마지막에 작성된 메세지 시간 업데이트
       await chatData.updateOne(
         {
