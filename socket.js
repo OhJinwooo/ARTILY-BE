@@ -100,23 +100,31 @@ module.exports = (server) => {
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
       console.log("targetUser", targetUser);
 
-      // const createUser = await chatData.findOne(
-      //   {
-      //     userId: socket.id,
-      //   },
-      //   "userId nickname profileImage"
-      // );
-      const TargetUser = await chatData.findOne(
+      const createConnected = await chatData.findOne(
         {
-          userId: targetUser,
+          userId: socket.id,
         },
-        "userId nickname profileImage connected"
+        "connected"
+      );
+      const targetConnected = await chatData.findOne(
+        {
+          userId: targetUser.userId,
+        },
+        "connected"
       );
 
       const nowUser = {
         userId: socket.userId,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
+        createConnected,
+      };
+
+      const target = {
+        userId: targetUser.userId,
+        nickname: targetUser.nockname,
+        profileImage: targetUser.profileImage,
+        targetConnected,
       };
 
       const receive = {
@@ -133,25 +141,6 @@ module.exports = (server) => {
         roomName,
         messages: [],
       };
-      // const 데이터모양 = {
-      //   userId,
-      //   nickname,
-      //   profileImage,
-      //   connected,
-      //   chatRoom: [
-      //     {
-      //       roomName: "",
-      //       lastTime: "",
-      //       lastMessage: "",
-      //       post: {},
-      //       newMessage: 3,
-      //       targetUser: {},
-      //     },
-      //     {},
-      //     {},
-      //     {},
-      //   ],
-      // };
 
       const chatRoom = {
         roomName: roomName,
@@ -160,7 +149,7 @@ module.exports = (server) => {
         lastTime: "",
         newMessage: 0,
         targetUser: nowUser,
-        createUser: TargetUser,
+        createUser: target,
       };
       console.log("receive: ", receive);
       // 여기서 이미 존재하는 방인지 검사해서 없을때만 아래구문 실행해야함
