@@ -102,7 +102,7 @@ const artStore = async (req, res) => {
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log('page',page)
+      console.log('page',skip)
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
