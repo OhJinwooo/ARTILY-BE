@@ -166,7 +166,7 @@ module.exports = (server) => {
       if (!existRooms) {
         await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
         await chatData.updateOne(
-          { userId: TargetUser.userId },
+          { userId: targetUser.userId },
           { $push: { chatRoom: chatRoom } }
         );
       }
