@@ -118,6 +118,7 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
+        console.log("데이터 없다.")
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
@@ -207,7 +208,7 @@ const artDetail = async (req, res) => {
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail[0].user,
+        user: detail.user,
       })
         .sort("-createdAt")
         .limit(4);
