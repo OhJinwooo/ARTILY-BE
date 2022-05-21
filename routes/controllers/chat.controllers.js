@@ -87,7 +87,7 @@ const messages = async (req, res) => {
   try {
     if (roomUser.messages.length > 0) {
       console.log("roomUser", roomUser);
-      await chatData.updateOne(
+      await ChatData.updateOne(
         { userId: userId, "chatRoom.roomName": roomName },
         { $set: { "chatRoom.$.newMessage": 0 } }
       );
