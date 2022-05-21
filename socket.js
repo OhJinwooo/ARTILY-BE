@@ -72,6 +72,7 @@ module.exports = (server) => {
     // });
 
     const result = await chatData.findOne({ userId }, "chatRoom");
+    console.log("result", result);
     const chatRoom = result.chatRoom;
     console.log("chatRoom", chatRoom);
     if (chatRoom.length > 0) {
