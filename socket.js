@@ -215,23 +215,23 @@ module.exports = (server) => {
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
       );
-      const data = await chatData.findOne({
-        userId: userId,
-        chatRoom: [messageData.roomName],
-      });
-      console.log("data", data);
+      // const data = await chatData.findOne({
+      //   userId: userId,
+      //   chatRoom: [messageData.roomName],
+      // });
+      // console.log("data", data);
       console.log("messageData.from", messageData.from);
-      //마지막에 받은 메세지 업데이트
+      //마지막에 작성된 메세지 시간 업데이트
       await chatData.updateOne(
         {
-          userId: data.targetUser.userId,
+          userId: messageData.from,
           "chatRoom.roomName": messageData.roomName,
         },
         { $set: { "chatRoom.$.lastMessage": messageData.message } }
       );
       await chatData.updateOne(
         {
-          userId: data.targetUser.userId,
+          userId: messageData.from,
           "chatRoom.roomName": messageData.roomName,
         },
         { $set: { "chatRoom.$.lastTime": messageData.time } }
@@ -239,20 +239,22 @@ module.exports = (server) => {
 
       await chatData.updateOne(
         {
-          userId: data.createUser.userId,
+          userId: messageData.to,
           "chatRoom.roomName": messageData.roomName,
         },
         { $set: { "chatRoom.$.lastMessage": messageData.message } }
       );
       await chatData.updateOne(
         {
-          userId: data.createUser.userId,
+          userId: messageData.to,
           "chatRoom.roomName": messageData.roomName,
         },
         { $set: { "chatRoom.$.lastTime": messageData.time } }
       );
 
       // const newMessage = await chatData.findOne({ userId });
+
+      //상대방에게 메세지를 보냈을때 숫자 1 증가
       if (messageData.from !== userId) {
         await chatData.updateOne(
           {
