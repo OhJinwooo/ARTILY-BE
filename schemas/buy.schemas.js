@@ -7,6 +7,9 @@ const buySchema = new mongoose.Schema({
   postId: {
     type: String,
   },
+  createdAt:{
+    type: String
+  }
 });
 
 module.exports = mongoose.model("buy", buySchema);

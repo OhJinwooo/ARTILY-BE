@@ -6,7 +6,6 @@ const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
 const buyPost = require("../../schemas/buy.schemas");
-const chatpost = require("../../schemas/chat.schemas");
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -79,7 +78,8 @@ const artStore = async (req, res) => {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.query;
     const keyword = data.keyword;
-
+    console.log("이게",req.query)
+    console.log("ss",data.page)
     //태그 기능 변수
     const category = data.category;
     const transaction = data.transaction;
@@ -118,6 +118,7 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
+        console.log("데이터 없다.")
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
@@ -207,7 +208,7 @@ const artDetail = async (req, res) => {
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail[0].user,
+        user: detail.user,
       })
         .sort("-createdAt")
         .limit(4);
@@ -236,7 +237,6 @@ const artDetail = async (req, res) => {
 const done = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { userId } = res.locals.user;
     const data = req.body;
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
@@ -270,6 +270,8 @@ const done = async (req, res) => {
     });
   }
 };
+
+
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
@@ -396,7 +398,11 @@ const artUpdate = async (req, res) => {
             }
           );
         }
-      } else if (Array.isArray(imgDt) === false && req.files.length === 1) {
+      } else if (
+        Array.isArray(imgDt) === false &&
+        imgDt &&
+        req.files.length === 1
+      ) {
         await postImg.updateOne(
           { imageUrl: imgDt },
           {
@@ -405,7 +411,7 @@ const artUpdate = async (req, res) => {
             },
           }
         );
-      } else {
+      } else if (imgDt || req.files) {
         if (Array.isArray(imgDt) === false) {
           await postImg.deleteOne({ imageUrl: imgDt });
         } else {
@@ -413,12 +419,16 @@ const artUpdate = async (req, res) => {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
         }
-        if (req.files.length > 0) {
+        if (req.files) {
           const max = await postImg
             .findOne({ postId })
             .sort("-imageNumber")
             .exec();
-          let num = max.imageNumber + 1;
+          let num = 0
+          
+          if(max){
+            num = max.imageNumber +1
+          }
           for (let i = 0; i < req.files.length; i++) {
             await postImg.create({
               postId,
@@ -428,7 +438,7 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-
+      
       //업데이트
       await Post.updateOne(
         { postId },
