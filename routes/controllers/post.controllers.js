@@ -77,7 +77,7 @@ const artStore = async (req, res) => {
   try {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.query;
-    console.log("req",req.query)
+    console.log("req", req.query);
     const keyword = data.keyword;
     //태그 기능 변수
     const category = data.category;
@@ -102,7 +102,7 @@ const artStore = async (req, res) => {
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log('page',page)
+      console.log("page", page);
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
@@ -118,13 +118,13 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
-        console.log("데이터 없다.")
+        console.log("데이터 없다.");
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
-          data:[]
+          data: [],
         });
-      }else{
+      } else {
         res.status(200).json({
           respons: "success",
           msg: "스토어 조회 성공",
@@ -143,6 +143,7 @@ const artStore = async (req, res) => {
       let skip = (page - 1) * limit;
       //검색기능
       let option = [];
+      console.log("option", option);
       if (keyword) {
         option = [{ postTitle: new RegExp(keyword) }];
       }
@@ -161,6 +162,7 @@ const artStore = async (req, res) => {
       }
       //search and filter = option
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
+      console.log("artPost", artPost);
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
@@ -169,19 +171,19 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
-        console.log('없어요')
+        console.log("없어요");
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
-          data:[]
+          data: [],
         });
-      }else{
+      } else {
         res.status(200).json({
           respons: "success",
           msg: "filter complete",
           data: artPost,
         });
-      } 
+      }
     }
   } catch (error) {
     res.status(400).json({
@@ -212,7 +214,7 @@ const artDetail = async (req, res) => {
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail[0].user
+        user: detail[0].user,
       })
         .sort("-createdAt")
         .limit(4);
@@ -274,8 +276,6 @@ const done = async (req, res) => {
     });
   }
 };
-
-
 
 //작성 api(구현 완료)
 const artPost = async (req, res) => {
@@ -428,10 +428,10 @@ const artUpdate = async (req, res) => {
             .findOne({ postId })
             .sort("-imageNumber")
             .exec();
-          let num = 0
-          
-          if(max){
-            num = max.imageNumber +1
+          let num = 0;
+
+          if (max) {
+            num = max.imageNumber + 1;
           }
           for (let i = 0; i < req.files.length; i++) {
             await postImg.create({
@@ -442,7 +442,7 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-      
+
       //업데이트
       await Post.updateOne(
         { postId },
