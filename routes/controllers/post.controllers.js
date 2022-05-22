@@ -84,10 +84,6 @@ const artStore = async (req, res) => {
     const transaction = data.transaction;
     const changeAddress = data.changeAddress;
     const price = data.price;
-    console.log("category", category);
-    console.log("transaction", transaction);
-    console.log("changeAddress", categchangeAddressory);
-    console.log("price", price);
 
     // 일반적인 상태(조건이 없을 때)
     if (

@@ -35,7 +35,10 @@ module.exports = (server) => {
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
 
-      await chatData.updateOne({ userId }, { $set: { connected: true } });
+      await chatData.updateOn(
+        { userId: userId },
+        { $set: { connected: true } }
+      );
       console.log("db 업데이트");
       return next();
     }
