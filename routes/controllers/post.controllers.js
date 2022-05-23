@@ -98,7 +98,7 @@ const artStore = async (req, res) => {
       let page = Math.max(1, parseInt(req.query.page));
       let limit = Math.max(1, parseInt(req.query.limit));
       //NaN일때 값지정
-      page = !isNaN(page) ? page : 1;
+      page = !isNaN(page) ? page+1 : 1;
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
