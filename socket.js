@@ -42,20 +42,24 @@ module.exports = (server) => {
       for (let i = 0; i < myConnected.length; i++) {
         const chatroom = myConnected[i].chatRoom;
         for (let j = 0; j < chatroom.length; j++) {
-          await chatData.updateOne(
-            {
-              "chatRoom[j].roomName": chatroom.roomName,
-              "chatRoom[j].targetUser.userId": userId,
-            },
-            { $set: { "chatRoom.$.targetUser.connected": true } }
-          );
-          await chatData.updateOne(
-            {
-              "chatRoom[j].roomName": chatroom.roomName,
-              "chatRoom[j].createUser.userId": userId,
-            },
-            { $set: { "chatRoom.$.createUser.connected": true } }
-          );
+          if (chatroom[j].targetUser.userId === userId) {
+            await chatData.updateOne(
+              {
+                "chatRoom.roomName": chatroom[j].roomName,
+                "chatRoom.targetUser.userId": userId,
+              },
+              { $set: { "chatRoom.$.targetUser.connected": true } }
+            );
+          }
+          if (chatroom[j].createUser.userId === userId) {
+            await chatData.updateOne(
+              {
+                "chatRoom.roomName": chatroom[j].roomName,
+                "chatRoom.createUser.userId": userId,
+              },
+              { $set: { "chatRoom.$.createUser.connected": true } }
+            );
+          }
         }
       }
 
@@ -319,20 +323,24 @@ module.exports = (server) => {
       for (let i = 0; i < myConnected.length; i++) {
         const chatroom = myConnected[i].chatRoom;
         for (let j = 0; j < chatroom.length; j++) {
-          await chatData.updateOne(
-            {
-              "chatRoom[j].roomName": chatroom.roomName,
-              "chatRoom[j].targetUser.userId": userId,
-            },
-            { $set: { "chatRoom.$.targetUser.connected": false } }
-          );
-          await chatData.updateOne(
-            {
-              "chatRoom[j].roomName": chatroom.roomName,
-              "chatRoom[j].createUser.userId": userId,
-            },
-            { $set: { "chatRoom.$.createUser.connected": false } }
-          );
+          if (chatroom[j].targetUser.userId === userId) {
+            await chatData.updateOne(
+              {
+                "chatRoom.roomName": chatroom[j].roomName,
+                "chatRoom.targetUser.userId": userId,
+              },
+              { $set: { "chatRoom.$.targetUser.connected": false } }
+            );
+          }
+          if (chatroom[j].createUser.userId === userId) {
+            await chatData.updateOne(
+              {
+                "chatRoom.roomName": chatroom[j].roomName,
+                "chatRoom.createUser.userId": userId,
+              },
+              { $set: { "chatRoom.$.createUser.connected": false } }
+            );
+          }
         }
       }
       const newUser = await chatData.findOne({ userId: socket.id });
