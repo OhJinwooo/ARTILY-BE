@@ -322,8 +322,13 @@ module.exports = (server) => {
       const myConnected = await chatData.find({}, "chatRoom");
       for (let i = 0; i < myConnected.length; i++) {
         const chatroom = myConnected[i].chatRoom;
+        console.log("chatroom", chatroom);
         for (let j = 0; j < chatroom.length; j++) {
           if (chatroom[j].targetUser.userId === userId) {
+            console.log(
+              "chatroom[j].targetUser.userId",
+              chatroom[j].targetUser.userId
+            );
             await chatData.updateOne(
               {
                 "chatRoom.roomName": chatroom[j].roomName,
@@ -333,6 +338,10 @@ module.exports = (server) => {
             );
           }
           if (chatroom[j].createUser.userId === userId) {
+            console.log(
+              "chatroom[j].createUser.userId",
+              chatroom[j].createUser.userId
+            );
             await chatData.updateOne(
               {
                 "chatRoom.roomName": chatroom[j].roomName,
