@@ -44,7 +44,7 @@ module.exports = (server) => {
           userId: userId,
           "chatRoom.targetUser.userId": userId,
         },
-        { $set: { "chatRoom.$.targetUse.connected": true } }
+        { $set: { "chatRoom.$.targetUser.connected": true } }
       );
       await chatData.updateOne(
         {
@@ -314,7 +314,7 @@ module.exports = (server) => {
           userId: userId,
           "chatRoom.targetUser.userId": userId,
         },
-        { $set: { "chatRoom.$.targetUse.connected": false } }
+        { $set: { "chatRoom.$.targetUser.connected": false } }
       );
       await chatData.updateOne(
         {
