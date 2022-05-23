@@ -326,7 +326,7 @@ module.exports = (server) => {
 
         if (chatroom) {
           for (let j = 0; j < chatroom.length; j++) {
-            const test = await chatData.find({
+            const test = await myConnected.find({
               "chatRoom.roomName": chatroom[j].roomName,
             });
             console.log("test", test);
