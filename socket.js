@@ -39,6 +39,20 @@ module.exports = (server) => {
         { userId: userId },
         { $set: { connected: true } }
       );
+      await chatData.updateOne(
+        {
+          userId: userId,
+          "chatRoom.targetUser.userId": userId,
+        },
+        { $set: { "chatRoom.$.targetUse.connected": true } }
+      );
+      await chatData.updateOne(
+        {
+          userId: userId,
+          "chatRoom.createUser.userId": userId,
+        },
+        { $set: { "chatRoom.$.createUser.connected": true } }
+      );
       console.log("db 업데이트");
       return next();
     }
@@ -290,10 +304,24 @@ module.exports = (server) => {
       socket.to(roomName).emit("admin_noti", admin_notification);
     });
     socket.on("disconnect", async () => {
-      const user = await chatData.findOne({ userId: socket.id });
-      const disUser = await chatData.updateOne(
-        { userId: user.userId },
+      // const user = await chatData.findOne({ userId: socket.id });
+      await chatData.updateOne(
+        { userId: userId },
         { $set: { connected: false } }
+      );
+      await chatData.updateOne(
+        {
+          userId: userId,
+          "chatRoom.targetUser.userId": userId,
+        },
+        { $set: { "chatRoom.$.targetUse.connected": false } }
+      );
+      await chatData.updateOne(
+        {
+          userId: userId,
+          "chatRoom.createUser.userId": userId,
+        },
+        { $set: { "chatRoom.$.createUser.connected": false } }
       );
       const newUser = await chatData.findOne({ userId: socket.id });
       socket.broadcast.emit(
