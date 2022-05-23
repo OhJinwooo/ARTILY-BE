@@ -25,7 +25,7 @@ const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
-/* const chatRouter = require("./routes/chat.router"); */
+const chatRouter = require("./routes/chat.router");
 const cors = require("cors");
 //접속로그 남기기
 const requestMiddleware = (req, res, next) => {
