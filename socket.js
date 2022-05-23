@@ -333,7 +333,7 @@ module.exports = (server) => {
               );
               await chatData.updateOne(
                 {
-                  "chatRoom.roomName": chatroom[j].roomName,
+                  "chatRoom[j].roomName": chatroom[j].roomName,
                   "chatRoom.targetUser.userId": userId,
                 },
                 { $set: { "chatRoom.$.targetUser.connected": false } }
@@ -347,7 +347,7 @@ module.exports = (server) => {
               );
               await chatData.updateOne(
                 {
-                  "chatRoom.roomName": chatroom[j].roomName,
+                  "chatRoom[j].roomName": chatroom[j].roomName,
                   "chatRoom.createUser.userId": userId,
                 },
                 { $set: { "chatRoom.$.createUser.connected": false } }
