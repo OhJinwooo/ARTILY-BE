@@ -245,7 +245,6 @@ const done = async (req, res) => {
     const { postId } = req.params;
     const {userId} = res.locals.user
     const data = req.body;
-    console.log(data.userId)
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
 
