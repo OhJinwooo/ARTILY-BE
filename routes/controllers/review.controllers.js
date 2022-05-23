@@ -16,8 +16,8 @@ const uuid = () => {
 const review = async (req, res) => {
   try {
     const data = req.query;
-    console.log(data.page);
-    console.log(data.limit);
+    console.log("page", data.page);
+    console.log("limit", data.limit);
     //infinite scroll 핸들링
     // 변수 선언 값이 정수로 표현
     let page = Math.max(1, parseInt(data.page));
@@ -27,7 +27,7 @@ const review = async (req, res) => {
     limit = !isNaN(limit) ? limit : 6;
     //제외할 데이터 지정 == 다음 페이지 시작점
     let skip = (page - 1) * limit;
-    console.log('limt',limit)
+    console.log("limt", limit);
     const reviews = await Review.find(
       {},
       "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
@@ -45,7 +45,7 @@ const review = async (req, res) => {
         review.images = imgs;
       }
     }
-    console.log('rew',reviews.length)
+    console.log("rew", reviews.length);
     res.json({ reviews });
   } catch (err) {
     console.error(err);
