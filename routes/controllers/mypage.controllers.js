@@ -404,7 +404,7 @@ const getMyPost = async (req, res) => {
       { "user.userId": userId },
       "postId postTitle price done imageUrl markupCnt"
     );
-    if (myPosts.length) {
+    if (myPosts.length > 0) {
       for (let myPost of myPosts) {
         const images = await PostImage.findOne({ postId: myPost.postId });
         myPost.images = images;
@@ -428,8 +428,18 @@ const getMyBuy = async (req, res) => {
       { "user.userId": buyPost },
       "postId postTitle user.nickname imageUrl"
     );
-
-    res.status(200).json({ myBuy });
+    if (myBuy.length > 0) {
+      for (let myPost of myBuy) {
+        const images = await PostImage.findOne({ postId: myPost.postId });
+        myPost.images = images;
+        if (myPost.images === null) {
+          myPost.images = [""];
+        }
+      }
+      res.status(200).json({ myBuy });
+    } else {
+      res.status(200).json({ msg: "구매한 작품이 없습니다." });
+    }
   } catch (err) {
     res.status(400).send("조회 실패");
   }
