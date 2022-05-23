@@ -25,7 +25,7 @@ const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
-const chatRouter = require("./routes/chat.router");
+/* const chatRouter = require("./routes/chat.router"); */
 const cors = require("cors");
 //접속로그 남기기
 const requestMiddleware = (req, res, next) => {
@@ -60,7 +60,7 @@ app.use("/api", [
   blackListRouter,
   postRouter,
   followRouter,
-  /* chatRouter, */
+  chatRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
@@ -72,7 +72,7 @@ const credentials = {
   key: privateKey,
   cert: certificate,
   ca: ca,
-};
+}; 
 // HTTP 리다이렉션 하기
 // app_low : http전용 미들웨어
 app_low.use((req, res, next) => {
@@ -88,9 +88,9 @@ app_low.use((req, res, next) => {
 const server = https.createServer(credentials, app);
 socket(server);
 
-// app.listen(httpPort, () => {
-//   console.log("http " + httpPort + " server start");
-// });
+/* app.listen(httpPort, () => {
+   console.log("http " + httpPort + " server start");
+ }); */
 http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start test test");
 });
