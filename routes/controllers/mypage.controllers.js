@@ -423,11 +423,17 @@ const getMyPost = async (req, res) => {
 const getMyBuy = async (req, res) => {
   try {
     const { userId } = res.locals.user;
-    const buyPost = await Buy.find({ userId });
+    console.log("userId", userId);
+    const buyPost = await Buy.find({ userId }, "postId");
+    let mybuy = [];
+    for (let i = 0; i < buyPost.length; i++) {
+      mybuy.push(buyPost[i].postId);
+    }
     const myBuy = await Post.find(
-      { "user.userId": buyPost },
-      "postId postTitle user.nickname imageUrl"
+      { postId: mybuy },
+      "postId postTitle user.nickname images"
     );
+    console.log("myBuy", myBuy);
     if (myBuy.length > 0) {
       for (let myPost of myBuy) {
         const images = await PostImage.findOne({ postId: myPost.postId });
