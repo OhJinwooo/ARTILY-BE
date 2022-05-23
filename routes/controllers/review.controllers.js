@@ -53,78 +53,78 @@ const review = async (req, res) => {
 };
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
-  //try {
-  const { reviewId } = req.params;
-  // console.log(reviewId);
+  try {
+    const { reviewId } = req.params;
+    // console.log(reviewId);
 
-  //buyer & seller
-  //리뷰를 작성한 user 정보 & 구매한 작품&작가 정보 찾기
-  let buyer = await Review.find({ reviewId });
-  // console.log("buyer", buyer);
-  let s_userId = "";
-  if (buyer.length) {
-    for (let review of buyer) {
-      const imgs = await ReviewImages.find({ reviewId: review.reviewId });
-      //console.log("imgs", imgs);
-      review.images = imgs;
-    }
-    s_userId = buyer[0].seller.user.userId;
-    // console.log("s_userId", s_userId);
-
-    // seller의 imageUrl 찾아서 보내주기
-    const sellerPostId = buyer[0].seller.postId;
-    let seller_img = await PostImages.findOne({ postId: sellerPostId });
-    let sellerImg = seller_img.imageUrl;
-    buyer[0].seller.imageUrl = sellerImg;
-
-    //defferents
-    //내가 구매한 작가의 다른 작품들 찾기
-    let defferents = await Post.find(
-      { "user.userId": s_userId },
-      "postId postTitle price"
-    );
-    // console.log("defferents", defferents);
-
-    // 판매자의 물품들(postId)
-    if (defferents) {
-      let seller_postId = [];
-      for (let i = 0; i < defferents.length; i++) {
-        seller_postId.push(defferents[i].postId);
+    //buyer & seller
+    //리뷰를 작성한 user 정보 & 구매한 작품&작가 정보 찾기
+    let buyer = await Review.find({ reviewId });
+    // console.log("buyer", buyer);
+    let s_userId = "";
+    if (buyer.length) {
+      for (let review of buyer) {
+        const imgs = await ReviewImages.find({ reviewId: review.reviewId });
+        //console.log("imgs", imgs);
+        review.images = imgs;
       }
-      // console.log("seller_postId", seller_postId);
+      s_userId = buyer[0].seller.user.userId;
+      // console.log("s_userId", s_userId);
 
-      //상단에 노출된 물품은 제외하고 추출
-      filtering = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
-      //console.log("filtering", filtering);
+      // seller의 imageUrl 찾아서 보내주기
+      const sellerPostId = buyer[0].seller.postId;
+      let seller_img = await PostImages.findOne({ postId: sellerPostId });
+      let sellerImg = seller_img.imageUrl;
+      buyer[0].seller.imageUrl = sellerImg;
 
-      //필터링된 판매물품 정보
-      let defferentInfo = await Post.find(
-        { postId: filtering },
-        "postId postTitle price imageUrl"
+      //defferents
+      //내가 구매한 작가의 다른 작품들 찾기
+      let defferents = await Post.find(
+        { "user.userId": s_userId },
+        "postId postTitle price"
       );
-      // console.log("defferentInfo", defferentInfo);
+      // console.log("defferents", defferents);
 
-      //판매물품들 정보에 이미지 합치기
-      for (let info of defferentInfo) {
-        const imgs = await PostImages.findOne({ postId: info.postId });
-        //console.log("info.postId", info.postId);
-        console.log("imgs", imgs);
-        info.images = imgs;
+      // 판매자의 물품들(postId)
+      if (defferents) {
+        let seller_postId = [];
+        for (let i = 0; i < defferents.length; i++) {
+          seller_postId.push(defferents[i].postId);
+        }
+        // console.log("seller_postId", seller_postId);
+
+        //상단에 노출된 물품은 제외하고 추출
+        filtering = seller_postId.filter((qq) => qq !== buyer[0].seller.postId);
+        //console.log("filtering", filtering);
+
+        //필터링된 판매물품 정보
+        let defferentInfo = await Post.find(
+          { postId: filtering },
+          "postId postTitle price imageUrl"
+        );
+        // console.log("defferentInfo", defferentInfo);
+
+        //판매물품들 정보에 이미지 합치기
+        for (let info of defferentInfo) {
+          const imgs = await PostImages.findOne({ postId: info.postId });
+          //console.log("info.postId", info.postId);
+          console.log("imgs", imgs);
+          info.images = imgs;
+        }
+        console.log("합치기", defferentInfo);
+        res.json({ buyer, defferentInfo });
+      } else {
+        res.json({ buyer });
       }
-      console.log("합치기", defferentInfo);
-      res.json({ buyer, defferentInfo });
     } else {
-      res.json({ buyer });
+      return res.send({ msg: "해당 게시글이 없습니다." });
     }
-  } else {
-    return res.send({ msg: "해당 게시글이 없습니다." });
+  } catch (err) {
+    console.log("상제조회 에러");
+    res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
   }
-  // } catch (err) {
-  //   console.log("상제조회 에러");
-  //   res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
-  // }
 };
-//};
+
 //리뷰 작성
 const review_write = async (req, res) => {
   // middlewares유저정보 가져오기
@@ -187,119 +187,100 @@ const review_write = async (req, res) => {
 
 //리뷰 수정
 const review_modify = async (req, res) => {
-  try {
-    //수정할 reviewID 파라미터로 받음
-    const { reviewId } = req.params;
-    //수정할 값 body로 받음
-    const { reviewTitle, reviewContent, imageId } = req.body;
-    //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
-    // console.log("1", imageId);
-    if (!reviewTitle || !reviewContent) {
-      return res.send({ msg: "내용을 입력해주세요" });
-    }
-    // 수정 이미지 URL 가져오기
-    const imageUrl = req.files;
+  //try {
+  //수정할 reviewID 파라미터로 받음
+  const { reviewId } = req.params;
+  //수정할 값 body로 받음
+  const { reviewTitle, reviewContent, imgDt } = req.body;
+  //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
+  // console.log("1", imageId);
+  if (!reviewTitle || !reviewContent) {
+    return res.send({ msg: "내용을 입력해주세요" });
+  }
 
-    // 수정 이미지 하나씩 빼서 배열에 저장
-    let img_new = [];
-    for (let i = 0; i < imageUrl.length; i++) {
-      img_new.push(imageUrl[i].location);
-    }
-    //  console.log("img_new", img_new);
-
-    let img = await ReviewImages.find({ reviewId, imageId });
-    // console.log("imglength", img.length, img);
-
-    let imgList = [];
-    for (let i = 0; i < img.length; i++) {
-      imgList.push(img[i].imageUrl);
-    }
-    console.log("imgList", imgList);
-
-    if (imageId === undefined) {
-      for (let i = 0; i < img_new.length; i++) {
-        await ReviewImages.create({
-          reviewId,
-          imageId: uuid(),
-          imageUrl: img_new[i],
-        });
+  //key 값을 저장 array
+  let deleteItems = [];
+  //key값 추출위한 for문
+  if (imgDt) {
+    if (Array.isArray(imgDt) && imgDt.length > 0) {
+      for (let i = 0; i < imgDt.length; i++) {
+        deleteItems.push({ Key: String(imgDt[i].split("/")[3]) });
       }
-      await Review.updateOne(
-        { reviewId },
+    } else {
+      deleteItems.push({ Key: String(imgDt.split("/")[3]) });
+    }
+
+    // 첫번째 값 제외 삭제..
+    let params = {
+      Bucket: process.env.BUCKETNAME,
+      Delete: {
+        Objects: deleteItems,
+        Quiet: false,
+      },
+    };
+    //option을 참조 하여 delete 실행
+    s3.deleteObjects(params, function (err, data) {
+      if (err) console.log(err);
+      else console.log("Successfully deleted myBucket/myKey");
+    });
+  }
+
+  if (
+    Array.isArray(imgDt) &&
+    imgDt.length > 0 &&
+    imgDt.length === req.files.length
+  ) {
+    for (let i = 0; i < imgDt.length && i < req.files.length; i++) {
+      await ReviewImages.updateOne(
+        { imageUrl: imgDt[i] },
         {
           $set: {
-            reviewTitle,
-            reviewContent,
+            imageUrl: req.files[i].location,
           },
         }
       );
-      return res.status(200).send({
-        respons: "success",
-        msg: "수정 완료",
-      });
     }
-
-    if (img.length) {
-      let deleteItems = [];
-      for (let i = 0; i < imgList.length; i++) {
-        //key값을 string으로 지정
-        deleteItems.push({ Key: String(imgList[i].split("/")[3]) });
-      }
-      //   console.log("deleteItems", deleteItems);
-      //s3에서 기존 이미지 삭제하기
-      let params = {
-        Bucket: process.env.BUCKETNAME,
-        Delete: {
-          Objects: deleteItems,
-          Quiet: false,
-        },
-      };
-      //s3 delete 실행
-      s3.deleteObjects(params, function (err, data) {
-        if (err) console.log(err);
-        else console.log("Successfully deleted myBucket/myKey");
-      });
-      //DB  삭제
-      if (img.length > 1) {
-        console.log("Array");
-        for (let i = 0; i < img.length; i++) {
-          //       console.log("imageId", imageId);
-          await ReviewImages.deleteOne({ imageId: imageId[i] });
-        }
-      } else if (img.length === 1) {
-        //    console.log("String");
-        await ReviewImages.deleteOne({ imageId });
-      }
-    }
-    for (let i = 0; i < img_new.length; i++) {
-      await ReviewImages.create({
-        reviewId,
-        imageId: uuid(),
-        imageUrl: img_new[i],
-      });
-    }
-
-    // 이미지를 제외한 값들 수정
-    await Review.updateOne(
-      { reviewId },
+  } else if (
+    Array.isArray(imgDt) === false &&
+    imgDt &&
+    req.files.length === 1
+  ) {
+    await ReviewImages.updateOne(
+      { imageUrl: imgDt },
       {
         $set: {
-          reviewTitle,
-          reviewContent,
+          imageUrl: req.files[0].location,
         },
       }
     );
-    res.status(200).send({
-      respons: "success",
-      msg: "수정 완료",
-    });
-  } catch (error) {
-    res.status(400).send({
-      respons: "fail",
-      msg: "수정 실패",
-    });
+  } else if (imgDt || req.files) {
+    if (Array.isArray(imgDt) === false) {
+      await ReviewImages.deleteOne({ imageUrl: imgDt });
+    } else {
+      for (let i = 0; i < imgDt.length; i++) {
+        await ReviewImages.deleteOne({ imageUrl: imgDt[i] });
+      }
+    }
+    if (req.files) {
+      const max = await ReviewImages.findOne({ reviewId })
+        .sort("-imageNumber")
+        .exec();
+      let num = 0;
+
+      if (max) {
+        num = max.imageNumber + 1;
+      }
+      for (let i = 0; i < req.files.length; i++) {
+        await ReviewImages.create({
+          reviewId,
+          imageUrl: req.files[i].location,
+          imageNumber: (num += i),
+        });
+      }
+    }
   }
-  // 이미지를 제외한 값들 수정
+
+  //업데이트
   await Review.updateOne(
     { reviewId },
     {
@@ -309,11 +290,135 @@ const review_modify = async (req, res) => {
       },
     }
   );
-
-  res.status(200).send({
+  return res.status(200).send({
     respons: "success",
     msg: "수정 완료",
   });
+  //   throw error;
+  // } catch (error) {
+  //   res.status(400).send({
+  //     respons: "fail",
+  //     msg: "수정 실패",
+  //   });
+  // }
+
+  //     // 수정 이미지 URL 가져오기
+  //     const imageUrl = req.files;
+
+  //     // 수정 이미지 하나씩 빼서 배열에 저장
+  //     let img_new = [];
+  //     for (let i = 0; i < imageUrl.length; i++) {
+  //       img_new.push(imageUrl[i].location);
+  //     }
+  //     //  console.log("img_new", img_new);
+
+  //     let img = await ReviewImages.find({ reviewId, imageId });
+  //     // console.log("imglength", img.length, img);
+
+  //     let imgList = [];
+  //     for (let i = 0; i < img.length; i++) {
+  //       imgList.push(img[i].imageUrl);
+  //     }
+  //     console.log("imgList", imgList);
+
+  //     if (imageId === undefined) {
+  //       for (let i = 0; i < img_new.length; i++) {
+  //         await ReviewImages.create({
+  //           reviewId,
+  //           imageId: uuid(),
+  //           imageUrl: img_new[i],
+  //         });
+  //       }
+  //       await Review.updateOne(
+  //         { reviewId },
+  //         {
+  //           $set: {
+  //             reviewTitle,
+  //             reviewContent,
+  //           },
+  //         }
+  //       );
+  //       return res.status(200).send({
+  //         respons: "success",
+  //         msg: "수정 완료",
+  //       });
+  //     }
+
+  //     if (img.length) {
+  //       let deleteItems = [];
+  //       for (let i = 0; i < imgList.length; i++) {
+  //         //key값을 string으로 지정
+  //         deleteItems.push({ Key: String(imgList[i].split("/")[3]) });
+  //       }
+  //       //   console.log("deleteItems", deleteItems);
+  //       //s3에서 기존 이미지 삭제하기
+  //       let params = {
+  //         Bucket: process.env.BUCKETNAME,
+  //         Delete: {
+  //           Objects: deleteItems,
+  //           Quiet: false,
+  //         },
+  //       };
+  //       //s3 delete 실행
+  //       s3.deleteObjects(params, function (err, data) {
+  //         if (err) console.log(err);
+  //         else console.log("Successfully deleted myBucket/myKey");
+  //       });
+  //       //DB  삭제
+  //       if (img.length > 1) {
+  //         console.log("Array");
+  //         for (let i = 0; i < img.length; i++) {
+  //           //       console.log("imageId", imageId);
+  //           await ReviewImages.deleteOne({ imageId: imageId[i] });
+  //         }
+  //       } else if (img.length === 1) {
+  //         //    console.log("String");
+  //         await ReviewImages.deleteOne({ imageId });
+  //       }
+  //     }
+  //     for (let i = 0; i < img_new.length; i++) {
+  //       await ReviewImages.create({
+  //         reviewId,
+  //         imageId: uuid(),
+  //         imageUrl: img_new[i],
+  //       });
+  //     }
+
+  //     // 이미지를 제외한 값들 수정
+  //     await Review.updateOne(
+  //       { reviewId },
+  //       {
+  //         $set: {
+  //           reviewTitle,
+  //           reviewContent,
+  //         },
+  //       }
+  //     );
+  //     res.status(200).send({
+  //       respons: "success",
+  //       msg: "수정 완료",
+  //     });
+  //   } catch (error) {
+  //     res.status(400).send({
+  //       respons: "fail",
+  //       msg: "수정 실패",
+  //     });
+  //   }
+  //   // 이미지를 제외한 값들 수정
+  //   await Review.updateOne(
+  //     { reviewId },
+  //     {
+  //       $set: {
+  //         reviewTitle,
+  //         reviewContent,
+  //       },
+  //     }
+  //   );
+
+  //   res.status(200).send({
+  //     respons: "success",
+  //     msg: "수정 완료",
+  //   });
 };
 
 //리뷰 삭제
