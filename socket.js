@@ -44,12 +44,14 @@ module.exports = (server) => {
         for (let j = 0; j < chatroom.length; j++) {
           await chatData.updateOne(
             {
+              "chatRoom[j].roomName": chatroom.roomName,
               "chatRoom[j].targetUser.userId": userId,
             },
             { $set: { "chatRoom.$.targetUser.connected": true } }
           );
           await chatData.updateOne(
             {
+              "chatRoom[j].roomName": chatroom.roomName,
               "chatRoom[j].createUser.userId": userId,
             },
             { $set: { "chatRoom.$.createUser.connected": true } }
@@ -319,12 +321,14 @@ module.exports = (server) => {
         for (let j = 0; j < chatroom.length; j++) {
           await chatData.updateOne(
             {
+              "chatRoom[j].roomName": chatroom.roomName,
               "chatRoom[j].targetUser.userId": userId,
             },
             { $set: { "chatRoom.$.targetUser.connected": false } }
           );
           await chatData.updateOne(
             {
+              "chatRoom[j].roomName": chatroom.roomName,
               "chatRoom[j].createUser.userId": userId,
             },
             { $set: { "chatRoom.$.createUser.connected": false } }
