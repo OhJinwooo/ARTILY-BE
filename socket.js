@@ -321,13 +321,13 @@ module.exports = (server) => {
             {
               "chatRoom[j].targetUser.userId": userId,
             },
-            { $set: { "chatRoom.$.targetUser.connected": true } }
+            { $set: { "chatRoom.$.targetUser.connected": false } }
           );
           await chatData.updateOne(
             {
               "chatRoom[j].createUser.userId": userId,
             },
-            { $set: { "chatRoom.$.createUser.connected": true } }
+            { $set: { "chatRoom.$.createUser.connected": false } }
           );
         }
       }
