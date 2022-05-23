@@ -42,13 +42,13 @@ module.exports = (server) => {
       for (let i = 0; i < myConnected.length; i++) {
         const chatroom = myConnected[i].chatRoom;
         for (let j = 0; j < chatroom.length; j++) {
-          await chatData.updateMany(
+          await chatData.updateOne(
             {
               "chatRoom[j].targetUser.userId": userId,
             },
             { $set: { "chatRoom.$.targetUser.connected": true } }
           );
-          await chatData.updateMany(
+          await chatData.updateOne(
             {
               "chatRoom[j].createUser.userId": userId,
             },
@@ -317,13 +317,13 @@ module.exports = (server) => {
       for (let i = 0; i < myConnected.length; i++) {
         const chatroom = myConnected[i].chatRoom;
         for (let j = 0; j < chatroom.length; j++) {
-          await chatData.updateMany(
+          await chatData.updateOne(
             {
               "chatRoom[j].targetUser.userId": userId,
             },
             { $set: { "chatRoom.$.targetUser.connected": true } }
           );
-          await chatData.updateMany(
+          await chatData.updateOne(
             {
               "chatRoom[j].createUser.userId": userId,
             },
