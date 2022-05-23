@@ -26,7 +26,7 @@ module.exports = (server) => {
     if (!userInfo) {
       return next(new Error("에러!!!!!!!"));
     }
-
+    const myConnected = await chatData.find({});
     //기존 사람 데이터가 있음
     if (session) {
       console.log("데이터가 있음");
@@ -41,14 +41,12 @@ module.exports = (server) => {
       );
       await chatData.updateOne(
         {
-          userId: userId,
           "chatRoom.targetUser.userId": userId,
         },
         { $set: { "chatRoom.$.targetUser.connected": true } }
       );
       await chatData.updateOne(
         {
-          userId: userId,
           "chatRoom.createUser.userId": userId,
         },
         { $set: { "chatRoom.$.createUser.connected": true } }
@@ -311,14 +309,12 @@ module.exports = (server) => {
       );
       await chatData.updateOne(
         {
-          userId: userId,
           "chatRoom.targetUser.userId": userId,
         },
         { $set: { "chatRoom.$.targetUser.connected": false } }
       );
       await chatData.updateOne(
         {
-          userId: userId,
           "chatRoom.createUser.userId": userId,
         },
         { $set: { "chatRoom.$.createUser.connected": false } }
