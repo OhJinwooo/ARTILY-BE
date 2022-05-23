@@ -323,8 +323,13 @@ module.exports = (server) => {
       for (let i = 0; i < myConnected.length; i++) {
         const chatroom = myConnected[i].chatRoom;
         console.log("chatroom", chatroom);
+
         if (chatroom) {
           for (let j = 0; j < chatroom.length; j++) {
+            const test = await chatData.find({
+              "chatRoom.roomName": chatroom[j].roomName,
+            });
+            console.log("test", test);
             if (chatroom[j].targetUser.userId === userId) {
               console.log(
                 "chatroom[j].targetUser.userId",
@@ -333,7 +338,7 @@ module.exports = (server) => {
               );
               await chatData.updateOne(
                 {
-                  "chatRoom[j].roomName": chatroom[j].roomName,
+                  "chatRoom.roomName": chatroom[j].roomName,
                   "chatRoom.targetUser.userId": userId,
                 },
                 { $set: { "chatRoom.$.targetUser.connected": false } }
@@ -347,7 +352,7 @@ module.exports = (server) => {
               );
               await chatData.updateOne(
                 {
-                  "chatRoom[j].roomName": chatroom[j].roomName,
+                  "chatRoom.roomName": chatroom[j].roomName,
                   "chatRoom.createUser.userId": userId,
                 },
                 { $set: { "chatRoom.$.createUser.connected": false } }
