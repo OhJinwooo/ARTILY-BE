@@ -39,13 +39,13 @@ module.exports = (server) => {
         { userId: userId },
         { $set: { connected: true } }
       );
-      await chatData.updateOne(
+      await chatData.updateMany(
         {
           "chatRoom.targetUser.userId": userId,
         },
         { $set: { "chatRoom.$.targetUser.connected": true } }
       );
-      await chatData.updateOne(
+      await chatData.updateMany(
         {
           "chatRoom.createUser.userId": userId,
         },
@@ -307,13 +307,13 @@ module.exports = (server) => {
         { userId: userId },
         { $set: { connected: false } }
       );
-      await chatData.updateOne(
+      await chatData.updateMany(
         {
           "chatRoom.targetUser.userId": userId,
         },
         { $set: { "chatRoom.$.targetUser.connected": false } }
       );
-      await chatData.updateOne(
+      await chatData.updateMany(
         {
           "chatRoom.createUser.userId": userId,
         },
