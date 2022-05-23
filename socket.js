@@ -26,7 +26,7 @@ module.exports = (server) => {
     if (!userInfo) {
       return next(new Error("에러!!!!!!!"));
     }
-    const myConnected = await chatData.find({});
+    const myConnected = await chatData.find({}, "chatRoom");
     //기존 사람 데이터가 있음
     if (session) {
       console.log("데이터가 있음");
@@ -39,18 +39,24 @@ module.exports = (server) => {
         { userId: userId },
         { $set: { connected: true } }
       );
-      await chatData.updateMany(
-        {
-          "chatRoom.targetUser.userId": userId,
-        },
-        { $set: { "chatRoom.$.targetUser.connected": true } }
-      );
-      await chatData.updateMany(
-        {
-          "chatRoom.createUser.userId": userId,
-        },
-        { $set: { "chatRoom.$.createUser.connected": true } }
-      );
+      for (let i = 0; i < myConnected.length; i++) {
+        const chatroom = myConnected[i].chatRoom;
+        for (let j = 0; j < chatroom.length; j++) {
+          await chatData.updateMany(
+            {
+              "chatRoom[j].targetUser.userId": userId,
+            },
+            { $set: { "chatRoom.$.targetUser.connected": true } }
+          );
+          await chatData.updateMany(
+            {
+              "chatRoom[j].createUser.userId": userId,
+            },
+            { $set: { "chatRoom.$.createUser.connected": true } }
+          );
+        }
+      }
+
       console.log("db 업데이트");
       return next();
     }
@@ -307,18 +313,24 @@ module.exports = (server) => {
         { userId: userId },
         { $set: { connected: false } }
       );
-      await chatData.updateMany(
-        {
-          "chatRoom.targetUser.userId": userId,
-        },
-        { $set: { "chatRoom.$.targetUser.connected": false } }
-      );
-      await chatData.updateMany(
-        {
-          "chatRoom.createUser.userId": userId,
-        },
-        { $set: { "chatRoom.$.createUser.connected": false } }
-      );
+      const myConnected = await chatData.find({}, "chatRoom");
+      for (let i = 0; i < myConnected.length; i++) {
+        const chatroom = myConnected[i].chatRoom;
+        for (let j = 0; j < chatroom.length; j++) {
+          await chatData.updateMany(
+            {
+              "chatRoom[j].targetUser.userId": userId,
+            },
+            { $set: { "chatRoom.$.targetUser.connected": true } }
+          );
+          await chatData.updateMany(
+            {
+              "chatRoom[j].createUser.userId": userId,
+            },
+            { $set: { "chatRoom.$.createUser.connected": true } }
+          );
+        }
+      }
       const newUser = await chatData.findOne({ userId: socket.id });
       socket.broadcast.emit(
         "user disconnected",
