@@ -60,7 +60,7 @@ app.use("/api", [
   blackListRouter,
   postRouter,
   followRouter,
-  /* chatRouter, */
+  chatRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 

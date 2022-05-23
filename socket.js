@@ -35,7 +35,10 @@ module.exports = (server) => {
       socket.id = userId;
       socket.profileImage = profileImage; // tnwjd
 
-      await chatData.updateOne({ userId }, { $set: { connected: true } });
+      await chatData.updateOne(
+        { userId: userId },
+        { $set: { connected: true } }
+      );
       console.log("db 업데이트");
       return next();
     }
@@ -131,10 +134,9 @@ module.exports = (server) => {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
         targetUser: nowUser,
-        messages: [], //msgList
-        // newMessage: 0,
-        // lastMessage: "",
-        // lastTime: "",
+        newMessage: 0,
+        lastMessage: null,
+        lastTime: null,
       };
 
       const saveData = {
@@ -175,6 +177,12 @@ module.exports = (server) => {
     // socket.on("enter_room", async (roomName) => {
     //   const a = await chatData.find({roomName})
     // });
+    socket.on("enter_room", async (roomName) => {
+      socket.join(roomName);
+      console.log("roomName", roomName);
+      // socket.to(chatRoom[i].userId).emit("enter_room", chatRoom[i].roomName);
+    });
+
     socket.on("send_message", async (messageData) => {
       console.log("send_message 받은거:", messageData.roomName);
 
@@ -204,9 +212,67 @@ module.exports = (server) => {
       };
 
       console.log("saveChat", saveChat);
+      //받은 메세지 저장
       await Message.updateOne(
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
+      );
+      // const data = await chatData.findOne({
+      //   userId: userId,
+      //   chatRoom: [messageData.roomName],
+      // });
+      // console.log("data", data);
+      console.log("messageData.from", messageData.from);
+      console.log("messageData.to", messageData.to);
+      //마지막에 작성된 메세지 시간 업데이트
+      await chatData.updateOne(
+        {
+          userId: messageData.from,
+          "chatRoom.roomName": messageData.roomName,
+        },
+        { $set: { "chatRoom.$.lastMessage": messageData.message } }
+      );
+      await chatData.updateOne(
+        {
+          userId: messageData.from,
+          "chatRoom.roomName": messageData.roomName,
+        },
+        { $set: { "chatRoom.$.lastTime": messageData.time } }
+      );
+
+      await chatData.updateOne(
+        {
+          userId: messageData.to,
+          "chatRoom.roomName": messageData.roomName,
+        },
+        { $set: { "chatRoom.$.lastMessage": messageData.message } }
+      );
+      await chatData.updateOne(
+        {
+          userId: messageData.to,
+          "chatRoom.roomName": messageData.roomName,
+        },
+        { $set: { "chatRoom.$.lastTime": messageData.time } }
+      );
+
+      // const newMessage = await chatData.findOne({ userId });
+
+      //상대방에게 메세지를 보냈을때 숫자 1 증가
+      if (messageData.to) {
+        console.log("조건문 들어옴");
+        await chatData.updateOne(
+          {
+            userId: messageData.to,
+            "chatRoom.roomName": messageData.roomName,
+          },
+          { $inc: { "chatRoom.$.newMessage": 1 } }
+        );
+      }
+    });
+    socket.on("check_chat", async (roomName) => {
+      await chatData.updateOne(
+        { userId: userId, "chatRoom.roomName": roomName },
+        { $set: { "chatRoom.$.newMessage": 0 } }
       );
     });
     socket.on("upload", (data) => {
