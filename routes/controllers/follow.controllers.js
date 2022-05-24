@@ -26,7 +26,7 @@ const addfollow = async (req, res) => {
         followName,
         profileImage,
       });
-
+      console.log('follow',follow)
       await myFollow.updateOne({ $inc: { followCnt: 1 } });
       await followUser.updateOne({ $inc: { followerCnt: 1 } });
 
