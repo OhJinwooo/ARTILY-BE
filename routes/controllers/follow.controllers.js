@@ -11,7 +11,6 @@ const addfollow = async (req, res) => {
 
     //follow DB에 본인이 팔로우한 유저정보가 있는지
     const found = await Follow.findOne({ userId, followId });
-    console.log('found',found)
     const myFollow = await User.findOne({ userId });
 
     const followUser = await User.findOne({ userId: followId });
@@ -26,7 +25,7 @@ const addfollow = async (req, res) => {
         followName,
         profileImage,
       });
-      console.log('follow',follow)
+      
       await myFollow.updateOne({ $inc: { followCnt: 1 } });
       await followUser.updateOne({ $inc: { followerCnt: 1 } });
 
