@@ -13,7 +13,7 @@ const addfollow = async (req, res) => {
     //follow DB에 본인이 팔로우한 유저정보가 있는지
     const found = await Follow.findOne({ userId, followId });
     const myFollow = await User.findOne({ userId });
-
+    console.log('found', found)
     const followUser = await User.findOne({ userId: followId });
     const followName = followUser.nickname;
 
