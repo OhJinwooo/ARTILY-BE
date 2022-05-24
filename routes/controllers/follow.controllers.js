@@ -6,9 +6,10 @@ const addfollow = async (req, res) => {
   try {
     //내가 팔로우 하려는 유저
     const { followId } = req.params;
+    console.log('followId',followId)
     //내 유저 아이디
     const { userId } = res.locals.user;
-
+    console.log('userId',userId)
     //follow DB에 본인이 팔로우한 유저정보가 있는지
     const found = await Follow.findOne({ userId, followId });
     const myFollow = await User.findOne({ userId });
