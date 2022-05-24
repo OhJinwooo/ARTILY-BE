@@ -11,12 +11,12 @@ const addfollow = async (req, res) => {
 
     //follow DB에 본인이 팔로우한 유저정보가 있는지
     const found = await Follow.findOne({ userId, followId });
-
+    console.log('found',found)
     const myFollow = await User.findOne({ userId });
 
     const followUser = await User.findOne({ userId: followId });
     const followName = followUser.nickname;
-    git;
+
     const profileImage = followUser.profileImage;
     if (!found) {
       //팔로우 하려는 유저 정보 저장
