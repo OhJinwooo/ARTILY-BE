@@ -188,6 +188,23 @@ module.exports = (server) => {
       });
       console.log("existRooms", existRooms);
 
+      const nowUser = {
+        userId: socket.userId,
+        nickname: socket.nickname,
+        profileImage: socket.profileImage,
+      };
+
+      //만들어진 방의 상대방 유저 정보
+      const target = await chatData.find({ userId: messageData.to });
+      const chatRoom = {
+        roomName: roomName,
+        post: post,
+        lastMessage: null,
+        lastTime: null,
+        newMessage: 0,
+        targetUser: nowUser,
+        createUser: target,
+      };
       //채팅방에  대한  정보가 없을 때 해당 유저의 채팅방 정보를 저장
       if (!existRooms) {
         await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
