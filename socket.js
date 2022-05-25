@@ -303,7 +303,7 @@ module.exports = (server) => {
           console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
           await chatData.updateOne(
             { userId: userId, "chatRoom.roomName": roomName },
-            { $pull: { "chatRoom.$.roomName": roomName } }
+            { $pull: { chatRoom: chatRoom[i] } }
           );
           for (let j = 0; j < targetRoom.length; i++) {
             if (chatRoom[j].roomName === roomName) {
