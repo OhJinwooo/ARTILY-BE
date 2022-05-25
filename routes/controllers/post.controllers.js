@@ -410,6 +410,7 @@ const artUpdate = async (req, res) => {
               },
             }
           );
+          
         }
       } else if (
         Array.isArray(imgDt) === false &&
@@ -425,9 +426,11 @@ const artUpdate = async (req, res) => {
           }
         );
       } else if (imgDt || req.files) {
-        if (Array.isArray(imgDt) === false) {
-          await postImg.deleteOne({ imageUrl: imgDt });
-        } else {
+        if (Array.isArray(imgDt) === false && imgDt) {
+          
+          await postImg.deleteOne({ postId ,imageUrl: imgDt });
+         
+        } else if(Array.isArray(imgDt)) {
           for (let i = 0; i < imgDt.length; i++) {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
@@ -443,12 +446,13 @@ const artUpdate = async (req, res) => {
             num = max.imageNumber + 1;
           }
           for (let i = 0; i < req.files.length; i++) {
-          let g =  await postImg.create({
+            await postImg.create({
               postId,
               imageUrl: req.files[i].location,
               imageNumber: (num += i),
             });
-            console.log('g',g)
+           
+            
           }
         }
       }
