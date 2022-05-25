@@ -271,46 +271,44 @@ module.exports = (server) => {
     // });
 
     // 채팅방을 나갔을 때
-    socket.on("leave_room", (roomName, targetUser) => {
-      socket.leave(roomName, async () => {
-        console.log("방이름", roomName);
-        const admin_notification = {
-          roomName,
-          from: "admin",
-          message: "상대방이 대화방을 나갔습니다",
-          time: new Date() + "",
-        };
+    socket.on("leave_room", async (roomName, targetUser) => {
+      console.log("방이름", roomName);
+      const admin_notification = {
+        roomName,
+        from: "admin",
+        message: "상대방이 대화방을 나갔습니다",
+        time: new Date() + "",
+      };
 
-        // 내 정보 찾기
-        const result = await chatData.findOne({
-          userId: userId,
-          "chatRoom.roomName": roomName,
-        });
-        const myRoom = result.chatRoom;
+      // 내 정보 찾기
+      const result = await chatData.findOne({
+        userId: userId,
+        "chatRoom.roomName": roomName,
+      });
+      const myRoom = result.chatRoom;
 
-        //상대방 정보를 찾기
-        const results = await chatData.findOne({
-          userId: targetUser,
-          "chatRoom.roomName": roomName,
-        });
-        const targetRoom = results.chatRoom;
+      //상대방 정보를 찾기
+      const results = await chatData.findOne({
+        userId: targetUser,
+        "chatRoom.roomName": roomName,
+      });
+      const targetRoom = results.chatRoom;
 
-        for (let i = 0; i < myRoom.length; i++) {
-          if (chatRoom[i].roomName === roomName) {
-            await chatData.updateOne(
-              { userId: userId, "chatRoom.roomName": roomName },
-              { $pull: { "chatRoom.$.roomName": roomName } }
-            );
-            for (let j = 0; j < targetRoom.length; i++) {
-              if (chatRoom[j].roomName === roomName) {
-                return next();
-              }
+      for (let i = 0; i < myRoom.length; i++) {
+        if (chatRoom[i].roomName === roomName) {
+          await chatData.updateOne(
+            { userId: userId, "chatRoom.roomName": roomName },
+            { $pull: { "chatRoom.$.roomName": roomName } }
+          );
+          for (let j = 0; j < targetRoom.length; i++) {
+            if (chatRoom[j].roomName === roomName) {
+              return next();
             }
           }
         }
-        await Message.deleteOne({ roomName });
-        socket.to(roomName).emit("admin_noti", admin_notification);
-      });
+      }
+      await Message.deleteOne({ roomName });
+      socket.to(roomName).emit("admin_noti", admin_notification);
 
       //상대방이 대화방을 나갔을 때 내 유저 정보에서 채팅방 정보를 지워줌
     });
