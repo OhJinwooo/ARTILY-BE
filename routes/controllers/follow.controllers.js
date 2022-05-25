@@ -30,7 +30,6 @@ const addfollow = async (req, res) => {
       res.send({ success: true, msg: "팔로잉" });
     } else {
       const follow = await Follow.deleteOne({ userId, followId });
-      console.log('follow exit',follow)
       await myFollow.updateOne({ $inc: { followCnt: -1 } });
       await followUser.updateOne({ $inc: { followerCnt: -1 } });
       res.send({ success: true, msg: "팔로우 취소" });
