@@ -285,23 +285,29 @@ module.exports = (server) => {
         userId: userId,
         "chatRoom.roomName": roomName,
       });
+      console.log("result", result);
       const myRoom = result.chatRoom;
+      console.log("myRoom", myRoom);
 
       //상대방 정보를 찾기
       const results = await chatData.findOne({
         userId: targetUser,
         "chatRoom.roomName": roomName,
       });
+      console.log("results", results);
       const targetRoom = results.chatRoom;
+      console.log("targetRoom", targetRoom);
 
       for (let i = 0; i < myRoom.length; i++) {
         if (chatRoom[i].roomName === roomName) {
+          console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
           await chatData.updateOne(
             { userId: userId, "chatRoom.roomName": roomName },
             { $pull: { "chatRoom.$.roomName": roomName } }
           );
           for (let j = 0; j < targetRoom.length; i++) {
             if (chatRoom[j].roomName === roomName) {
+              console.log("조건문 들어옴", chatRoom[j].roomName, roomName);
               return next();
             }
           }
