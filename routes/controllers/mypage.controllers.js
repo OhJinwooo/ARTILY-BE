@@ -281,28 +281,6 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-      await Message.updateOne(
-        {
-          "createUser.userId": userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
-      await Message.updateOne(
-        {
-          "targetUser.userId": userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
     } else {
       console.log("이미지 없음");
       await User.updateOne(
@@ -359,28 +337,6 @@ const updateProfile = async (req, res) => {
       await ChatData.updateOne(
         {
           userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
-      await Message.updateOne(
-        {
-          "createUser.userId": userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
-      await Message.updateOne(
-        {
-          "targetUser.userId": userId,
         },
         {
           $set: {

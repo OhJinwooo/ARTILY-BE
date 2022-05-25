@@ -26,7 +26,7 @@ module.exports = (server) => {
     if (!userInfo) {
       return next(new Error("에러!!!!!!!"));
     }
-    const myConnected = await chatData.find({}, "chatRoom");
+
     //기존 사람 데이터가 있음
     if (session) {
       console.log("데이터가 있음");
@@ -39,29 +39,6 @@ module.exports = (server) => {
         { userId: userId },
         { $set: { connected: true } }
       );
-      for (let i = 0; i < myConnected.length; i++) {
-        const chatroom = myConnected[i].chatRoom;
-        for (let j = 0; j < chatroom.length; j++) {
-          if (chatroom[j].targetUser.userId === userId) {
-            await chatData.updateOne(
-              {
-                "chatRoom.roomName": chatroom[j].roomName,
-                "chatRoom.targetUser.userId": userId,
-              },
-              { $set: { "chatRoom.$.targetUser.connected": true } }
-            );
-          }
-          if (chatroom[j].createUser.userId === userId) {
-            await chatData.updateOne(
-              {
-                "chatRoom.roomName": chatroom[j].roomName,
-                "chatRoom.createUser.userId": userId,
-              },
-              { $set: { "chatRoom.$.createUser.connected": true } }
-            );
-          }
-        }
-      }
 
       console.log("db 업데이트");
       return next();
@@ -74,33 +51,23 @@ module.exports = (server) => {
 
     await chatData.create({
       userId,
-      // nickname,
-      // profileImage,
       connected: true,
       chatRoom: [],
     });
     console.log("DB 생성");
     next();
   });
+
+  //io.on 프론트와 백 연결
   io.on("connection", async (socket) => {
     const { userId, nickname, profileImage, connected } = socket;
     console.log("연결 : ", userId, nickname, profileImage, connected);
-    // 아이디 받아오기
-    // socket.on("main", (userId) => {
-    //   console.log(`아이디 받아오기: ${userId}`);
-    //   socket.userId = userId;
-    // });
-
-    // 방 리스트
-    // socket.on("roomList", async () => {
-    //   console.log("roomList");
-    //   const rooms = await Chat.find({}, "post");
-    //   socket.emit("roomList", rooms);
-    // });
 
     const result = await chatData.findOne({ userId }, "chatRoom");
     const chatRoom = result.chatRoom;
     console.log("chatRoom", chatRoom);
+
+    //이미 방을  만들어놓은 유저들을 로그인 했을때 조인을 시켜줌
     if (chatRoom.length > 0) {
       for (let i = 0; i < chatRoom.length; i++) {
         socket.join(chatRoom[i].roomName);
@@ -111,13 +78,14 @@ module.exports = (server) => {
       }
     }
 
+    //로그인한 유저 정보를 프론트에게 보내줌  test 확인용
     socket.broadcast.emit("user connected", {
       userId,
       nickname,
       connected: true,
-      // socketID: socket.id,
     });
 
+    //처음 방을 만들었을 때 방이름을 프론트에서 만들어 보내면 유저 정보에 저장을 하고 조인을 시킴
     socket.on("join_room", async (roomName, targetUser, post) => {
       // const a = await io.sockets.manager.roomClients[socket.id];
       console.log("@@@@@@@@@@@@", roomName);
@@ -127,33 +95,21 @@ module.exports = (server) => {
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
       console.log("targetUser", targetUser);
 
-      const createConnected = await chatData.findOne(
-        {
-          userId: socket.id,
-        },
-        "connected"
-      );
-      const targetConnected = await chatData.findOne(
-        {
-          userId: targetUser.userId,
-        },
-        "connected"
-      );
-
+      //방을 만든사람의 정보
       const nowUser = {
         userId: socket.userId,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
-        connected: createConnected.connected,
       };
 
+      //만들어진 방의 상대방 유저 정보
       const target = {
         userId: targetUser.userId,
         nickname: targetUser.nickname,
         profileImage: targetUser.profileImage,
-        connected: targetConnected.connected,
       };
 
+      //프론트에게 다시 보내줄 정보
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
@@ -163,11 +119,13 @@ module.exports = (server) => {
         lastTime: null,
       };
 
+      //데이터 베이스에 저장할 정보 채팅 내용( messages )
       const saveData = {
         roomName,
         messages: [],
       };
 
+      //데이터 베이스에 저장할 정보 채팅 방에 대한 정보( chatData )
       const chatRoom = {
         roomName: roomName,
         post: post,
@@ -185,10 +143,14 @@ module.exports = (server) => {
       });
       console.log("existRooms", existRooms);
       // console.log("existRoom", existRoom);
+
+      //채팅방 채팅 내용에 대한 정보가 없을 때 채팅  내용을 저장하는 컬렉션을 생성
       if (!existRoom) {
         await Message.create(saveData); // 유저정보 둘다 있는 데이터
         socket.to(targetUser.userId).emit("join_room", receive);
       }
+
+      //채팅방에  대한  정보가 없을 때 해당 유저의 채팅방 정보를 저장
       if (!existRooms) {
         await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
         await chatData.updateOne(
@@ -197,28 +159,31 @@ module.exports = (server) => {
         );
       }
     });
-    // newMessage
-    // socket.on("enter_room", async (roomName) => {
-    //   const a = await chatData.find({roomName})
-    // });
+
+    //채팅방을 다시한번 조인 시켜줌
     socket.on("enter_room", async (roomName) => {
       socket.join(roomName);
       console.log("roomName", roomName);
       // socket.to(chatRoom[i].userId).emit("enter_room", chatRoom[i].roomName);
     });
 
+    //메시지 받은 정보를 저장함
     socket.on("send_message", async (messageData) => {
       console.log("send_message 받은거:", messageData.roomName);
 
+      //채팅 내용에대한 정보가 있는지  확인
       const existRoom = await Message.findOne({
         roomName: messageData.roomName,
       });
       console.log("sendMessage_roomName", messageData.roomName);
       // const receiveMessage= await  Chat.find({userId})
+
+      //없으면 에러 무조건 생성이 되어 있어야됨
       if (!existRoom) {
         throw new error();
       }
 
+      //프론트에게 보내줄 받은 메시지 데이터
       const receive = {
         roomName: messageData.roomName,
         from: false,
@@ -229,6 +194,7 @@ module.exports = (server) => {
       };
       socket.to(messageData.roomName).emit("receive_message", receive);
 
+      //디비에  저장해줄 데이터
       const saveChat = {
         from: socket.id, // 보낸사람 유저아이디
         message: messageData.message,
@@ -241,14 +207,11 @@ module.exports = (server) => {
         { roomName: messageData.roomName },
         { $push: { messages: saveChat } }
       );
-      // const data = await chatData.findOne({
-      //   userId: userId,
-      //   chatRoom: [messageData.roomName],
-      // });
-      // console.log("data", data);
+
       console.log("messageData.from", messageData.from);
       console.log("messageData.to", messageData.to);
-      //마지막에 작성된 메세지 시간 업데이트
+
+      //마지막에 작성된 메세지, 마지막으로 메시지 받은 시간 업데이트
       await chatData.updateOne(
         {
           userId: messageData.from,
@@ -293,17 +256,22 @@ module.exports = (server) => {
         );
       }
     });
+
+    //채팅방에 들어갔을 때 읽었으니 newMessage 숫자는 0으로 바꿔줌
     socket.on("check_chat", async (roomName) => {
       await chatData.updateOne(
         { userId: userId, "chatRoom.roomName": roomName },
         { $set: { "chatRoom.$.newMessage": 0 } }
       );
     });
-    socket.on("upload", (data) => {
-      console.log("upload 받은거:", data);
-      console.log(JSON.stringify(data));
-    });
-    socket.on("leave_room", (roomName) => {
+
+    // socket.on("upload", (data) => {
+    //   console.log("upload 받은거:", data);
+    //   console.log(JSON.stringify(data));
+    // });
+
+    // 채팅방을 나갔을 때
+    socket.on("leave_room", async (roomName, targetUser) => {
       console.log("방이름", roomName);
       const admin_notification = {
         roomName,
@@ -311,52 +279,47 @@ module.exports = (server) => {
         message: "상대방이 대화방을 나갔습니다",
         time: new Date() + "",
       };
+
+      // 내 정보 찾기
+      const result = await chatData.findOne({
+        userId: userId,
+        "chatRoom.roomName": roomName,
+      });
+      const myRoom = result.chatRoom;
+
+      //상대방 정보를 찾기
+      const results = await chatData.findOne({
+        userId: targetUser,
+        "chatRoom.roomName": roomName,
+      });
+      const targetRoom = results.chatRoom;
+
+      for (let i = 0; i < myRoom.length; i++) {
+        if (chatRoom[i].roomName === roomName) {
+          await chatData.updateOne(
+            { userId: userId, "chatRoom.roomName": roomName },
+            { $pull: { "chatRoom.$.roomName": roomName } }
+          );
+          for (let j = 0; j < targetRoom.length; i++) {
+            if (chatRoom[j].roomName === roomName) {
+              return next();
+            }
+          }
+        }
+      }
+      await Message.deleteOne({ roomName });
       socket.to(roomName).emit("admin_noti", admin_notification);
+
+      //상대방이 대화방을 나갔을 때 내 유저 정보에서 채팅방 정보를 지워줌
     });
+
+    //상대방이 로그아웃을 하면 false로 변경해줌 지금은 딱히 필요없어졌음 실시간 접속 사용 안함.
     socket.on("disconnect", async () => {
       // const user = await chatData.findOne({ userId: socket.id });
       await chatData.updateOne(
         { userId: userId },
         { $set: { connected: false } }
       );
-      const myConnected = await chatData.find({}, "chatRoom");
-      for (let i = 0; i < myConnected.length; i++) {
-        const chatroom = myConnected[i].chatRoom;
-        console.log("chatroom", chatroom);
-
-        if (chatroom) {
-          for (let j = 0; j < chatroom.length; j++) {
-            if (chatroom[j].targetUser.userId === userId) {
-              console.log(
-                "chatroom[j].targetUser.userId",
-                chatroom[j].targetUser.userId,
-                chatroom[j].roomName
-              );
-              await chatData.updateOne(
-                {
-                  "chatRoom.roomName": chatroom[j].roomName,
-                  "chatRoom.targetUser.userId": userId,
-                },
-                { $set: { "chatRoom.$.targetUser.connected": false } }
-              );
-            }
-            if (chatroom[j].createUser.userId === userId) {
-              console.log(
-                "chatroom[j].createUser.userId",
-                chatroom[j].createUser.userId,
-                chatroom[j].roomName
-              );
-              await chatData.updateOne(
-                {
-                  "chatRoom.roomName": chatroom[j].roomName,
-                  "chatRoom.createUser.userId": userId,
-                },
-                { $set: { "chatRoom.$.createUser.connected": false } }
-              );
-            }
-          }
-        }
-      }
 
       const newUser = await chatData.findOne({ userId: socket.id });
       socket.broadcast.emit(
