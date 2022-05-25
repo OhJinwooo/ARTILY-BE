@@ -308,7 +308,7 @@ module.exports = (server) => {
           for (let j = 0; j < targetRoom.length; i++) {
             if (chatRoom[j].roomName === roomName) {
               console.log("조건문 들어옴", chatRoom[j].roomName, roomName);
-              return next();
+              return;
             }
           }
         }
