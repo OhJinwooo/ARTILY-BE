@@ -98,11 +98,11 @@ const artStore = async (req, res) => {
       let page = Math.max(1, parseInt(req.query.page));
       let limit = Math.max(1, parseInt(req.query.limit));
       //NaN일때 값지정
-      page = !isNaN(page) ? page+1 : 1;
+      page = !isNaN(page) ? page + 1 : 1;
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log('page',skip)
+      console.log("page", skip);
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
@@ -243,22 +243,24 @@ const artDetail = async (req, res) => {
 const done = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { userId } = res.locals.user
+    const { userId } = res.locals.user;
     const data = req.body;
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
 
     if (userPost.done === false) {
-      const image = await postImg.findOne({postId}).sort('createdAt').exec();
-      console.log('image',image)
-      await buyPost.create({ postTitle:userPost.postTitle,
-        price:userPost.price,
-        category:userPost.category,
-        user:userPost.user,
+      const image = await postImg.findOne({ postId }).sort("createdAt").exec();
+      console.log("image", image);
+      await buyPost.create({
+        postTitle: userPost.postTitle,
+        price: userPost.price,
+        category: userPost.category,
+        user: userPost.user,
         createdAt,
         userId: data.userId,
-        images:image.imageUrl,
-        postId });
+        images: image.imageUrl,
+        postId,
+      });
       await Post.updateOne(
         { postId },
         {

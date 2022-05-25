@@ -61,7 +61,6 @@ const review_detail = async (req, res) => {
     //buyer & seller
     //리뷰를 작성한 user 정보 & 구매한 작품&작가 정보 찾기
     let buyer = await Review.find({ reviewId });
-    // console.log("buyer", buyer);
     let s_userId = "";
     if (buyer.length) {
       for (let review of buyer) {
@@ -70,12 +69,12 @@ const review_detail = async (req, res) => {
         review.images = imgs;
       }
       s_userId = buyer[0].seller.user.userId;
-      // console.log("s_userId", s_userId);
+      console.log("s_userId", s_userId);
 
       // seller의 imageUrl 찾아서 보내주기
       const sellerPostId = buyer[0].seller.postId;
       let seller_img = await Buy.findOne({ postId: sellerPostId });
-      let sellerImg = seller_img.imageUrl;
+      let sellerImg = seller_img.images;
       buyer[0].seller.imageUrl = sellerImg;
 
       //defferents
@@ -148,11 +147,11 @@ const review_write = async (req, res) => {
   moment.tz.setDefault("Asia/Seoul");
   const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
 
-  let seller = await Post.findOne(
+  let seller = await Buy.findOne(
     { postId },
-    "category postId postTitle price imageUrl user.userId user.nickname user.profileImage"
+    "category postId postTitle price images user.userId user.nickname user.profileImage"
   );
-  // console.log("ss", seller);
+  console.log("ss", seller);
 
   // 이미지에서 location정보만 저장해줌
   if (req.files.length) {
