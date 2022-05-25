@@ -66,6 +66,7 @@ module.exports = (server) => {
     const result = await chatData.findOne({ userId }, "chatRoom");
     const chatRoom = result.chatRoom;
     console.log("chatRoom", chatRoom);
+
     //이미 방을  만들어놓은 유저들을 로그인 했을때 조인을 시켜줌
     if (chatRoom.length > 0) {
       for (let i = 0; i < chatRoom.length; i++) {
@@ -263,27 +264,55 @@ module.exports = (server) => {
         { $set: { "chatRoom.$.newMessage": 0 } }
       );
     });
+
     // socket.on("upload", (data) => {
     //   console.log("upload 받은거:", data);
     //   console.log(JSON.stringify(data));
     // });
 
     // 채팅방을 나갔을 때
-    socket.on("leave_room", async (roomName) => {
-      console.log("방이름", roomName);
-      const admin_notification = {
-        roomName,
-        from: "admin",
-        message: "상대방이 대화방을 나갔습니다",
-        time: new Date() + "",
-      };
+    socket.on("leave_room", (roomName, targetUser) => {
+      socket.leave(roomName, async () => {
+        console.log("방이름", roomName);
+        const admin_notification = {
+          roomName,
+          from: "admin",
+          message: "상대방이 대화방을 나갔습니다",
+          time: new Date() + "",
+        };
+
+        // 내 정보 찾기
+        const result = await chatData.findOne({
+          userId: userId,
+          "chatRoom.roomName": roomName,
+        });
+        const myRoom = result.chatRoom;
+
+        //상대방 정보를 찾기
+        const results = await chatData.findOne({
+          userId: targetUser,
+          "chatRoom.roomName": roomName,
+        });
+        const targetRoom = results.chatRoom;
+
+        for (let i = 0; i < myRoom.length; i++) {
+          if (chatRoom[i].roomName === roomName) {
+            await chatData.updateOne(
+              { userId: userId, "chatRoom.roomName": roomName },
+              { $pull: { "chatRoom.$.roomName": roomName } }
+            );
+            for (let j = 0; j < targetRoom.length; i++) {
+              if (chatRoom[j].roomName === roomName) {
+                return next();
+              }
+            }
+          }
+        }
+        await Message.deleteOne({ roomName });
+        socket.to(roomName).emit("admin_noti", admin_notification);
+      });
 
       //상대방이 대화방을 나갔을 때 내 유저 정보에서 채팅방 정보를 지워줌
-      await chatData.updateOne(
-        { userId: userId, "chatRoom.roomName": roomName },
-        { $pull: { "chatRoom.$.roomName": roomName } }
-      );
-      socket.to(roomName).emit("admin_noti", admin_notification);
     });
 
     //상대방이 로그아웃을 하면 false로 변경해줌 지금은 딱히 필요없어졌음 실시간 접속 사용 안함.
