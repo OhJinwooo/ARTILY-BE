@@ -243,14 +243,22 @@ const artDetail = async (req, res) => {
 const done = async (req, res) => {
   try {
     const { postId } = req.params;
-    const {userId} = res.locals.user
+    const { userId } = res.locals.user
     const data = req.body;
-    console.log(data.userId)
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     const userPost = await Post.findOne({ userId, postId });
 
     if (userPost.done === false) {
-      await buyPost.create({ createdAt, userId: data.userId, postId });
+      const image = await postImg.findOne({postId}).sort('createdAt').exec();
+      console.log('image',image)
+      await buyPost.create({ postTitle:userPost.postTitle,
+        price:userPost.price,
+        category:userPost.category,
+        user:userPost.user,
+        createdAt,
+        userId: data.userId,
+        images:image.imageUrl,
+        postId });
       await Post.updateOne(
         { postId },
         {
