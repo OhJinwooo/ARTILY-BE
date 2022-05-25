@@ -451,7 +451,6 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-
       //업데이트
       await Post.updateOne(
         { postId },
@@ -473,7 +472,6 @@ const artUpdate = async (req, res) => {
         msg: "수정 완료",
       });
     }
-
     throw error;
   } catch (error) {
     res.status(400).send({
@@ -501,6 +499,7 @@ const artdelete = async (req, res) => {
         // 추가하기 위한 코드(string으로 해야 접근 가능)
         deleteItems.push({ Key: String(image[i].imageUrl.split("/")[3]) });
       }
+      deleteItems.shift();
       //삭제를 위한 변수
       let params = {
         //bucket 이름
