@@ -182,6 +182,16 @@ module.exports = (server) => {
       if (!existRoom) {
         throw new error();
       }
+      const existRooms = await chatData.findOne({
+        userId: userId,
+        "chatRoom.roomName": messageData.roomName,
+      });
+      console.log("existRooms", existRooms);
+
+      //채팅방에  대한  정보가 없을 때 해당 유저의 채팅방 정보를 저장
+      if (!existRooms) {
+        await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
+      }
 
       //프론트에게 보내줄 받은 메시지 데이터
       const receive = {
