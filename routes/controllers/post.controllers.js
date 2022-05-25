@@ -443,6 +443,7 @@ const artUpdate = async (req, res) => {
             num = max.imageNumber + 1;
           }
           for (let i = 0; i < req.files.length; i++) {
+            console.log(req.files[i].location)
             await postImg.create({
               postId,
               imageUrl: req.files[i].location,
