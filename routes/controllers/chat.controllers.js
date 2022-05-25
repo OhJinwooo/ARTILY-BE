@@ -41,7 +41,16 @@ const messages = async (req, res) => {
   }
 };
 
+const chatDelete = async (req, res) => {
+  const { userId } = res.locals;
+  const { roomName } = req.params;
+
+  const chat = await Message.deleteOne({ roomName });
+  await chatData.deleteOne({ $and: userId, roomName });
+};
+
 module.exports = {
   chatData,
   messages,
+  chatDelete,
 };
