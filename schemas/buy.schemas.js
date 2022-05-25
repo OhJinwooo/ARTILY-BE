@@ -7,6 +7,21 @@ const buySchema = new mongoose.Schema({
   postId: {
     type: String,
   },
+  postTitle: {
+    type: String,
+  },
+  category: {
+    type: String,
+  },
+  price: {
+    type: String,
+  },
+  user : {
+    type:Array
+  },
+  images : {
+    type:String
+  },
   createdAt:{
     type: String
   }
