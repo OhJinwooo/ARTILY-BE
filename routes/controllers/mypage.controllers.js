@@ -191,14 +191,9 @@ const myProfile = async (req, res) => {
 
 // 프로필 수정
 const updateProfile = async (req, res) => {
-  const { user } = res.locals;
-  const userId = user.userId;
+  const { userId } = res.locals.user;
   const { introduce, snsUrl, address, nickname } = req.body;
   let profileImage = req.file?.location;
-
-  // if (!profileImage) {
-  //   profileImage = "";
-  // }
 
   try {
     const photo = await User.findOne({ userId });
