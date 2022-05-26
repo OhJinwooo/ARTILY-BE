@@ -77,7 +77,6 @@ const artStore = async (req, res) => {
   try {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
-    console.log("req", req.query);
     const keyword = req.query.keyword;
     //태그 기능 변수
     const category = data.category;
@@ -102,7 +101,6 @@ const artStore = async (req, res) => {
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log("page", skip);
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
@@ -118,7 +116,6 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
-        console.log("데이터 없다.");
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
@@ -143,7 +140,6 @@ const artStore = async (req, res) => {
       let skip = (page - 1) * limit;
       //검색기능
       let option = [];
-      console.log("option", option);
       if (keyword) {
         option = [{ postTitle: new RegExp(keyword) }];
       }
@@ -162,7 +158,6 @@ const artStore = async (req, res) => {
       }
       //search and filter = option
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
-      console.log("artPost", artPost);
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
@@ -171,7 +166,6 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
-        console.log("없어요");
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
