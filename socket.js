@@ -309,10 +309,10 @@ module.exports = (server) => {
             );
           }
         }
-      }
-      if (!results) {
-        await Message.deleteOne({ roomName: roomName });
-        return;
+        if (!results) {
+          await Message.deleteOne({ roomName: roomName });
+          return;
+        }
       }
 
       socket.to(roomName).emit("admin_noti", admin_notification);
