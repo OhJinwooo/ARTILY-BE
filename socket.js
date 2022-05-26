@@ -307,11 +307,11 @@ module.exports = (server) => {
               { userId: userId, "chatRoom.roomName": roomName },
               { $pull: { chatRoom: chatRoom[i] } }
             );
-            if (!results) {
-              await Message.deleteOne({ roomName: roomName });
-              return;
-            }
           }
+        }
+        if (!results) {
+          await Message.deleteOne({ roomName: roomName });
+          return;
         }
       }
 
