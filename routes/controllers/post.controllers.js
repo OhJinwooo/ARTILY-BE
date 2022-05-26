@@ -214,7 +214,7 @@ const artDetail = async (req, res) => {
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail[0].user,
+        "user.userId": detail[0].user.userId,
       })
         .sort("-createdAt")
         .limit(4);
@@ -427,9 +427,9 @@ const artUpdate = async (req, res) => {
           }
         );
       } else if (imgDt || req.files) {
-        if (Array.isArray(imgDt) === false) {
-          await postImg.deleteOne({ imageUrl: imgDt });
-        } else {
+        if (Array.isArray(imgDt) === false && imgDt) {
+          await postImg.deleteOne({ postId, imageUrl: imgDt });
+        } else if (Array.isArray(imgDt)) {
           for (let i = 0; i < imgDt.length; i++) {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
@@ -453,7 +453,6 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-
       //업데이트
       await Post.updateOne(
         { postId },
@@ -475,7 +474,6 @@ const artUpdate = async (req, res) => {
         msg: "수정 완료",
       });
     }
-
     throw error;
   } catch (error) {
     res.status(400).send({
@@ -503,6 +501,7 @@ const artdelete = async (req, res) => {
         // 추가하기 위한 코드(string으로 해야 접근 가능)
         deleteItems.push({ Key: String(image[i].imageUrl.split("/")[3]) });
       }
+      deleteItems.shift();
       //삭제를 위한 변수
       let params = {
         //bucket 이름
