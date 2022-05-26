@@ -275,6 +275,17 @@ const updateProfile = async (req, res) => {
           },
         }
       );
+      await Buy.updateMany(
+        {
+          "user.userId": userId,
+        },
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+          },
+        }
+      );
     } else {
       console.log("이미지 없음");
       await User.updateOne(
@@ -336,6 +347,17 @@ const updateProfile = async (req, res) => {
           $set: {
             nickname,
             profileImage,
+          },
+        }
+      );
+      await Buy.updateMany(
+        {
+          "user.userId": userId,
+        },
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
           },
         }
       );
