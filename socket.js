@@ -287,7 +287,7 @@ module.exports = (server) => {
       });
       console.log("result", result);
       let myRoom;
-      if (result !== null) {
+      if (result) {
         myRoom = result.chatRoom;
         console.log("myRoom", myRoom);
       }
@@ -299,7 +299,7 @@ module.exports = (server) => {
       });
       console.log("results", results);
 
-      if (result !== null) {
+      if (result) {
         for (let i = 0; i < myRoom.length; i++) {
           if (chatRoom[i].roomName === roomName) {
             console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
