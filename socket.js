@@ -309,12 +309,11 @@ module.exports = (server) => {
             );
           }
         }
-        if (!results) {
-          await Message.deleteOne({ roomName: roomName });
-          return;
-        }
       }
-
+      if (!results) {
+        await Message.deleteOne({ roomName: roomName });
+        return;
+      }
       socket.to(roomName).emit("admin_noti", admin_notification);
 
       //상대방이 대화방을 나갔을 때 내 유저 정보에서 채팅방 정보를 지워줌
