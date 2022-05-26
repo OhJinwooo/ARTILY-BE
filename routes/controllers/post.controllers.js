@@ -250,7 +250,6 @@ const done = async (req, res) => {
 
     if (userPost.done === false) {
       const image = await postImg.findOne({ postId }).sort("createdAt").exec();
-      console.log("image", image);
       await buyPost.create({
         postTitle: userPost.postTitle,
         price: userPost.price,
