@@ -196,9 +196,9 @@ const updateProfile = async (req, res) => {
   const { introduce, snsUrl, address, nickname } = req.body;
   let profileImage = req.file?.location;
 
-  if (!profileImage) {
-    profileImage = "";
-  }
+  // if (!profileImage) {
+  //   profileImage = "";
+  // }
 
   try {
     const photo = await User.findOne({ userId });
