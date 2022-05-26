@@ -157,7 +157,9 @@ const artStore = async (req, res) => {
         option.push({ price: price });
       }
       //search and filter = option
-      const artPost = await Post.find({ $and: option }).sort('-createdAt').exec()/* skip(skip).limit(limit); */
+      const artPost = await Post.find({ $and: option },
+        "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
+        ).sort('-createdAt').exec()/* skip(skip).limit(limit); */
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
