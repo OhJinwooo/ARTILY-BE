@@ -286,8 +286,9 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("result", result);
+      let myRoom;
       if (result !== null) {
-        const myRoom = result.chatRoom;
+        myRoom = result.chatRoom;
         console.log("myRoom", myRoom);
       }
 
@@ -297,8 +298,9 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("results", results);
+      let targetRoom;
       if (results !== null) {
-        const targetRoom = results.chatRoom;
+        targetRoom = results.chatRoom;
         console.log("targetRoom", targetRoom);
       }
       if (result !== null) {
