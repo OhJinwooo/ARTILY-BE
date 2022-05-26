@@ -94,20 +94,20 @@ const artStore = async (req, res) => {
     ) {
       //infinite scroll 핸들링
       // 변수 선언 값이 정수로 표현
-      let page = Math.max(1, parseInt(req.query.page));
+      /* let page = Math.max(1, parseInt(req.query.page));
       let limit = Math.max(1, parseInt(req.query.limit));
       //NaN일때 값지정
       page = !isNaN(page) ? page + 1 : 1;
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
-      let skip = (page - 1) * limit;
+      let skip = (page - 1) * limit; */
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
       )
         .sort("-createdAt")
-        .skip(skip)
-        .limit(limit);
+        /* .skip(skip)
+        .limit(limit); */
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
@@ -131,13 +131,13 @@ const artStore = async (req, res) => {
     } else {
       //infinite scroll 핸들링
       // 변수 선언 값이 정수로 표현
-      let page = Math.max(1, parseInt(data.page));
+      /* let page = Math.max(1, parseInt(data.page));
       let limit = Math.max(1, parseInt(data.limit));
       //NaN일때 값지정
       page = !isNaN(page) ? page : 1;
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
-      let skip = (page - 1) * limit;
+      let skip = (page - 1) * limit; */
       //검색기능
       let option = [];
       if (keyword) {
@@ -157,7 +157,7 @@ const artStore = async (req, res) => {
         option.push({ price: price });
       }
       //search and filter = option
-      const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
+      const artPost = await Post.find({ $and: option }).sort('-createdAt').exec()/* skip(skip).limit(limit); */
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
