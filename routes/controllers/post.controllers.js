@@ -258,7 +258,7 @@ const done = async (req, res) => {
         user: userPost.user,
         createdAt,
         userId: data.userId,
-        images: image.imageUrl,
+        imageUrl: image.imageUrl,
         postId,
       });
       await Post.updateOne(
