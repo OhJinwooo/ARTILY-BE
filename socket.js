@@ -1,5 +1,4 @@
 const Message = require("./schemas/message.schemas");
-const User = require("./schemas/user.schemas");
 const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
 

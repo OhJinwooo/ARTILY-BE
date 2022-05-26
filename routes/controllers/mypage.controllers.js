@@ -8,7 +8,6 @@ const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
-const Message = require("../../schemas/message.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
