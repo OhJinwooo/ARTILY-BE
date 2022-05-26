@@ -32,7 +32,7 @@ module.exports = (server) => {
       socket.userId = userId;
       socket.nickname = nickname;
       socket.id = userId;
-      socket.profileImage = profileImage; // socket에 이미 user정보가 있는데 왜 또 백단에서 user정보를 넣어주는지? // socket.handshake.auth.user => socket.id = userId
+      socket.profileImage = profileImage;
 
       await chatData.updateOne(
         { userId: userId },
@@ -41,11 +41,11 @@ module.exports = (server) => {
 
       return next();
     }
-    console.log("데이터가 없음"); //26번째줄의 코드와 동일한 기능 ?
+    console.log("데이터가 없음");
     socket.userId = userId;
     socket.nickname = nickname;
     socket.id = userId;
-    socket.profileImage = profileImage; // tnwjd
+    socket.profileImage = profileImage;
 
     await chatData.create({
       userId,
@@ -61,11 +61,11 @@ module.exports = (server) => {
 
     const result = await chatData.findOne({ userId }, "chatRoom");
     const chatRoom = result.chatRoom;
-    //이미 방을  만들어놓은 유저들이 로그인 했을때 조인을 시켜줌  => 본인이 속해있는 채팅방만 찾는 것
+    //이미 방을  만들어놓은 유저들이 로그인 했을때 조인을 시켜줌
     if (chatRoom.length > 0) {
       for (let i = 0; i < chatRoom.length; i++) {
         // 로그인 되어있는 유저가 속해있는 채팅방 리스트
-        socket.join(chatRoom[i].roomName); //socket.join => 다시 한번 로그인 한 유저들에게 적용 / 이미 방이 있으면 로그인 하자마자 연결 시켜줌 / 새로고침 시 프론트단에서 조인이 풀려서 다시 한 번 연결시며주는 것
+        socket.join(chatRoom[i].roomName);
       }
     }
 
@@ -82,7 +82,7 @@ module.exports = (server) => {
 
       //방을 만든사람의 정보
       const nowUser = {
-        //현재 로그인된 유저의 정보 / ex) user1. user2  / 구매자인지 판매자인지 상광 없음 / 두 명의 유저정보 저장
+        //현재 로그인된 유저의 정보
         userId: socket.userId,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
@@ -99,7 +99,7 @@ module.exports = (server) => {
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        targetUser: nowUser, // ex) user1. user2 / create : 판매자 / target : 구매자  //현재 로그인된 유저 정보를 targetUser에 넣어서 보내줌.
+        targetUser: nowUser,
         newMessage: 0,
         lastMessage: null,
         lastTime: null,
@@ -144,7 +144,7 @@ module.exports = (server) => {
       }
     });
 
-    //채팅방을 다시한번 조인 시켜줌  => 프론트단에서 새로고침하면 날아가는 이슈로 인해 다시 한번 조인해줌. //로그인 상태에서 방을 만들고 둘러보는 상황에서 새로고침 누르면 날아가는데, 그때 다시 조인시켜줌
+    //채팅방을 다시한번 조인 시켜줌
     socket.on("enter_room", async (roomName) => {
       socket.join(roomName);
       // socket.to(chatRoom[i].userId).emit("enter_room", chatRoom[i].roomName);
@@ -178,7 +178,7 @@ module.exports = (server) => {
 
       //디비에  저장해줄 데이터
       const saveChat = {
-        from: socket.id, // 보낸사람 유저아이디 //로그인된 유저 // 상대방
+        from: socket.id,
         message: messageData.message,
         time: messageData.time,
       };
@@ -196,7 +196,7 @@ module.exports = (server) => {
           userId: messageData.from,
           "chatRoom.roomName": messageData.roomName,
         },
-        { $set: { "chatRoom.$.lastMessage": messageData.message } } // $ : 이중 배열 에서 원하는 값 찾아서 업데이트 // 몽고디비 공식문서 (update)
+        { $set: { "chatRoom.$.lastMessage": messageData.message } }
       );
       await chatData.updateOne(
         {
