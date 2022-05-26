@@ -17,7 +17,7 @@ const buySchema = new mongoose.Schema({
     type: String,
   },
   user : {
-    type:Array
+    type:Object
   },
   images : {
     type:String
