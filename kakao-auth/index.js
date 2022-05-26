@@ -14,7 +14,6 @@ module.exports = () => {
 
       async (accessToken, refreshToken, profile, done) => {
         try {
-          console.log("try in", profile);
           const exUser = await User.findOne({
             userId: profile.id,
             provider: "kakao",
@@ -26,7 +25,6 @@ module.exports = () => {
           let introduce = "";
           let role = true;
           if (exUser) {
-            console.log("로그인", exUser);
             return done(null, exUser); // 로그인 인증 완료
           } else {
             const user = {
