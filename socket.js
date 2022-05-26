@@ -286,7 +286,7 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("result", result);
-      const myRoom = "";
+      const myRoom = new Object();
       if (result) {
         myRoom = result.chatRoom;
         console.log("myRoom", myRoom);
@@ -298,7 +298,7 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("results", results);
-      const targetRoom = "";
+      const targetRoom = new Object();
       if (results) {
         targetRoom = results.chatRoom;
         console.log("targetRoom", targetRoom);
