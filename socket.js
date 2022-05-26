@@ -298,32 +298,21 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("results", results);
-      let targetRoom;
-      if (results !== null) {
-        targetRoom = results.chatRoom;
-        console.log("targetRoom", targetRoom);
-      }
+
       if (result !== null) {
         for (let i = 0; i < myRoom.length; i++) {
-          if (results === null) {
-            await Message.deleteOne({ roomName });
-            return;
-          }
           if (chatRoom[i].roomName === roomName) {
             console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
             await chatData.updateOne(
               { userId: userId, "chatRoom.roomName": roomName },
               { $pull: { chatRoom: chatRoom[i] } }
             );
-
-            for (let j = 0; j < targetRoom.length; i++) {
-              if (chatRoom[j].roomName === roomName) {
-                console.log("조건문 들어옴", chatRoom[j].roomName, roomName);
-                return;
-              }
-            }
           }
         }
+      }
+      if (!results) {
+        await Message.deleteOne({ roomName: roomName });
+        return;
       }
 
       socket.to(roomName).emit("admin_noti", admin_notification);
