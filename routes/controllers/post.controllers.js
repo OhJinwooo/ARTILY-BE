@@ -226,7 +226,7 @@ const artDetail = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(200).json({
+    res.status(400).json({
       respons: "fail",
       msg: "상세페이지 조회 실패",
     });
