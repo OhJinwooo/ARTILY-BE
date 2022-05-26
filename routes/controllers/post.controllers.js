@@ -77,7 +77,6 @@ const artStore = async (req, res) => {
   try {
     //페이지의 시작 값을 받음(테이터의 총개수)
     const data = req.body;
-    console.log("req", req.query);
     const keyword = req.query.keyword;
     //태그 기능 변수
     const category = data.category;
@@ -102,7 +101,6 @@ const artStore = async (req, res) => {
       limit = !isNaN(limit) ? limit : 6;
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
-      console.log("page", skip);
       const artPost = await Post.find(
         {},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
@@ -118,7 +116,6 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
-        console.log("데이터 없다.");
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
@@ -143,7 +140,6 @@ const artStore = async (req, res) => {
       let skip = (page - 1) * limit;
       //검색기능
       let option = [];
-      console.log("option", option);
       if (keyword) {
         option = [{ postTitle: new RegExp(keyword) }];
       }
@@ -162,7 +158,6 @@ const artStore = async (req, res) => {
       }
       //search and filter = option
       const artPost = await Post.find({ $and: option }).skip(skip).limit(limit);
-      console.log("artPost", artPost);
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
@@ -171,7 +166,6 @@ const artStore = async (req, res) => {
         }
       }
       if (Array.isArray(artPost) && artPost.length === 0) {
-        console.log("없어요");
         return res.status(200).json({
           respons: "fail",
           msg: "데이터 없음",
@@ -214,7 +208,7 @@ const artDetail = async (req, res) => {
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
         postId: { $ne: postId },
-        user: detail[0].user,
+        "user.userId": detail[0].user.userId,
       })
         .sort("-createdAt")
         .limit(4);
@@ -250,7 +244,6 @@ const done = async (req, res) => {
 
     if (userPost.done === false) {
       const image = await postImg.findOne({ postId }).sort("createdAt").exec();
-      console.log("image", image);
       await buyPost.create({
         postTitle: userPost.postTitle,
         price: userPost.price,
@@ -427,9 +420,9 @@ const artUpdate = async (req, res) => {
           }
         );
       } else if (imgDt || req.files) {
-        if (Array.isArray(imgDt) === false) {
-          await postImg.deleteOne({ imageUrl: imgDt });
-        } else {
+        if (Array.isArray(imgDt) === false && imgDt) {
+          await postImg.deleteOne({ postId, imageUrl: imgDt });
+        } else if (Array.isArray(imgDt)) {
           for (let i = 0; i < imgDt.length; i++) {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
           }
@@ -453,7 +446,6 @@ const artUpdate = async (req, res) => {
           }
         }
       }
-
       //업데이트
       await Post.updateOne(
         { postId },
@@ -475,7 +467,6 @@ const artUpdate = async (req, res) => {
         msg: "수정 완료",
       });
     }
-
     throw error;
   } catch (error) {
     res.status(400).send({
@@ -503,6 +494,7 @@ const artdelete = async (req, res) => {
         // 추가하기 위한 코드(string으로 해야 접근 가능)
         deleteItems.push({ Key: String(image[i].imageUrl.split("/")[3]) });
       }
+      deleteItems.shift();
       //삭제를 위한 변수
       let params = {
         //bucket 이름
