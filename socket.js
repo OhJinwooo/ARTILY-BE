@@ -286,8 +286,10 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("result", result);
-      const myRoom = result.chatRoom;
-      console.log("myRoom", myRoom);
+      if (result) {
+        const myRoom = result.chatRoom;
+        console.log("myRoom", myRoom);
+      }
 
       //상대방 정보를 찾기
       const results = await chatData.findOne({
@@ -295,9 +297,10 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("results", results);
-      const targetRoom = results.chatRoom;
-      console.log("targetRoom", targetRoom);
-
+      if (results) {
+        const targetRoom = results.chatRoom;
+        console.log("targetRoom", targetRoom);
+      }
       for (let i = 0; i < myRoom.length; i++) {
         if (chatRoom[i].roomName === roomName) {
           console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
