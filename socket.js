@@ -286,9 +286,8 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("result", result);
-      const myRoom = new Object();
-      if (result) {
-        myRoom = result.chatRoom;
+      if (result !== null) {
+        const myRoom = result.chatRoom;
         console.log("myRoom", myRoom);
       }
 
@@ -298,27 +297,32 @@ module.exports = (server) => {
         "chatRoom.roomName": roomName,
       });
       console.log("results", results);
-      const targetRoom = new Object();
-      if (results) {
-        targetRoom = results.chatRoom;
+      if (results !== null) {
+        const targetRoom = results.chatRoom;
         console.log("targetRoom", targetRoom);
       }
-      for (let i = 0; i < myRoom.length; i++) {
-        if (chatRoom[i].roomName === roomName) {
-          console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
-          await chatData.updateOne(
-            { userId: userId, "chatRoom.roomName": roomName },
-            { $pull: { chatRoom: chatRoom[i] } }
-          );
-          for (let j = 0; j < targetRoom.length; i++) {
-            if (chatRoom[j].roomName === roomName) {
-              console.log("조건문 들어옴", chatRoom[j].roomName, roomName);
+      if (result !== null) {
+        for (let i = 0; i < myRoom.length; i++) {
+          if (chatRoom[i].roomName === roomName) {
+            console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
+            await chatData.updateOne(
+              { userId: userId, "chatRoom.roomName": roomName },
+              { $pull: { chatRoom: chatRoom[i] } }
+            );
+            if (results === null) {
+              await Message.deleteOne({ roomName });
               return;
+            }
+            for (let j = 0; j < targetRoom.length; i++) {
+              if (chatRoom[j].roomName === roomName) {
+                console.log("조건문 들어옴", chatRoom[j].roomName, roomName);
+                return;
+              }
             }
           }
         }
       }
-      await Message.deleteOne({ roomName });
+
       socket.to(roomName).emit("admin_noti", admin_notification);
 
       //상대방이 대화방을 나갔을 때 내 유저 정보에서 채팅방 정보를 지워줌
