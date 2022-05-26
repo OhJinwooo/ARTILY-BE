@@ -305,16 +305,17 @@ module.exports = (server) => {
       }
       if (result !== null) {
         for (let i = 0; i < myRoom.length; i++) {
+          if (results === null) {
+            await Message.deleteOne({ roomName });
+            return;
+          }
           if (chatRoom[i].roomName === roomName) {
             console.log("조건문 들어옴", chatRoom[i].roomName, roomName);
             await chatData.updateOne(
               { userId: userId, "chatRoom.roomName": roomName },
               { $pull: { chatRoom: chatRoom[i] } }
             );
-            if (results === null) {
-              await Message.deleteOne({ roomName });
-              return;
-            }
+
             for (let j = 0; j < targetRoom.length; i++) {
               if (chatRoom[j].roomName === roomName) {
                 console.log("조건문 들어옴", chatRoom[j].roomName, roomName);
