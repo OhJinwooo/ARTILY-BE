@@ -16,15 +16,15 @@ const buySchema = new mongoose.Schema({
   price: {
     type: String,
   },
-  user : {
-    type:Array
+  user: {
+    type: Object,
   },
-  images : {
-    type:String
+  imageUrl: {
+    type: String,
   },
-  createdAt:{
-    type: String
-  }
+  createdAt: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model("buy", buySchema);

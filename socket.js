@@ -4,6 +4,7 @@ const chatData = require("./schemas/chatData.schemas");
 const socket = require("socket.io");
 
 module.exports = (server) => {
+  //socket에는 프론트단에서 채팅을 보낸 user정보를 보내주는건지?
   const io = socket(server, {
     // path: "/socket.io",
     cors: {
@@ -24,6 +25,7 @@ module.exports = (server) => {
 
     // 비 회원 없음
     if (!userInfo) {
+      // userInfo 자체가 안넘어왔을 때 대비.
       return next(new Error("에러!!!!!!!"));
     }
 
@@ -33,17 +35,17 @@ module.exports = (server) => {
       socket.userId = userId;
       socket.nickname = nickname;
       socket.id = userId;
-      socket.profileImage = profileImage; // tnwjd
+      socket.profileImage = profileImage; // socket에 이미 user정보가 있는데 왜 또 백단에서 user정보를 넣어주는지? // socket.handshake.auth.user => socket.id = userId
 
       await chatData.updateOne(
         { userId: userId },
-        { $set: { connected: true } }
+        { $set: { connected: true } } // 채팅방에서 접속한 유저정보 띄우주려고 사용 = > 혹시몰라서 보류
       );
 
       console.log("db 업데이트");
       return next();
     }
-    console.log("데이터가 없음");
+    console.log("데이터가 없음"); //26번째줄의 코드와 동일한 기능 ?
     socket.userId = userId;
     socket.nickname = nickname;
     socket.id = userId;
@@ -66,19 +68,16 @@ module.exports = (server) => {
     const result = await chatData.findOne({ userId }, "chatRoom");
     const chatRoom = result.chatRoom;
     console.log("chatRoom", chatRoom);
-
-    //이미 방을  만들어놓은 유저들을 로그인 했을때 조인을 시켜줌
+    //이미 방을  만들어놓은 유저들이 로그인 했을때 조인을 시켜줌  => 본인이 속해있는 채팅방만 찾는 것
     if (chatRoom.length > 0) {
       for (let i = 0; i < chatRoom.length; i++) {
-        socket.join(chatRoom[i].roomName);
+        // 로그인 되어있는 유저가 속해있는 채팅방 리스트
+        socket.join(chatRoom[i].roomName); //socket.join => 다시 한번 로그인 한 유저들에게 적용 / 이미 방이 있으면 로그인 하자마자 연결 시켜줌 / 새로고침 시 프론트단에서 조인이 풀려서 다시 한 번 연결시며주는 것
         console.log("chatRoom[i].roomName", chatRoom[i].roomName);
-        socket
-          .to(chatRoom[i].userId)
-          .emit("chatRoom_join", chatRoom[i].roomName);
       }
     }
 
-    //로그인한 유저 정보를 프론트에게 보내줌  test 확인용
+    //로그인한 유저 정보를 프론트에게 보내줌 / test 확인용
     socket.broadcast.emit("user connected", {
       userId,
       nickname,
@@ -87,9 +86,10 @@ module.exports = (server) => {
 
     //처음 방을 만들었을 때 방이름을 프론트에서 만들어 보내면 유저 정보에 저장을 하고 조인을 시킴
     socket.on("join_room", async (roomName, targetUser, post) => {
+      //상대방의 정보를 프론트단에서 식별해서 보는주는걸로 바뀐건지?
       // const a = await io.sockets.manager.roomClients[socket.id];
       console.log("@@@@@@@@@@@@", roomName);
-      socket.join(roomName);
+      socket.join(roomName); //socket.join의 의미를 모르겠음
       console.log(socket.id, socket.nickname);
       // const { userId, nickname, profileImage } = socket;
       // 유저 조회해서 상대방 프로필이미지, 닉네임 찾기
@@ -97,6 +97,7 @@ module.exports = (server) => {
 
       //방을 만든사람의 정보
       const nowUser = {
+        //현재 로그인된 유저의 정보 / ex) user1. user2  / 구매자인지 판매자인지 상광 없음 / 두 명의 유저정보 저장
         userId: socket.userId,
         nickname: socket.nickname,
         profileImage: socket.profileImage,
@@ -113,7 +114,7 @@ module.exports = (server) => {
       const receive = {
         post, // postId, imageUrl: current.imageUrl[0], postTitle: current.postTitle, price: current.price,
         roomName,
-        targetUser: nowUser,
+        targetUser: nowUser, // ex) user1. user2 / create : 판매자 / target : 구매자  //현재 로그인된 유저 정보를 targetUser에 넣어서 보내줌.
         newMessage: 0,
         lastMessage: null,
         lastTime: null,
@@ -144,13 +145,13 @@ module.exports = (server) => {
       console.log("existRooms", existRooms);
       // console.log("existRoom", existRoom);
 
-      //채팅방 채팅 내용에 대한 정보가 없을 때 채팅  내용을 저장하는 컬렉션을 생성
+      //채팅방 채팅 내용에 대한 정보가 없을 때 채팅 내용을 저장하는 컬렉션을 생성
       if (!existRoom) {
         await Message.create(saveData); // 유저정보 둘다 있는 데이터
-        socket.to(targetUser.userId).emit("join_room", receive);
+        socket.to(targetUser.userId).emit("join_room", receive); //상대방에게 receive 정보 전달
       }
 
-      //채팅방에  대한  정보가 없을 때 해당 유저의 채팅방 정보를 저장
+      //채팅방에 대한  정보가 없을 때 해당 유저의 채팅방 정보를 저장
       if (!existRooms) {
         await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
         await chatData.updateOne(
@@ -160,7 +161,7 @@ module.exports = (server) => {
       }
     });
 
-    //채팅방을 다시한번 조인 시켜줌
+    //채팅방을 다시한번 조인 시켜줌  => 프론트단에서 새로고침하면 날아가는 이슈로 인해 다시 한번 조인해줌. //로그인 상태에서 방을 만들고 둘러보는 상황에서 새로고침 누르면 날아가는데, 그때 다시 조인시켜줌
     socket.on("enter_room", async (roomName) => {
       socket.join(roomName);
       console.log("roomName", roomName);
@@ -182,33 +183,6 @@ module.exports = (server) => {
       if (!existRoom) {
         throw new error();
       }
-      const existRooms = await chatData.findOne({
-        userId: userId,
-        "chatRoom.roomName": messageData.roomName,
-      });
-      console.log("existRooms", existRooms);
-
-      const nowUser = {
-        userId: socket.userId,
-        nickname: socket.nickname,
-        profileImage: socket.profileImage,
-      };
-
-      //만들어진 방의 상대방 유저 정보
-      const target = await chatData.find({ userId: messageData.to });
-      const chatRoom = {
-        roomName: roomName,
-        post: post,
-        lastMessage: null,
-        lastTime: null,
-        newMessage: 0,
-        targetUser: nowUser,
-        createUser: target,
-      };
-      //채팅방에  대한  정보가 없을 때 해당 유저의 채팅방 정보를 저장
-      if (!existRooms) {
-        await chatData.updateOne({ userId }, { $push: { chatRoom: chatRoom } });
-      }
 
       //프론트에게 보내줄 받은 메시지 데이터
       const receive = {
@@ -223,7 +197,7 @@ module.exports = (server) => {
 
       //디비에  저장해줄 데이터
       const saveChat = {
-        from: socket.id, // 보낸사람 유저아이디
+        from: socket.id, // 보낸사람 유저아이디 //로그인된 유저 // 상대방
         message: messageData.message,
         time: messageData.time,
       };
@@ -244,7 +218,7 @@ module.exports = (server) => {
           userId: messageData.from,
           "chatRoom.roomName": messageData.roomName,
         },
-        { $set: { "chatRoom.$.lastMessage": messageData.message } }
+        { $set: { "chatRoom.$.lastMessage": messageData.message } } // $ : 이중 배열 에서 원하는 값 찾아서 업데이트 // 몽고디비 공식문서 (update)
       );
       await chatData.updateOne(
         {
@@ -291,7 +265,6 @@ module.exports = (server) => {
         { $set: { "chatRoom.$.newMessage": 0 } }
       );
     });
-
     // socket.on("upload", (data) => {
     //   console.log("upload 받은거:", data);
     //   console.log(JSON.stringify(data));
