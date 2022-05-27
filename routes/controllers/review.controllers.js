@@ -36,7 +36,7 @@ const review = async (req, res) => {
     //   .skip(skip)
     //   .limit(limit);
 
-    const reviews = await Review.find({});
+    const reviews = await Review.find({}).sort("-createdAt");
     if (reviews.length) {
       for (let review of reviews) {
         const imgs = await ReviewImages.findOne({
