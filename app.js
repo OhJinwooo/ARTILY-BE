@@ -25,7 +25,7 @@ const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
 const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
-/* const chatRouter = require("./routes/chat.router"); */
+const chatRouter = require("./routes/chat.router");
 const cors = require("cors");
 //접속로그 남기기
 const requestMiddleware = (req, res, next) => {
@@ -60,12 +60,12 @@ app.use("/api", [
   blackListRouter,
   postRouter,
   followRouter,
-  /* chatRouter, */
+  chatRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // 인증서 파트
-/* const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
+const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
 const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
 const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
 const credentials = {
@@ -87,13 +87,13 @@ app_low.use((req, res, next) => {
 
 const server = https.createServer(credentials, app);
 socket(server);
- */
-app.listen(httpPort, () => {
+
+/* app.listen(httpPort, () => {
    console.log("http " + httpPort + " server start");
- });
-/* http.createServer(app_low).listen(httpPort, () => {
+ }); */
+http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start test test");
 });
 server.listen(httpsPort, () => {
   console.log("https " + httpsPort + " server start test test");
-}); */
+});
