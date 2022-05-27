@@ -27,7 +27,7 @@ const getHome = async (req, res) => {
       { },
       "postId postTitle imageUrl transaction price markupCnt createdAt changeAddress user"
     )
-      .sort( "-markupCnt"+"-createdAt"  )
+      .sort( "-markupCnt"  )
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
