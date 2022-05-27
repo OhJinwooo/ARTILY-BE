@@ -36,7 +36,7 @@ const review = async (req, res) => {
     //   .skip(skip)
     //   .limit(limit);
 
-    const reviews = await Review.find({});
+    const reviews = await Review.find({}).sort("-createdAt");
     if (reviews.length) {
       for (let review of reviews) {
         const imgs = await ReviewImages.findOne({
@@ -67,7 +67,6 @@ const review_detail = async (req, res) => {
         review.images = imgs;
       }
       s_userId = buyer[0].seller.user.userId;
-      console.log("s_userId", s_userId);
 
       //defferents
       //내가 구매한 작가의 다른 작품들 찾기
@@ -97,7 +96,6 @@ const review_detail = async (req, res) => {
           const imgs = await PostImages.findOne({ postId: info.postId });
           info.images = imgs;
         }
-        console.log("합치기", defferentInfo);
         res.json({ buyer, defferentInfo });
       } else {
         res.json({ buyer });
