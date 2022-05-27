@@ -27,7 +27,7 @@ const getHome = async (req, res) => {
       { },
       "postId postTitle imageUrl transaction price markupCnt createdAt changeAddress user"
     )
-      .sort( "-markupCnt"+"-createdAt"  )
+      .sort( "-markupCnt"  )
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
@@ -43,7 +43,6 @@ const getHome = async (req, res) => {
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
     }
-
     const bestReview = await Review.find(
       {},
       "reviewId imageUrl reviewTitle reviewContent likeCnt nickname profileImage"
@@ -102,7 +101,7 @@ const artStore = async (req, res) => {
       //제외할 데이터 지정
       let skip = (page - 1) * limit;
       const artPost = await Post.find(
-        {},
+        {done:{$inc:true}},
         "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
       )
         .sort("-createdAt")
