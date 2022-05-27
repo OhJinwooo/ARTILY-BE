@@ -8,7 +8,6 @@ const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
-const Message = require("../../schemas/message.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -191,165 +190,206 @@ const myProfile = async (req, res) => {
 
 // 프로필 수정
 const updateProfile = async (req, res) => {
-  const { user } = res.locals;
-  const userId = user.userId;
+  const { userId } = res.locals.user;
   const { introduce, snsUrl, address, nickname } = req.body;
   let profileImage = req.file?.location;
 
-  // if (!profileImage) {
-  //   profileImage = "";
-  // }
+  // try {
+  const photo = await User.findOne({ userId });
+  if (photo.profileImage) {
+    const url = photo.profileImage.split("/");
+    const delFileName = url[url.length - 1];
 
-  try {
-    const photo = await User.findOne({ userId });
-    if (photo.profileImage) {
-      const url = photo.profileImage.split("/");
-      const delFileName = url[url.length - 1];
+    console.log("이미지 있음");
+    s3.deleteObject(
+      {
+        Bucket: process.env.BUCKETNAME,
+        Key: delFileName,
+      },
+      (err, data) => {
+        if (err) {
+          throw err;
+        }
+      }
+    );
+    await User.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
+          address,
+          introduce,
+          snsUrl,
+        },
+      }
+    );
+    await Post.updateMany(
+      {
+        "user.userId": userId,
+      },
+      {
+        $set: {
+          "user.nickname": nickname,
+          "user.profileImage": profileImage,
+          "user.address": address,
+          "user.introduce": introduce,
+          "user.snsUrl": snsUrl,
+        },
+      }
+    );
 
-      console.log("이미지 있음");
-      s3.deleteObject(
-        {
-          Bucket: process.env.BUCKETNAME,
-          Key: delFileName,
+    await Review.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
         },
-        (err, data) => {
-          if (err) {
-            throw err;
-          }
-        }
-      );
-      await User.updateOne(
-        {
-          userId,
-        },
-        {
-          $set: {
-            nickname,
-            profileImage,
-            address,
-            introduce,
-            snsUrl,
-          },
-        }
-      );
-      await Post.updateMany(
-        {
-          "user.userId": userId,
-        },
-        {
-          $set: {
-            "user.nickname": nickname,
-            "user.profileImage": profileImage,
-            "user.address": address,
-            "user.introduce": introduce,
-            "user.snsUrl": snsUrl,
-          },
-        }
-      );
+      }
+    );
 
-      await Review.updateOne(
-        {
-          userId,
+    await Follow.updateOne(
+      {
+        followId: userId,
+      },
+      {
+        $set: {
+          profileImage,
         },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
+      }
+    );
 
-      await Follow.updateOne(
-        {
-          followId: userId,
+    await ChatData.updateOne(
+      {
+        "chatRoom.targetUser.userId": userId,
+      },
+      {
+        $set: {
+          "chatRoom.$.targetUser.nickname": nickname,
+          "chatRoom.$.targetUser.profileImage": profileImage,
         },
-        {
-          $set: {
-            profileImage,
-          },
-        }
-      );
+      }
+    );
 
-      await ChatData.updateOne(
-        {
-          userId,
+    await ChatData.updateOne(
+      {
+        "chatRoom.createUser.userId": userId,
+      },
+      {
+        $set: {
+          "chatRoom.$.createUser.nickname": nickname,
+          "chatRoom.$.createUser.profileImage": profileImage,
         },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
-    } else {
-      console.log("이미지 없음");
-      await User.updateOne(
-        {
-          userId,
+      }
+    );
+    await Review.updateOne(
+      {
+        "seller.user.userId": userId,
+      },
+      {
+        $set: {
+          "seller.user.nickname": nickname,
+          "seller.user.profileImage": profileImage,
         },
-        {
-          $set: {
-            nickname,
-            profileImage,
-            address,
-            introduce,
-            snsUrl,
-          },
-        }
-      );
-      await Post.updateMany(
-        {
-          "user.userId": userId,
+      }
+    );
+  } else {
+    console.log("이미지 없음");
+    await User.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
+          address,
+          introduce,
+          snsUrl,
         },
-        {
-          $set: {
-            "user.nickname": nickname,
-            "user.profileImage": profileImage,
-            "user.address": address,
-            "user.introduce": introduce,
-            "user.snsUrl": snsUrl,
-          },
-        }
-      );
+      }
+    );
+    await Post.updateMany(
+      {
+        "user.userId": userId,
+      },
+      {
+        $set: {
+          "user.nickname": nickname,
+          "user.profileImage": profileImage,
+          "user.address": address,
+          "user.introduce": introduce,
+          "user.snsUrl": snsUrl,
+        },
+      }
+    );
 
-      await Review.updateOne(
-        {
-          userId,
+    await Review.updateOne(
+      {
+        userId,
+      },
+      {
+        $set: {
+          nickname,
+          profileImage,
         },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
-      await Follow.updateOne(
-        {
-          followId: userId,
+      }
+    );
+    await Follow.updateOne(
+      {
+        followId: userId,
+      },
+      {
+        $set: {
+          profileImage,
         },
-        {
-          $set: {
-            profileImage,
-          },
-        }
-      );
+      }
+    );
 
-      await ChatData.updateOne(
-        {
-          userId,
+    await ChatData.updateOne(
+      {
+        "chatRoom.targetUser.userId": userId,
+      },
+      {
+        $set: {
+          "chatRoom.$.targetUser.nickname": nickname,
+          "chatRoom.$.targetUser.profileImage": profileImage,
         },
-        {
-          $set: {
-            nickname,
-            profileImage,
-          },
-        }
-      );
-    }
-    res.status(201).json({ success: true });
-  } catch (error) {
-    res.status(400).send("프로필 수정 실패");
+      }
+    );
+
+    await ChatData.updateOne(
+      {
+        "chatRoom.createUser.userId": userId,
+      },
+      {
+        $set: {
+          "chatRoom.$.createUser.nickname": nickname,
+          "chatRoom.$.createUser.profileImage": profileImage,
+        },
+      }
+    );
+    await Review.updateOne(
+      {
+        "seller.user.userId": userId,
+      },
+      {
+        $set: {
+          "seller.user.nickname": nickname,
+          "seller.user.profileImage": profileImage,
+        },
+      }
+    );
   }
+  res.status(201).json({ success: true });
+  // } catch (error) {
+  //   res.status(400).send("프로필 수정 실패");
+  // }
 };
 
 //판매 작품 관리하기
