@@ -7,7 +7,7 @@ const app = express();
 const app_low = express(); //http
 const httpsPort = process.env.HTTPSPORT;
 const httpPort = process.env.PORT;
-const socket = require("./socket");
+/* const socket = require("./socket"); */
 /* const option = {
   key:
   cert:
