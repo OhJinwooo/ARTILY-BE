@@ -24,10 +24,10 @@ const getHome = async (req, res) => {
   try {
     //limt함수 사용 보여주는 데이터 숫자 제한
     const bestPost = await Post.find(
-      {},
+      { },
       "postId postTitle imageUrl transaction price markupCnt createdAt changeAddress user"
     )
-      .sort({ createdAt: -1, markupCnt: 1 })
+      .sort( "-markupCnt"+"-createdAt"  )
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
