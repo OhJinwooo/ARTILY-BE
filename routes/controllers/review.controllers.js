@@ -34,7 +34,7 @@ const review = async (req, res) => {
     // )
     //   .sort("-createdAt")
     //   .skip(skip)
-    //   .limit(limit);
+    //   .limit(limit);/
 
     const reviews = await Review.find({}).sort("-createdAt");
     if (reviews.length) {
@@ -233,9 +233,9 @@ const review_modify = async (req, res) => {
         }
       );
     } else if (imgDt || req.files) {
-      if (Array.isArray(imgDt) === false) {
-        await ReviewImages.deleteOne({ imageUrl: imgDt });
-      } else {
+      if (Array.isArray(imgDt) === false && imgDt) {
+        await ReviewImages.deleteOne({ reviewId, imageUrl: imgDt });
+      } else if (Array.isArray(imgDt)) {
         for (let i = 0; i < imgDt.length; i++) {
           await ReviewImages.deleteOne({ imageUrl: imgDt[i] });
         }
