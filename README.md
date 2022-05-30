@@ -36,8 +36,27 @@
 <br>
 
 ## 🔨 기술스택
-### **Tech**
+### **Tech**	
 <p>
+<img src="https://img.shields.io/badge/node.js-339933?style=for-the-badge&logo=Node.js&logoColor=white">
+<img alt="Express.js" src ="https://img.shields.io/badge/express-000000.svg?&style=for-the-badge&logo=express&logoColor=white"/>
+<img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
+<img src="https://img.shields.io/badge/passport-33D875?style=for-the-badge&logo=passport&logoColor=white">
+</br>
+<img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=Json Web Tokens&logoColor=white">
+<!-- <img src="https://img.shields.io/badge/AWS Lambda-FF9900?style=for-the-badge&logo=AWS Lambda&logoColor=white"> -->
+<img src="https://img.shields.io/badge/AWS Ec2-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white">
+<img src="https://img.shields.io/badge/Load Balancer-FF9E0F?style=for-the-badge&logo=Load Balancer&logoColor=white">
+<img src="https://img.shields.io/badge/PM2-2B037A?style=for-the-badge&logo=PM2&logoColor=white">
+<br>
+</p>
+
+
+
+
+
+<!-- 	
+	
 <img src='https://img.shields.io/badge/javascript-F7DF1E?logo=javascript'/>
 <img src='https://img.shields.io/badge/Node-version16.13.1-green?logo=Node.js'/>
 <img src='https://img.shields.io/badge/Express-v4.18.0-black?logo=Express'/>
@@ -51,7 +70,9 @@
 <img src="https://img.shields.io/badge/nginx-v1.14.0-green?logo=nginx&logoColor=white" />
 <img src="https://img.shields.io/badge/PM2-000000?logo=PM2&logoColor=white" />
 <br>
-</p>
+</p> -->
+
+
 
 <br>
 
