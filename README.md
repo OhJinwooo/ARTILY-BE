@@ -1,7 +1,7 @@
 # ARTILY
 
 <a href="https://artily.org" height="5" width="10" target="_blank">
-	<img src="[\images\logo.png](https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png)">
+	<img src="https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png">
 <a>
 
 
