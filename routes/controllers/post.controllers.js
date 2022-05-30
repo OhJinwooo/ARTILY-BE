@@ -46,7 +46,6 @@ const getHome = async (req, res) => {
     for(let i = 0; i<bestWriter.length; i++ ){
       let count = await Post.find({"user.userId":bestWriter[i].userId},
         "postId user.userId")
-        console.log(count)
         bestWriter[i].postCount = count.length
     }
     
