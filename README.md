@@ -1,6 +1,6 @@
 # ARTILY
 
-<a href="https://artily.org" height="3" width="6" target="_blank">
+<a href="https://artily.org" height="3px" width="6px" target="_blank">
 	<img src="https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png">
 <a>
 
