@@ -1,5 +1,5 @@
 # ARTILY
-![그림11](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fb6a0e546-9afe-47b0-830e-4bdc6ebacbe8%2F%EB%A1%9C%EA%B3%A0.jpg?table=block&id=ae896c71-d914-412f-8231-951def073d54&spaceId=5b5162e1-fb28-420c-acae-78efb764f3c3&width=2000&userId=2c64a51b-82d3-485a-b59b-5b8cef0ad4a9&cache=v2)
+![그림11](file:///C:/Users/user/Desktop/%EB%A1%9C%EA%B3%A0.jpg)
 
 <br>
 
