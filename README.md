@@ -1,13 +1,8 @@
 # ARTILY
 
-<a href="https://artily.org" height="5" width="10" target="_blank">
+<a href="https://artily.org" height="3" width="6" target="_blank">
 	<img src="https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png">
 <a>
-
-
-<!-- <a href="https://artily.org"></a>
-
-<a><href ![그림11](![image](https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png)) -->
 
 <br>
 
