@@ -23,7 +23,7 @@
 ## ✨ 아키텍쳐
 <br>
 
-<a><img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/cbf4ff65-0b16-4718-a636-a85335da78c0/%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220530%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220530T085531Z&X-Amz-Expires=86400&X-Amz-Signature=ae430f5fb1c9f0da4fabb655180206853ec968598ea98160deb63702ec79576d&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22%25EC%2584%259C%25EB%25B9%2584%25EC%258A%25A4%2520%25EC%2595%2584%25ED%2582%25A4%25ED%2585%258D%25EC%25B3%2590.PNG.png%22&x-id=GetObject"><a/>
+<a><img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/8edd852a-a00d-4c35-9dd4-e54e0d3f8d24/%EC%84%9C%EB%B9%84%EC%8A%A4_%EC%95%84%ED%82%A4%ED%85%8D%EC%B3%90.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220530%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220530T085822Z&X-Amz-Expires=86400&X-Amz-Signature=2722d0acac586c1750d43e72bf402b0cca4d33d41d48903acdab12fe7603be7c&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22%25EC%2584%259C%25EB%25B9%2584%25EC%258A%25A4%2520%25EC%2595%2584%25ED%2582%25A4%25ED%2585%258D%25EC%25B3%2590.PNG.png%22&x-id=GetObject"><a/>
 
 <br>
 
