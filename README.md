@@ -1,5 +1,5 @@
 # ARTILY
-![그림11](![image](https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png))
+![그림11](file:///C:/Users/user/Desktop/%EB%A1%9C%EA%B3%A0.jpg)
 
 <br>
 
