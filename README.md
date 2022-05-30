@@ -1,7 +1,7 @@
 # ARTILY
 
 <a href="https://artily.org" height="3px" width="6px" target="_blank">
-	<img src="https://user-images.githubusercontent.com/101077454/170950443-ca0eec42-47e4-4afe-87d7-129113c81464.png">
+	<img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/d7ecc34f-c3e7-4c00-aac0-bc481d56bb42/%EC%84%9C%EB%B9%84%EC%8A%A4_%EB%A1%9C%EA%B3%A0.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220530%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220530T085851Z&X-Amz-Expires=86400&X-Amz-Signature=2157a1a5572678b29560df065f066b539760a0b4f20a3884be2f48c74da2ad0a&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22%25EC%2584%259C%25EB%25B9%2584%25EC%258A%25A4%2520%25EB%25A1%259C%25EA%25B3%25A0.PNG.png%22&x-id=GetObject">
 <a>
 
 <br>
