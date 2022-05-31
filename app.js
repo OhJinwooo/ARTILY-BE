@@ -63,7 +63,9 @@ app.use("/api", [
   chatRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-
+app.get("/", (req, res) => {
+  return res.send("good");
+});
 // 인증서 파트
 // const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
 // const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
