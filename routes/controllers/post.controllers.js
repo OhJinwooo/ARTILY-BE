@@ -12,7 +12,7 @@ const postSchema = Joi.object({
       postContent:Joi.string().min(3).max(300).required(),
       category:Joi.string().max(7).required(),
       transaction:Joi.string().max(10).required(),
-      changeAddress:Joi.string().max(10).required(),
+      changeAddress:Joi.string().max(10),
       price:Joi.number().max(9999999).required(),
       postSize:Joi.string().max(40),
       imgDt:Joi.string()
