@@ -5,6 +5,11 @@ const Post = require("../../schemas/post.schemas");
 const PostImages = require("../../schemas/postImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const moment = require("moment");
+const Joi = require("joi");
+const reviewSchema = Joi.object({
+  reviewTitle: Joi.string().required(),
+  reviewContent: Joi.string().min(3).max(300).required(),
+});
 const s3 = require("../config/s3");
 const { v4 } = require("uuid");
 const uuid = () => {
@@ -120,7 +125,10 @@ const review_write = async (req, res) => {
   const reviewId = uuid();
 
   //작성한 정보 가져옴
-  const { reviewTitle, reviewContent } = req.body;
+  const { reviewTitle, reviewContent } = await reviewSchema.validateAsync(
+    req.body
+  );
+
   if (!reviewTitle || !reviewContent) {
     return res.send({ msg: "내용을 입력해주세요" });
   }
@@ -173,7 +181,8 @@ const review_modify = async (req, res) => {
     //수정할 reviewID 파라미터로 받음
     const { reviewId } = req.params;
     //수정할 값 body로 받음
-    const { reviewTitle, reviewContent, imgDt } = req.body;
+    const { reviewTitle, reviewContent, imgDt } =
+      await reviewSchema.validateAsync(req.body);
     //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
     if (!reviewTitle || !reviewContent) {
       return res.send({ msg: "내용을 입력해주세요" });
