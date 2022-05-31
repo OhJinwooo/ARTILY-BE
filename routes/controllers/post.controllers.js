@@ -6,17 +6,15 @@ const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
 const buyPost = require("../../schemas/buy.schemas");
-const Joi = require('joi');
+const Joi = require("joi");
 const postSchema = Joi.object({
-      postTitle:Joi.string().required(),
-      postContent:Joi.string().min(3).max(300).required(),
-      category:Joi.string().max(7).required(),
-      transaction:Joi.string().max(4).required(),
-      changeAddress:Joi.string().max(10).required(),
-      price:Joi.number().max(9999999).required(),
-      postSize:Joi.string().max(20).required(),
-
-})
+  postTitle: Joi.string(),
+  postContent: Joi.string().min(3).max(300),
+  transaction: Joi.string().max(4),
+  changeAddress: Joi.string().max(10),
+  price: Joi.number().max(999999),
+  postSize: Joi.string().max(20),
+});
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -35,10 +33,10 @@ const getHome = async (req, res) => {
   try {
     //limt함수 사용 보여주는 데이터 숫자 제한
     const bestPost = await Post.find(
-      { },
+      {},
       "postId postTitle imageUrl transaction price markupCnt createdAt changeAddress user"
     )
-      .sort( "-markupCnt"  )
+      .sort("-markupCnt")
       .limit(4);
     if (bestPost.length) {
       for (let i of bestPost) {
@@ -54,12 +52,14 @@ const getHome = async (req, res) => {
     for (let i = 0; i < bestPost.length; i++) {
       bestWriter.push(bestPost[i].user);
     }
-    for(let i = 0; i<bestWriter.length; i++ ){
-      let count = await Post.find({"user.userId":bestWriter[i].userId},
-        "postId user.userId")
-        bestWriter[i].postCount = count.length
+    for (let i = 0; i < bestWriter.length; i++) {
+      let count = await Post.find(
+        { "user.userId": bestWriter[i].userId },
+        "postId user.userId"
+      );
+      bestWriter[i].postCount = count.length;
     }
-    
+
     const bestReview = await Review.find(
       {},
       "reviewId imageUrl reviewTitle reviewContent likeCnt nickname profileImage"
@@ -118,11 +118,10 @@ const artStore = async (req, res) => {
       //제외할 데이터 지정
       let skip = (page - 1) * limit; */
       const artPost = await Post.find(
-        {done:{$ne:true}},
+        { done: { $ne: true } },
         "postId postTitle imageUrl transaction price markupCnt changeAddress createdAt category user"
-      )
-        .sort("-createdAt")
-        /* .skip(skip)
+      ).sort("-createdAt");
+      /* .skip(skip)
         .limit(limit); */
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
@@ -173,9 +172,12 @@ const artStore = async (req, res) => {
         option.push({ price: price });
       }
       //search and filter = option
-      const artPost = await Post.find({done:{$ne:true}, $and: option },
+      const artPost = await Post.find(
+        { done: { $ne: true }, $and: option },
         "postId postTitle imageUrl transaction price markupCnt changeAddress createdAt category user"
-        ).sort('-createdAt').exec()/* skip(skip).limit(limit); */
+      )
+        .sort("-createdAt")
+        .exec(); /* skip(skip).limit(limit); */
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
