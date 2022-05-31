@@ -28,6 +28,8 @@
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "ioredis": "^5.0.4",
+    "joi": "^17.6.0",
+    "join": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "moment-timezone": "^0.5.34",

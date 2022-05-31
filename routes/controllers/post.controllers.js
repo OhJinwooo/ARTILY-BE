@@ -6,6 +6,17 @@ const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
 const buyPost = require("../../schemas/buy.schemas");
+const Joi = require('joi');
+const postSchema = Joi.object({
+      postTitle:Joi.string().required(),
+      postContent:Joi.string().min(3).max(300).required(),
+      category:Joi.string().max(7).required(),
+      transaction:Joi.string().max(4).required(),
+      changeAddress:Joi.string().max(10).required(),
+      price:Joi.number().max(9999999).required(),
+      postSize:Joi.string().max(20).required(),
+
+})
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -108,7 +119,7 @@ const artStore = async (req, res) => {
       let skip = (page - 1) * limit; */
       const artPost = await Post.find(
         {done:{$ne:true}},
-        "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
+        "postId postTitle imageUrl transaction price markupCnt changeAddress createdAt category user"
       )
         .sort("-createdAt")
         /* .skip(skip)
@@ -163,7 +174,7 @@ const artStore = async (req, res) => {
       }
       //search and filter = option
       const artPost = await Post.find({done:{$ne:true}, $and: option },
-        "postId postTitle imageUrl transaction price markupCnt changeAddress category user"
+        "postId postTitle imageUrl transaction price markupCnt changeAddress createdAt category user"
         ).sort('-createdAt').exec()/* skip(skip).limit(limit); */
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
@@ -302,7 +313,7 @@ const artPost = async (req, res) => {
       changeAddress,
       price,
       postSize,
-    } = req.body;
+    } = await postSchema.validateAsync(req.body);
 
     // console.log(req.files);
     //moment를 이용하여 한국시간으로 날짜생성
@@ -365,7 +376,7 @@ const artUpdate = async (req, res) => {
       price,
       postSize,
       imgDt,
-    } = req.body;
+    } = await postSchema.validateAsync(req.body);
     const userPost = await Post.findOne({ postId, userId }).exec();
     if (userPost) {
       //moment를 이용하여 한국시간으로 날짜생성
