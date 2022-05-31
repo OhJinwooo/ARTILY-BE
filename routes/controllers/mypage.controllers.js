@@ -11,10 +11,7 @@ const ChatData = require("../../schemas/chatData.schemas");
 const s3 = require("../config/s3");
 const Joi = require("joi");
 const mypageSchema = Joi.object({
-  introduce: Joi.string().min(2).max(50).required(),
-  snsUrl: Joi.string().min(3).max(50).required(),
-  address: Joi.string().max(50).required(),
-  nickname: Joi.string().max(10).required(),
+  introduce: Joi.string().min(2).max(50),
 });
 
 // 초반 프로필 설정

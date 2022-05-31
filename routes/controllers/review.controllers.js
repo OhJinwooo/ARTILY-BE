@@ -7,8 +7,8 @@ const Buy = require("../../schemas/buy.schemas");
 const moment = require("moment");
 const Joi = require("joi");
 const reviewSchema = Joi.object({
-  reviewTitle: Joi.string().required(),
-  reviewContent: Joi.string().min(3).max(300).required(),
+  reviewTitle: Joi.string(),
+  reviewContent: Joi.string().min(3).max(300),
 });
 const s3 = require("../config/s3");
 const { v4 } = require("uuid");
@@ -20,28 +20,28 @@ const uuid = () => {
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
-    const data = req.query;
-    console.log("page", data.page);
-    console.log("limit", data.limit);
-    // infinite scroll 핸들링
-    // 변수 선언 값이 정수로 표현
-    let page = Math.max(1, parseInt(data.page));
-    let limit = Math.max(1, parseInt(data.limit));
-    // NaN일때 값지정
-    page = !isNaN(page) ? page : 1;
-    limit = !isNaN(limit) ? limit : 6;
-    // 제외할 데이터 지정 == 다음 페이지 시작점
-    let skip = (page - 1) * limit;
+    // const data = req.query;
+    // console.log("page", data.page);
+    // console.log("limit", data.limit);
+    // // infinite scroll 핸들링
+    // // 변수 선언 값이 정수로 표현
+    // let page = Math.max(1, parseInt(data.page));
+    // let limit = Math.max(1, parseInt(data.limit));
+    // // NaN일때 값지정
+    // page = !isNaN(page) ? page : 1;
+    // limit = !isNaN(limit) ? limit : 6;
+    // // 제외할 데이터 지정 == 다음 페이지 시작점
+    // let skip = (page - 1) * limit;
 
-    const reviews = await Review.find(
-      {},
-      "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
-    )
-      .sort("-createdAt")
-      .skip(skip)
-      .limit(limit);
+    // const reviews = await Review.find(
+    //   {},
+    //   "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
+    // )
+    //   .sort("-createdAt")
+    //   .skip(skip)
+    //   .limit(limit);
 
-    // const reviews = await Review.find({}).sort("-createdAt");
+    const reviews = await Review.find({}).sort("-createdAt");
     if (reviews.length) {
       for (let review of reviews) {
         const imgs = await ReviewImages.findOne({
