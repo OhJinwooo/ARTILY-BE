@@ -27,7 +27,6 @@ const messages = async (req, res) => {
   const roomUser = await Message.findOne({ roomName });
   try {
     if (roomUser.messages.length > 0) {
-      console.log("roomUser", roomUser);
       await ChatData.updateOne(
         { userId: userId, "chatRoom.roomName": roomName },
         { $set: { "chatRoom.$.newMessage": 0 } }
@@ -41,16 +40,7 @@ const messages = async (req, res) => {
   }
 };
 
-const chatDelete = async (req, res) => {
-  const { userId } = res.locals;
-  const { roomName } = req.params;
-
-  const chat = await Message.deleteOne({ roomName });
-  await chatData.deleteOne({ $and: userId, roomName });
-};
-
 module.exports = {
   chatData,
   messages,
-  chatDelete,
 };

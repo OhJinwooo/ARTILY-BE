@@ -8,7 +8,6 @@ const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
-const Message = require("../../schemas/message.schemas");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -191,14 +190,9 @@ const myProfile = async (req, res) => {
 
 // 프로필 수정
 const updateProfile = async (req, res) => {
-  const { user } = res.locals;
-  const userId = user.userId;
+  const { userId } = res.locals.user;
   const { introduce, snsUrl, address, nickname } = req.body;
   let profileImage = req.file?.location;
-
-  if (!profileImage) {
-    profileImage = "";
-  }
 
   try {
     const photo = await User.findOne({ userId });
@@ -270,14 +264,37 @@ const updateProfile = async (req, res) => {
         }
       );
 
-      await ChatData.updateOne(
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.targetUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.targetUser.nickname": nickname,
+      //       "chatRoom.$.targetUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
+
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.createUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.createUser.nickname": nickname,
+      //       "chatRoom.$.createUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
+      await Review.updateOne(
         {
-          userId,
+          "seller.user.userId": userId,
         },
         {
           $set: {
-            nickname,
-            profileImage,
+            "seller.user.nickname": nickname,
+            "seller.user.profileImage": profileImage,
           },
         }
       );
@@ -334,14 +351,37 @@ const updateProfile = async (req, res) => {
         }
       );
 
-      await ChatData.updateOne(
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.targetUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.targetUser.nickname": nickname,
+      //       "chatRoom.$.targetUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
+
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.createUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.createUser.nickname": nickname,
+      //       "chatRoom.$.createUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
+      await Review.updateOne(
         {
-          userId,
+          "seller.user.userId": userId,
         },
         {
           $set: {
-            nickname,
-            profileImage,
+            "seller.user.nickname": nickname,
+            "seller.user.profileImage": profileImage,
           },
         }
       );
