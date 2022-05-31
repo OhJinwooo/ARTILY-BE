@@ -67,35 +67,35 @@ app.get("/", (req, res) => {
   return res.send("good");
 });
 // 인증서 파트
-// const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
-// const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
-// const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
-// const credentials = {
-//   key: privateKey,
-//   cert: certificate,
-//   ca: ca,
-// };
+const privateKey = fs.readFileSync(__dirname + "/rusy7225_shop.key");
+const certificate = fs.readFileSync(__dirname + "/rusy7225_shop__crt.pem");
+const ca = fs.readFileSync(__dirname + "/rusy7225_shop__ca.pem");
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca: ca,
+};
 //HTTP 리다이렉션 하기
 //app_low : http전용 미들웨어
-// app_low.use((req, res, next) => {
-//   if (req.secure) {
-//     next();
-//   } else {
-//     const to = `https://${req.hostname}:${httpsPort}${req.url}`;
-//     console.log(to);
-//     res.redirect(to);
-//   }
-// });
+app_low.use((req, res, next) => {
+  if (req.secure) {
+    next();
+  } else {
+    const to = `https://${req.hostname}:${httpsPort}${req.url}`;
+    console.log(to);
+    res.redirect(to);
+  }
+});
 
 const server = http.createServer(app);
 socket(server);
 
-app.listen(httpPort, () => {
-  console.log("http " + httpPort + " server start");
+// app.listen(httpPort, () => {
+//   console.log("http " + httpPort + " server start");
+// });
+http.createServer(app_low).listen(httpPort, () => {
+  console.log("http " + httpPort + " server start test test");
 });
-// http.createServer(app_low).listen(httpPort, () => {
-//   console.log("http " + httpPort + " server start test test");
-// });
-// server.listen(httpsPort, () => {
-//   console.log("https " + httpsPort + " server start test test");
-// });
+server.listen(httpsPort, () => {
+  console.log("https " + httpsPort + " server start test test");
+});
