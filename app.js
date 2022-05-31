@@ -60,7 +60,7 @@ app.use("/api", [
   blackListRouter,
   postRouter,
   followRouter,
-  chatRouter,
+/*   chatRouter, */
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
@@ -88,9 +88,10 @@ app_low.use((req, res, next) => {
 const server = https.createServer(credentials, app);
 socket(server);
 
-// app.listen(httpPort, () => {
-//   console.log("http " + httpPort + " server start");
-// });
+/* app.listen(httpPort, () => {
+  console.log("http " + httpPort + " server start");
+}); */
+
 http.createServer(app_low).listen(httpPort, () => {
   console.log("http " + httpPort + " server start test test");
 });

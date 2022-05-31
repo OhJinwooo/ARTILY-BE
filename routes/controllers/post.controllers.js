@@ -11,12 +11,12 @@ const postSchema = Joi.object({
       postTitle:Joi.string().required(),
       postContent:Joi.string().min(3).max(300).required(),
       category:Joi.string().max(7).required(),
-      transaction:Joi.string().max(4).required(),
+      transaction:Joi.string().max(10).required(),
       changeAddress:Joi.string().max(10).required(),
       price:Joi.number().max(9999999).required(),
-      postSize:Joi.string().max(20).required(),
-
-})
+      postSize:Joi.string().max(40),
+      imgDt:Joi.string()
+});
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -303,7 +303,6 @@ const done = async (req, res) => {
 const artPost = async (req, res) => {
   try {
     const { user } = res.locals;
-
     //req.body를 받음
     const {
       postTitle,
@@ -314,14 +313,14 @@ const artPost = async (req, res) => {
       price,
       postSize,
     } = await postSchema.validateAsync(req.body);
-
-    // console.log(req.files);
+    console.log('body',req.body);
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //uuid를 사용하여 고유 값생성
     const postId = uuid();
     //검증 고유값중복 검증
     const artPostId = await Post.find({ postId }).exec();
+    console.log(req.files)
     //여러장 이미지 저장
     for (let i = 0; i < req.files.length; i++) {
       await postImg.create({
