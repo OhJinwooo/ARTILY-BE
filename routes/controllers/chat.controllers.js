@@ -1,5 +1,6 @@
 const Message = require("../../schemas/message.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 const dayjs = require("dayjs");
 
 const chatData = async (req, res) => {
@@ -16,6 +17,7 @@ const chatData = async (req, res) => {
       return res.status(200).send({ newChat, msg: "채팅 정보 없음" });
     }
   } catch {
+    logger.error('chat')
     res.status(400).send("채팅 목록 조회 실패");
   }
 };
@@ -36,6 +38,7 @@ const messages = async (req, res) => {
       res.status(200).send({ roomUser, msg: "메시지 정보가 없습니다." });
     }
   } catch (err) {
+    logger.error('chat')
     res.status(400).send("채팅 목록 조회 실패");
   }
 };

@@ -3,6 +3,7 @@ const Review = require("../../schemas/review.schemas");
 const ReviewImages = require("../../schemas/reviewImage.schemas");
 const Post = require("../../schemas/post.schemas");
 const PostImages = require("../../schemas/postImage.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 const Buy = require("../../schemas/buy.schemas");
 const moment = require("moment");
 const Joi = require("joi");
@@ -31,6 +32,7 @@ const review = async (req, res) => {
     }
     res.json({ reviews });
   } catch (err) {
+    logger.error('reviews')
     console.error(err);
     next(err);
   }
@@ -88,6 +90,7 @@ const review_detail = async (req, res) => {
       return res.send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (err) {
+    logger.error('reviews')
     console.log("상제조회 에러");
     res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
   }
@@ -150,6 +153,7 @@ const review_write = async (req, res) => {
       ReviewList,
     });
   } catch {
+    logger.error('reviews')
     res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
@@ -263,6 +267,7 @@ const review_modify = async (req, res) => {
     });
     throw error;
   } catch (error) {
+    logger.error('reviews')
     res.status(400).send({
       respons: "fail",
       msg: "수정 실패",
@@ -315,6 +320,7 @@ const review_delete = async (req, res) => {
       return res.status(400).send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (error) {
+    logger.error('reviews')
     res.status(400).send({
       respons: "fail",
       msg: "삭제 실패",

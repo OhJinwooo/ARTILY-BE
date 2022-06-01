@@ -1,5 +1,6 @@
 const User = require("../../schemas/user.schemas");
 const Follow = require("../../schemas/follow.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 
 //follow
 const addfollow = async (req, res) => {
@@ -35,6 +36,7 @@ const addfollow = async (req, res) => {
       res.send({ success: true, msg: "팔로우 취소" });
     }
   } catch {
+    logger.error('follow')
     res.status(400).send("Error");
   }
 };
@@ -50,6 +52,7 @@ const myFollow = async (req, res) => {
 
     res.status(200).json({ success: true, data: follow });
   } catch (err) {
+    logger.error('follow')
     res.status(400).send("팔로우 목록 조회 실패");
   }
 };
@@ -70,6 +73,7 @@ const myFollower = async (req, res) => {
 
     res.status(200).json({ success: true, data: follower });
   } catch (err) {
+    logger.error('follow')
     res.status(400).send("팔로우 목록 조회 실패");
   }
 };
@@ -85,6 +89,7 @@ const follow = async (req, res) => {
 
     res.status(200).json({ success: true, data: follow });
   } catch (err) {
+    logger.error('follow')
     res.status(400).send("팔로우 목록 조회 실패");
   }
 };
@@ -105,6 +110,7 @@ const follower = async (req, res) => {
 
     res.status(200).json({ success: true, data: follower });
   } catch (err) {
+    logger.error('follow')
     res.status(400).send("팔로우 목록 조회 실패");
   }
 };
@@ -125,6 +131,7 @@ const deleteFollower = async (req, res) => {
       return res.status(400).send({ msg: "이미 삭제되었습니다." });
     }
   } catch (err) {
+    logger.error('follow')
     res.status(400).send("팔로워 삭제 실패");
   }
 };
