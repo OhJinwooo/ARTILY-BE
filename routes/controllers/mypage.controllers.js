@@ -15,7 +15,7 @@ const Joi = require("joi");
 const postProfile = async (req, res) => {
   const { userId } = res.locals.user;
 
-  const { introduce, snsUrl, address, nickname } = requ.body;
+  const { introduce, snsUrl, address, nickname } = req.body;
 
   const profileImage = req.file?.location;
 
