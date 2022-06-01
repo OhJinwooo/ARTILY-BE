@@ -10,17 +10,13 @@ const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
 const {logger,stream}  =require('../../middleware/logger');
 const s3 = require("../config/s3");
-// const Joi = require("joi");
-// const mypageSchema = Joi.object({
-//   introduce: Joi.string().min(2).max(50),
-// });
+const Joi = require("joi");
 
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
   const { userId } = res.locals.user;
 
-  const { introduce, snsUrl, address, nickname } = req.body;
-  // await mypageSchema.validateAsync(req.body);
+  const { introduce, snsUrl, address, nickname } = requ.body;
 
   const profileImage = req.file?.location;
 
@@ -202,7 +198,6 @@ const myProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   const { userId } = res.locals.user;
   const { introduce, snsUrl, address, nickname } = req.body;
-  //await mypageSchema.validateAsync(req.body);
   let profileImage = req.file?.location;
 
   try {
