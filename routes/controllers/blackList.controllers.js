@@ -1,4 +1,5 @@
 const BlackList = require("../../schemas/blackList.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 
 // 신고하기
 const blackList = async (req, res) => {

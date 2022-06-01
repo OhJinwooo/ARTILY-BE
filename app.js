@@ -2,7 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const httpPort = process.env.PORT;
-
+const morgan = require('morgan')
+const {logger,stream} = require('./middleware/logger')
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
 const naverRouter = require("./naver-auth/naver/naver");
@@ -42,6 +43,7 @@ connect();
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
+app.use(morgan('combined', {stream}))
 app.use("/oauth", [kakaoRouter, naverRouter]);
 app.use("/api", [
   userRouter,
