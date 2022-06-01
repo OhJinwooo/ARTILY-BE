@@ -8,9 +8,8 @@ const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
-const {logger,stream}  =require('../../middleware/logger');
+const { logger, stream } = require("../../middleware/logger");
 const s3 = require("../config/s3");
-const Joi = require("joi");
 
 // 초반 프로필 설정
 const postProfile = async (req, res) => {
@@ -38,7 +37,7 @@ const postProfile = async (req, res) => {
     );
     res.status(201).json({ success: true });
   } catch (error) {
-    logger.error('mypage')
+    logger.error("mypage");
     res.status(400).send("작성 실패");
   }
 };
@@ -112,7 +111,7 @@ const getProfile = async (req, res) => {
     }
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
-    logger.error('mypage')
+    logger.error("mypage");
     res.send(err);
   }
 };
@@ -189,7 +188,7 @@ const myProfile = async (req, res) => {
     console.log("마지막", myPosts);
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
-    logger.error('mypage')
+    logger.error("mypage");
     res.send(err);
   }
 };
@@ -394,7 +393,7 @@ const updateProfile = async (req, res) => {
     }
     res.status(201).json({ success: true });
   } catch (error) {
-    logger.error('mypage')
+    logger.error("mypage");
     res.status(400).send("프로필 수정 실패");
   }
 };
@@ -418,7 +417,7 @@ const getMyPost = async (req, res) => {
       res.status(200).json({ myPosts });
     }
   } catch (err) {
-    logger.error('mypage')
+    logger.error("mypage");
     res.status(400).send("조회 실패");
   }
 };
@@ -451,7 +450,7 @@ const getMyBuy = async (req, res) => {
       res.status(200).json({ msg: "구매한 작품이 없습니다." });
     }
   } catch (err) {
-    logger.error('mypage')
+    logger.error("mypage");
     res.status(400).send("조회 실패");
   }
 };
