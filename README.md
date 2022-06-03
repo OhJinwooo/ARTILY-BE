@@ -10,7 +10,7 @@
 - 사이트 바로가기 : https://artily.org
 - 프론트엔드 GitHub Repository : https://github.com/lnuvy/mvp-project
 - 백엔드 GitHub Respository : https://github.com/OhJinwooo/ARTILY_BE
-- 시연 영상 보러가기: 준비중입니다! 😊
+- 시연 영상 보러가기: https://www.youtube.com/watch?v=K3dtzK5XruY
 
 <br>
 
