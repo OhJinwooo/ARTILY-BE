@@ -7,8 +7,7 @@ const PostImage = require("../../schemas/postImage.schemas");
 const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
-const ChatData = require("../../schemas/chatData.schemas");
-const { logger, stream } = require("../../middleware/logger");
+const { logger } = require("../../middleware/logger");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -44,11 +43,11 @@ const postProfile = async (req, res) => {
 
 // 상대 프로필 조회
 const getProfile = async (req, res) => {
-  const { userId } = req.params;
+  const { userid } = req.params;
 
   try {
     const user = await User.findOne(
-      { userId },
+      { userId: userid },
       "userId nickname profileImage introduce followCnt followerCnt snsUrl"
     );
     if (!user) {
@@ -56,7 +55,7 @@ const getProfile = async (req, res) => {
     }
 
     const myPosts = await Post.find(
-      { "user.userId": userId },
+      { "user.userId": userid },
       "postId imageUrl postTitle price done markupCnt"
     );
     const postCnt = myPosts.length;
@@ -72,12 +71,11 @@ const getProfile = async (req, res) => {
     }
 
     const myReviews = await Review.find(
-      { userId },
+      { userId: userid },
       "reviewId nickname profileImage reviewTitle reviewContent imageUrl likeCnt"
     );
     if (myReviews.length) {
       for (let myReview of myReviews) {
-        //myPost는 myPosts안에 있는 인덱스중 하나
         const images = await ReviewImage.findOne({
           reviewId: myReview.reviewId,
         });
@@ -87,7 +85,7 @@ const getProfile = async (req, res) => {
         }
       }
     }
-    const markUpPost = await Markup.find({ userId }, "postId");
+    const markUpPost = await Markup.find({ userId: userid }, "postId");
     let myMarkups = [];
     let myMarkup = [];
     if (markUpPost.length) {
@@ -101,7 +99,6 @@ const getProfile = async (req, res) => {
       );
 
       for (let markUp of myMarkups) {
-        //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.images = images;
         if (markUp.images === null) {
@@ -152,7 +149,6 @@ const myProfile = async (req, res) => {
     );
     if (myReviews.length) {
       for (let myReview of myReviews) {
-        //myPost는 myPosts안에 있는 인덱스중 하나
         const images = await ReviewImage.findOne({
           reviewId: myReview.reviewId,
         });
@@ -177,7 +173,6 @@ const myProfile = async (req, res) => {
       );
 
       for (let markUp of myMarkups) {
-        //myPost는 myPosts안에 있는 인덱스중 하나
         let images = await PostImage.findOne({ postId: markUp.postId });
         markUp.images = images;
         if (markUp.images === null) {
@@ -268,30 +263,6 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-
-      // await ChatData.updateOne(
-      //   {
-      //     "chatRoom.targetUser.userId": userId,
-      //   },
-      //   {
-      //     $set: {
-      //       "chatRoom.$.targetUser.nickname": nickname,
-      //       "chatRoom.$.targetUser.profileImage": profileImage,
-      //     },
-      //   }
-      // );
-
-      // await ChatData.updateOne(
-      //   {
-      //     "chatRoom.createUser.userId": userId,
-      //   },
-      //   {
-      //     $set: {
-      //       "chatRoom.$.createUser.nickname": nickname,
-      //       "chatRoom.$.createUser.profileImage": profileImage,
-      //     },
-      //   }
-      // );
       await Review.updateOne(
         {
           "seller.user.userId": userId,
@@ -355,30 +326,6 @@ const updateProfile = async (req, res) => {
           },
         }
       );
-
-      // await ChatData.updateOne(
-      //   {
-      //     "chatRoom.targetUser.userId": userId,
-      //   },
-      //   {
-      //     $set: {
-      //       "chatRoom.$.targetUser.nickname": nickname,
-      //       "chatRoom.$.targetUser.profileImage": profileImage,
-      //     },
-      //   }
-      // );
-
-      // await ChatData.updateOne(
-      //   {
-      //     "chatRoom.createUser.userId": userId,
-      //   },
-      //   {
-      //     $set: {
-      //       "chatRoom.$.createUser.nickname": nickname,
-      //       "chatRoom.$.createUser.profileImage": profileImage,
-      //     },
-      //   }
-      // );
       await Review.updateOne(
         {
           "seller.user.userId": userId,
@@ -423,7 +370,7 @@ const getMyPost = async (req, res) => {
 };
 
 //내가 구입한 상품
-const getMyBuy = async (req, res) => {
+const purchases = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     console.log("userId", userId);
@@ -461,5 +408,5 @@ module.exports = {
   myProfile,
   updateProfile,
   getMyPost,
-  getMyBuy,
+  purchases,
 };

@@ -11,7 +11,7 @@ const {
 } = require("./controllers/follow.controllers");
 
 //팔로우
-router.post("/follow/:followId", middleware, addfollow);
+router.post("/follow/:followid", middleware, addfollow);
 
 //내 팔로우 리스트 조회
 router.get("/follow/myfollowlist", middleware, myFollow);
@@ -20,12 +20,12 @@ router.get("/follow/myfollowlist", middleware, myFollow);
 router.get("/follow/myfollowerlist", middleware, myFollower);
 
 //다른 유저 팔로우 리스트 조회
-router.get("/follow/followlist/:userId", middleware, follow);
+router.get("/follow/followlist/:userid", middleware, follow);
 
 //다른 유저 리스트 조회
-router.get("/follow/followerlist/:userId", middleware, follower);
+router.get("/follow/followerlist/:userid", middleware, follower);
 
 //팔로워 삭제
-router.delete("/follow/delete/:userId", middleware, deleteFollower);
+router.delete("/follow/:userid", middleware, deleteFollower);
 
 module.exports = router;

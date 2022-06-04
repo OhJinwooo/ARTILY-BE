@@ -8,10 +8,10 @@ const {
   myProfile,
   updateProfile,
   getMyPost,
-  getMyBuy,
+  purchases,
 } = require("./controllers/mypage.controllers");
 
-//프로필 등록
+//로그인 후 바로 프로필 등록
 router.patch(
   "/profile",
   middleware,
@@ -20,22 +20,22 @@ router.patch(
 );
 
 //상대 프로필 조회 조회
-router.get("/profile/:userId", getProfile);
+router.get("/profile/:userid", getProfile);
 
 //내 프로필 조회 조회
-router.get("/myprofile", middleware, myProfile);
+router.get("/mypage/profiles", middleware, myProfile);
 
 //마이페이지 프로필 수정
 router.patch(
-  "/profile/update",
+  "/mypage/profiles",
   middleware,
   upload.single("profileImage"),
   updateProfile
 );
 //판매 작품 관리하기
-router.get("/mypost", middleware, getMyPost);
+router.get("/mypage/posts", middleware, getMyPost);
 
 //내가 구입한 상품
-router.get("/mybuy", middleware, getMyBuy);
+router.get("/mypage/purchases", middleware, purchases);
 
 module.exports = router;
