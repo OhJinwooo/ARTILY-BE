@@ -8,6 +8,7 @@ const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
+const { logger, stream } = require("../../middleware/logger");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정
@@ -15,6 +16,7 @@ const postProfile = async (req, res) => {
   const { userId } = res.locals.user;
 
   const { introduce, snsUrl, address, nickname } = req.body;
+
   const profileImage = req.file?.location;
 
   try {
@@ -35,6 +37,7 @@ const postProfile = async (req, res) => {
     );
     res.status(201).json({ success: true });
   } catch (error) {
+    logger.error("mypage");
     res.status(400).send("작성 실패");
   }
 };
@@ -108,6 +111,7 @@ const getProfile = async (req, res) => {
     }
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
+    logger.error("mypage");
     res.send(err);
   }
 };
@@ -184,6 +188,7 @@ const myProfile = async (req, res) => {
     console.log("마지막", myPosts);
     res.status(200).json({ user, postCnt, myPosts, myReviews, myMarkups });
   } catch (err) {
+    logger.error("mypage");
     res.send(err);
   }
 };
@@ -194,202 +199,203 @@ const updateProfile = async (req, res) => {
   const { introduce, snsUrl, address, nickname } = req.body;
   let profileImage = req.file?.location;
 
-  // try {
-  const photo = await User.findOne({ userId });
-  if (photo.profileImage) {
-    const url = photo.profileImage.split("/");
-    const delFileName = url[url.length - 1];
+  try {
+    const photo = await User.findOne({ userId });
+    if (photo.profileImage) {
+      const url = photo.profileImage.split("/");
+      const delFileName = url[url.length - 1];
 
-    console.log("이미지 있음");
-    s3.deleteObject(
-      {
-        Bucket: process.env.BUCKETNAME,
-        Key: delFileName,
-      },
-      (err, data) => {
-        if (err) {
-          throw err;
+      console.log("이미지 있음");
+      s3.deleteObject(
+        {
+          Bucket: process.env.BUCKETNAME,
+          Key: delFileName,
+        },
+        (err, data) => {
+          if (err) {
+            throw err;
+          }
         }
-      }
-    );
-    await User.updateOne(
-      {
-        userId,
-      },
-      {
-        $set: {
-          nickname,
-          profileImage,
-          address,
-          introduce,
-          snsUrl,
+      );
+      await User.updateOne(
+        {
+          userId,
         },
-      }
-    );
-    await Post.updateMany(
-      {
-        "user.userId": userId,
-      },
-      {
-        $set: {
-          "user.nickname": nickname,
-          "user.profileImage": profileImage,
-          "user.address": address,
-          "user.introduce": introduce,
-          "user.snsUrl": snsUrl,
+        {
+          $set: {
+            nickname,
+            profileImage,
+            address,
+            introduce,
+            snsUrl,
+          },
+        }
+      );
+      await Post.updateMany(
+        {
+          "user.userId": userId,
         },
-      }
-    );
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+            "user.address": address,
+            "user.introduce": introduce,
+            "user.snsUrl": snsUrl,
+          },
+        }
+      );
 
-    await Review.updateOne(
-      {
-        userId,
-      },
-      {
-        $set: {
-          nickname,
-          profileImage,
+      await Review.updateOne(
+        {
+          userId,
         },
-      }
-    );
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
 
-    await Follow.updateOne(
-      {
-        followId: userId,
-      },
-      {
-        $set: {
-          profileImage,
+      await Follow.updateOne(
+        {
+          followId: userId,
         },
-      }
-    );
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
 
-    await ChatData.updateOne(
-      {
-        "chatRoom.targetUser.userId": userId,
-      },
-      {
-        $set: {
-          "chatRoom.$.targetUser.nickname": nickname,
-          "chatRoom.$.targetUser.profileImage": profileImage,
-        },
-      }
-    );
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.targetUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.targetUser.nickname": nickname,
+      //       "chatRoom.$.targetUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
 
-    await ChatData.updateOne(
-      {
-        "chatRoom.createUser.userId": userId,
-      },
-      {
-        $set: {
-          "chatRoom.$.createUser.nickname": nickname,
-          "chatRoom.$.createUser.profileImage": profileImage,
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.createUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.createUser.nickname": nickname,
+      //       "chatRoom.$.createUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
+      await Review.updateOne(
+        {
+          "seller.user.userId": userId,
         },
-      }
-    );
-    await Review.updateOne(
-      {
-        "seller.user.userId": userId,
-      },
-      {
-        $set: {
-          "seller.user.nickname": nickname,
-          "seller.user.profileImage": profileImage,
+        {
+          $set: {
+            "seller.user.nickname": nickname,
+            "seller.user.profileImage": profileImage,
+          },
+        }
+      );
+    } else {
+      console.log("이미지 없음");
+      await User.updateOne(
+        {
+          userId,
         },
-      }
-    );
-  } else {
-    console.log("이미지 없음");
-    await User.updateOne(
-      {
-        userId,
-      },
-      {
-        $set: {
-          nickname,
-          profileImage,
-          address,
-          introduce,
-          snsUrl,
+        {
+          $set: {
+            nickname,
+            profileImage,
+            address,
+            introduce,
+            snsUrl,
+          },
+        }
+      );
+      await Post.updateMany(
+        {
+          "user.userId": userId,
         },
-      }
-    );
-    await Post.updateMany(
-      {
-        "user.userId": userId,
-      },
-      {
-        $set: {
-          "user.nickname": nickname,
-          "user.profileImage": profileImage,
-          "user.address": address,
-          "user.introduce": introduce,
-          "user.snsUrl": snsUrl,
-        },
-      }
-    );
+        {
+          $set: {
+            "user.nickname": nickname,
+            "user.profileImage": profileImage,
+            "user.address": address,
+            "user.introduce": introduce,
+            "user.snsUrl": snsUrl,
+          },
+        }
+      );
 
-    await Review.updateOne(
-      {
-        userId,
-      },
-      {
-        $set: {
-          nickname,
-          profileImage,
+      await Review.updateOne(
+        {
+          userId,
         },
-      }
-    );
-    await Follow.updateOne(
-      {
-        followId: userId,
-      },
-      {
-        $set: {
-          profileImage,
+        {
+          $set: {
+            nickname,
+            profileImage,
+          },
+        }
+      );
+      await Follow.updateOne(
+        {
+          followId: userId,
         },
-      }
-    );
+        {
+          $set: {
+            profileImage,
+          },
+        }
+      );
 
-    await ChatData.updateOne(
-      {
-        "chatRoom.targetUser.userId": userId,
-      },
-      {
-        $set: {
-          "chatRoom.$.targetUser.nickname": nickname,
-          "chatRoom.$.targetUser.profileImage": profileImage,
-        },
-      }
-    );
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.targetUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.targetUser.nickname": nickname,
+      //       "chatRoom.$.targetUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
 
-    await ChatData.updateOne(
-      {
-        "chatRoom.createUser.userId": userId,
-      },
-      {
-        $set: {
-          "chatRoom.$.createUser.nickname": nickname,
-          "chatRoom.$.createUser.profileImage": profileImage,
+      // await ChatData.updateOne(
+      //   {
+      //     "chatRoom.createUser.userId": userId,
+      //   },
+      //   {
+      //     $set: {
+      //       "chatRoom.$.createUser.nickname": nickname,
+      //       "chatRoom.$.createUser.profileImage": profileImage,
+      //     },
+      //   }
+      // );
+      await Review.updateOne(
+        {
+          "seller.user.userId": userId,
         },
-      }
-    );
-    await Review.updateOne(
-      {
-        "seller.user.userId": userId,
-      },
-      {
-        $set: {
-          "seller.user.nickname": nickname,
-          "seller.user.profileImage": profileImage,
-        },
-      }
-    );
+        {
+          $set: {
+            "seller.user.nickname": nickname,
+            "seller.user.profileImage": profileImage,
+          },
+        }
+      );
+    }
+    res.status(201).json({ success: true });
+  } catch (error) {
+    logger.error("mypage");
+    res.status(400).send("프로필 수정 실패");
   }
-  res.status(201).json({ success: true });
-  // } catch (error) {
-  //   res.status(400).send("프로필 수정 실패");
-  // }
 };
 
 //판매 작품 관리하기
@@ -411,6 +417,7 @@ const getMyPost = async (req, res) => {
       res.status(200).json({ myPosts });
     }
   } catch (err) {
+    logger.error("mypage");
     res.status(400).send("조회 실패");
   }
 };
@@ -443,6 +450,7 @@ const getMyBuy = async (req, res) => {
       res.status(200).json({ msg: "구매한 작품이 없습니다." });
     }
   } catch (err) {
+    logger.error("mypage");
     res.status(400).send("조회 실패");
   }
 };

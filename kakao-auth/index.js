@@ -18,15 +18,15 @@ module.exports = () => {
             userId: profile.id,
             provider: "kakao",
           });
-
-          let profileImage = "";
-          let nickname = "";
-          let address = "";
-          let introduce = "";
-          let role = true;
           if (exUser) {
             return done(null, exUser); // 로그인 인증 완료
           } else {
+            let profileImage = "";
+            let nickname = "";
+            let address = "";
+            let introduce = "";
+            let role = true;
+
             const user = {
               userId: profile.id,
               provider: "kakao",

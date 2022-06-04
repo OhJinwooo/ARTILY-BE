@@ -3,8 +3,14 @@ const Review = require("../../schemas/review.schemas");
 const ReviewImages = require("../../schemas/reviewImage.schemas");
 const Post = require("../../schemas/post.schemas");
 const PostImages = require("../../schemas/postImage.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 const Buy = require("../../schemas/buy.schemas");
 const moment = require("moment");
+const Joi = require("joi");
+const reviewSchema = Joi.object({
+  reviewTitle: Joi.string().min(3).max(50),
+  reviewContent: Joi.string().min(3).max(500),
+});
 const s3 = require("../config/s3");
 const { v4 } = require("uuid");
 const uuid = () => {
@@ -15,28 +21,7 @@ const uuid = () => {
 // 리뷰 조회(무한 스크롤)
 const review = async (req, res) => {
   try {
-    // const data = req.query;
-    // console.log("page", data.page);
-    // console.log("limit", data.limit);
-    //infinite scroll 핸들링
-    // 변수 선언 값이 정수로 표현
-    // let page = Math.max(1, parseInt(data.page));
-    // let limit = Math.max(1, parseInt(data.limit));
-    //NaN일때 값지정 ??
-    // page = !isNaN(page) ? page : 1;
-    // limit = !isNaN(limit) ? limit : 6;
-    //제외할 데이터 지정 == 다음 페이지 시작점
-    //let skip = (page - 1) * limit;
-
-    // const reviews = await Review.find(
-    //   {},
-    //   "createdAt reviewId nickname profileImage reviewTitle reviewContent images likeCnt seller.category"
-    // )
-    //   .sort("-createdAt")
-    //   .skip(skip)
-    //   .limit(limit);
-
-    const reviews = await Review.find({});
+    const reviews = await Review.find({}).sort("-createdAt");
     if (reviews.length) {
       for (let review of reviews) {
         const imgs = await ReviewImages.findOne({
@@ -47,6 +32,7 @@ const review = async (req, res) => {
     }
     res.json({ reviews });
   } catch (err) {
+    logger.error('reviews')
     console.error(err);
     next(err);
   }
@@ -67,7 +53,6 @@ const review_detail = async (req, res) => {
         review.images = imgs;
       }
       s_userId = buyer[0].seller.user.userId;
-      console.log("s_userId", s_userId);
 
       //defferents
       //내가 구매한 작가의 다른 작품들 찾기
@@ -97,7 +82,6 @@ const review_detail = async (req, res) => {
           const imgs = await PostImages.findOne({ postId: info.postId });
           info.images = imgs;
         }
-        console.log("합치기", defferentInfo);
         res.json({ buyer, defferentInfo });
       } else {
         res.json({ buyer });
@@ -106,6 +90,7 @@ const review_detail = async (req, res) => {
       return res.send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (err) {
+    logger.error('reviews')
     console.log("상제조회 에러");
     res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
   }
@@ -122,7 +107,10 @@ const review_write = async (req, res) => {
   const reviewId = uuid();
 
   //작성한 정보 가져옴
-  const { reviewTitle, reviewContent } = req.body;
+  const { reviewTitle, reviewContent } = await reviewSchema.validateAsync(
+    req.body
+  );
+
   if (!reviewTitle || !reviewContent) {
     return res.send({ msg: "내용을 입력해주세요" });
   }
@@ -165,6 +153,7 @@ const review_write = async (req, res) => {
       ReviewList,
     });
   } catch {
+    logger.error('reviews')
     res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
@@ -175,7 +164,8 @@ const review_modify = async (req, res) => {
     //수정할 reviewID 파라미터로 받음
     const { reviewId } = req.params;
     //수정할 값 body로 받음
-    const { reviewTitle, reviewContent, imgDt } = req.body;
+    const { reviewTitle, reviewContent, imgDt } =
+      await reviewSchema.validateAsync(req.body);
     //게시글 내용이 없으면 저장되지 않고 alert 뜨게하기.
     if (!reviewTitle || !reviewContent) {
       return res.send({ msg: "내용을 입력해주세요" });
@@ -235,9 +225,9 @@ const review_modify = async (req, res) => {
         }
       );
     } else if (imgDt || req.files) {
-      if (Array.isArray(imgDt) === false) {
-        await ReviewImages.deleteOne({ imageUrl: imgDt });
-      } else {
+      if (Array.isArray(imgDt) === false && imgDt) {
+        await ReviewImages.deleteOne({ reviewId, imageUrl: imgDt });
+      } else if (Array.isArray(imgDt)) {
         for (let i = 0; i < imgDt.length; i++) {
           await ReviewImages.deleteOne({ imageUrl: imgDt[i] });
         }
@@ -277,6 +267,7 @@ const review_modify = async (req, res) => {
     });
     throw error;
   } catch (error) {
+    logger.error('reviews')
     res.status(400).send({
       respons: "fail",
       msg: "수정 실패",
@@ -329,6 +320,7 @@ const review_delete = async (req, res) => {
       return res.status(400).send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (error) {
+    logger.error('reviews')
     res.status(400).send({
       respons: "fail",
       msg: "삭제 실패",

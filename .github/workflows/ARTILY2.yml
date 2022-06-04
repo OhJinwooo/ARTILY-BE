@@ -1,0 +1,26 @@
+name: CI-CD2
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST2 }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/ubuntu/ARTILY_BE
+            git config --global --add safe.directory /home/ubuntu/ARTILY_BE
+            sudo git pull
+            sudo npm update
+            sudo npm install
+            sudo pm2 reload all

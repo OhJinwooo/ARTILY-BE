@@ -3,6 +3,7 @@ const { create } = require("../../schemas/like.schemas");
 const Review = require("../../schemas/review.schemas");
 const Like = require("../../schemas/like.schemas");
 const User = require("../../schemas/user.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 // //좋아요 추가,삭제
 const like = async (req, res) => {
   try {
@@ -46,6 +47,7 @@ const like = async (req, res) => {
       msg: "유효하지 않은 토큰입니다",
     });
   } catch (error) {
+    logger.error('like')
     res.status(400).json({
       response: "fail",
       msg: "알수 없는 오류가 발생했습니다.",
@@ -75,6 +77,7 @@ const likeList = async (req, res) => {
       msg: "유효하지 않은 토큰입니다",
     });
   } catch (error) {
+    logger.error('like')
     res.status(400).json({
       response: "fail",
       msg: "알수 없는 오류가 발생했습니다.",
