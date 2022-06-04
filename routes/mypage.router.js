@@ -13,14 +13,14 @@ const {
 
 //로그인 후 바로 프로필 등록
 router.patch(
-  "/profile",
+  "/profiles",
   middleware,
   upload.single("profileImage"),
   postProfile
 );
 
 //상대 프로필 조회 조회
-router.get("/profile/:userid", getProfile);
+router.get("/profiles/:userid", getProfile);
 
 //내 프로필 조회 조회
 router.get("/mypage/profiles", middleware, myProfile);
