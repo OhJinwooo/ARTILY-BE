@@ -7,7 +7,8 @@ const PostImage = require("../../schemas/postImage.schemas");
 const ReviewImage = require("../../schemas/reviewImage.schemas");
 const Buy = require("../../schemas/buy.schemas");
 const Follow = require("../../schemas/follow.schemas");
-const { logger } = require("../../middleware/logger");
+const ChatData = require("../../schemas/chatData.schemas");
+const { logger, stream } = require("../../middleware/logger");
 const s3 = require("../config/s3");
 
 // 초반 프로필 설정

@@ -2,9 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const httpPort = process.env.PORT;
-
 const morgan = require("morgan");
-const { stream } = require("./middleware/logger");
+const { logger, stream } = require("./middleware/logger");
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
 const { swaggerUi, specs } = require("./swagger/swagger");
@@ -14,7 +13,6 @@ const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
-const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
 const chatRouter = require("./routes/chat.router");
 const cors = require("cors");
@@ -49,7 +47,6 @@ app.use("/", [
   reviewRouter,
   mypageRouter,
   likeRouter,
-  blackListRouter,
   postRouter,
   followRouter,
   chatRouter,

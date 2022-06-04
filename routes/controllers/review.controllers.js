@@ -3,7 +3,7 @@ const Review = require("../../schemas/review.schemas");
 const ReviewImages = require("../../schemas/reviewImage.schemas");
 const Post = require("../../schemas/post.schemas");
 const PostImages = require("../../schemas/postImage.schemas");
-const {logger,stream}  =require('../../middleware/logger');
+const { logger, stream } = require("../../middleware/logger");
 const Buy = require("../../schemas/buy.schemas");
 const moment = require("moment");
 const Joi = require("joi");
@@ -32,7 +32,7 @@ const review = async (req, res) => {
     }
     res.json({ reviews });
   } catch (err) {
-    logger.error('reviews')
+    logger.error("reviews");
     console.error(err);
     next(err);
   }
@@ -41,11 +41,11 @@ const review = async (req, res) => {
 // 리뷰 상세조회
 const review_detail = async (req, res) => {
   try {
-    const { reviewId } = req.params;
+    const { reviewid } = req.params;
 
     //buyer & seller
     //리뷰를 작성한 user 정보 & 구매한 작품/작가 정보 찾기
-    let buyer = await Review.find({ reviewId });
+    let buyer = await Review.find({ reviewId: reviewid });
     let s_userId = "";
     if (buyer.length) {
       for (let review of buyer) {
@@ -90,7 +90,7 @@ const review_detail = async (req, res) => {
       return res.send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (err) {
-    logger.error('reviews')
+    logger.error("reviews");
     console.log("상제조회 에러");
     res.status(400).send({ msg: "리뷰상세보기가 조회되지 않았습니다." });
   }
@@ -99,7 +99,7 @@ const review_detail = async (req, res) => {
 //리뷰 작성
 const review_write = async (req, res) => {
   // 파라미터 정보 가져오기
-  const { postId } = req.params;
+  const { postid } = req.params;
 
   // middlewares유저정보 가져오기
   const { user } = res.locals;
@@ -121,7 +121,7 @@ const review_write = async (req, res) => {
   const createdAt = String(moment().format("YYYY-MM-DD HH:mm:ss"));
 
   let seller = await Buy.findOne(
-    { postId },
+    { postid },
     "category postId postTitle price imageUrl user.userId user.nickname user.profileImage"
   );
 
@@ -153,7 +153,7 @@ const review_write = async (req, res) => {
       ReviewList,
     });
   } catch {
-    logger.error('reviews')
+    logger.error("reviews");
     res.status(400).send({ msg: "리뷰가 작성되지 않았습니다." });
   }
 };
@@ -162,7 +162,7 @@ const review_write = async (req, res) => {
 const review_modify = async (req, res) => {
   try {
     //수정할 reviewID 파라미터로 받음
-    const { reviewId } = req.params;
+    const { reviewid } = req.params;
     //수정할 값 body로 받음
     const { reviewTitle, reviewContent, imgDt } =
       await reviewSchema.validateAsync(req.body);
@@ -226,14 +226,14 @@ const review_modify = async (req, res) => {
       );
     } else if (imgDt || req.files) {
       if (Array.isArray(imgDt) === false && imgDt) {
-        await ReviewImages.deleteOne({ reviewId, imageUrl: imgDt });
+        await ReviewImages.deleteOne({ reviewId: reviewid, imageUrl: imgDt });
       } else if (Array.isArray(imgDt)) {
         for (let i = 0; i < imgDt.length; i++) {
           await ReviewImages.deleteOne({ imageUrl: imgDt[i] });
         }
       }
       if (req.files) {
-        const max = await ReviewImages.findOne({ reviewId })
+        const max = await ReviewImages.findOne({ reviewId: reviewid })
           .sort("-imageNumber")
           .exec();
         let num = 0;
@@ -243,7 +243,7 @@ const review_modify = async (req, res) => {
         }
         for (let i = 0; i < req.files.length; i++) {
           await ReviewImages.create({
-            reviewId,
+            reviewId: reviewid,
             imageUrl: req.files[i].location,
             imageNumber: (num += i),
           });
@@ -253,7 +253,7 @@ const review_modify = async (req, res) => {
 
     //업데이트
     await Review.updateOne(
-      { reviewId },
+      { reviewId: reviewid },
       {
         $set: {
           reviewTitle,
@@ -267,7 +267,7 @@ const review_modify = async (req, res) => {
     });
     throw error;
   } catch (error) {
-    logger.error('reviews')
+    logger.error("reviews");
     res.status(400).send({
       respons: "fail",
       msg: "수정 실패",
@@ -277,14 +277,17 @@ const review_modify = async (req, res) => {
 
 //리뷰 삭제
 const review_delete = async (req, res) => {
-  const { reviewId } = req.params;
+  const { reviewid } = req.params;
   const { userId } = res.locals.user;
   try {
     // 해당 유저와 리뷰가 있는지 확인
-    const reviewUser = await Review.findOne({ userId, reviewId }).exec();
+    const reviewUser = await Review.findOne({
+      userId,
+      reviewId: reviewid,
+    }).exec();
     if (reviewUser) {
       // 이미지 URL 가져오기 위한 로직
-      const reviewImage = await ReviewImages.find({ reviewId });
+      const reviewImage = await ReviewImages.find({ reviewId: reviewid });
       // 복수의 이미지를 삭제 변수(array)
       let deleteItems = [];
       if (reviewImage.length) {
@@ -308,10 +311,10 @@ const review_delete = async (req, res) => {
           if (err) console.log(err);
           else console.log("Successfully deleted myBucket/myKey");
         });
-        await ReviewImages.deleteMany({ reviewId });
+        await ReviewImages.deleteMany({ reviewId: reviewid });
       }
       //delete
-      await Review.deleteOne({ reviewId, userId });
+      await Review.deleteOne({ reviewId: reviewid, userId });
       res.status(200).send({
         respons: "success",
         msg: "삭제 완료",
@@ -320,7 +323,11 @@ const review_delete = async (req, res) => {
       return res.status(400).send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (error) {
+<<<<<<< HEAD
     logger.error('reviews');
+=======
+    logger.error("reviews");
+>>>>>>> f44cca50332207759e283c5e03cd0669f7381ce4
     res.status(400).send({
       respons: "fail",
       msg: "삭제 실패",

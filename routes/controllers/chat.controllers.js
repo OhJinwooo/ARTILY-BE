@@ -1,6 +1,6 @@
 const Message = require("../../schemas/message.schemas");
 const ChatData = require("../../schemas/chatData.schemas");
-const { logger } = require("../../middleware/logger");
+const { logger, stream } = require("../../middleware/logger");
 const dayjs = require("dayjs");
 
 const chatData = async (req, res) => {
