@@ -1,5 +1,7 @@
 const winston = require('winston');
 require('winston-daily-rotate-file');
+const moment = require("moment");
+require("moment-timezone");
 const { combine, timestamp, printf } = winston.format;
 
 const customFormat = printf(info => {
@@ -9,7 +11,7 @@ const customFormat = printf(info => {
 const logger = winston.createLogger({
     format: combine(
         timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss',
+            format: new moment().format("YYYY-MM-DD HH:mm:ss"),
         }),
         customFormat,
     ),
