@@ -113,21 +113,12 @@ const artStore = async (req, res) => {
       changeAddress === undefined &&
       price === undefined
     ) {
-      //infinite scroll 핸들링
-      // 변수 선언 값이 정수로 표현
-      /* let page = Math.max(1, parseInt(req.query.page));
-      let limit = Math.max(1, parseInt(req.query.limit));
-      //NaN일때 값지정
-      page = !isNaN(page) ? page + 1 : 1;
-      limit = !isNaN(limit) ? limit : 6;
-      //제외할 데이터 지정
-      let skip = (page - 1) * limit; */
+      
       const artPost = await Post.find(
         { done: { $ne: true } },
         "postId postTitle imageUrl transaction price markupCnt changeAddress createdAt category user"
       ).sort("-createdAt");
-      /* .skip(skip)
-        .limit(limit); */
+     
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
@@ -149,15 +140,7 @@ const artStore = async (req, res) => {
         });
       }
     } else {
-      //infinite scroll 핸들링
-      // 변수 선언 값이 정수로 표현
-      /* let page = Math.max(1, parseInt(data.page));
-      let limit = Math.max(1, parseInt(data.limit));
-      //NaN일때 값지정
-      page = !isNaN(page) ? page : 1;
-      limit = !isNaN(limit) ? limit : 6;
-      //제외할 데이터 지정
-      let skip = (page - 1) * limit; */
+      
       //검색기능
       let option = [];
       if (keyword) {
@@ -182,7 +165,7 @@ const artStore = async (req, res) => {
         "postId postTitle imageUrl transaction price markupCnt changeAddress createdAt category user"
       )
         .sort("-createdAt")
-        .exec(); /* skip(skip).limit(limit); */
+        .exec(); 
       for (let i of artPost) {
         const img = await postImg.findOne({ postId: i.postId });
         i.images = img;
@@ -217,13 +200,10 @@ const artStore = async (req, res) => {
 const artDetail = async (req, res) => {
   try {
     //파리미터 값받음
-    const { postId } = req.params;
-    if (postId) {
+    const { postid } = req.params;
+    if (postid) {
       //상세 페이지 데이터
-      const detail = await Post.find({ postId });
-      // for (let i = 0; i < img.length; i++) {
-      //   detail.images.push(img[i].imageUrl);
-      // }
+      const detail = await Post.find({ postId:postid });
       for (let j of detail) {
         const images = await postImg.find({ postId: j.postId });
         j.images = images;
@@ -233,7 +213,7 @@ const artDetail = async (req, res) => {
       }
       // 추가 데이터(상세 페이지 작가기준)
       const getUser = await Post.find({
-        postId: { $ne: postId },
+        postId: { $ne: postid },
         "user.userId": detail[0].user.userId,
       })
         .sort("-createdAt")
@@ -263,14 +243,14 @@ const artDetail = async (req, res) => {
 // 작품 상태 변환
 const done = async (req, res) => {
   try {
-    const { postId } = req.params;
+    const { postid } = req.params;
     const { userId } = res.locals.user;
     const data = req.body;
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
-    const userPost = await Post.findOne({ userId, postId });
+    const userPost = await Post.findOne({ userId, postId:postid });
 
     if (userPost.done === false) {
-      const image = await postImg.findOne({ postId }).sort("createdAt").exec();
+      const image = await postImg.findOne({ postId:postid }).sort("createdAt").exec();
       await buyPost.create({
         postTitle: userPost.postTitle,
         price: userPost.price,
@@ -282,7 +262,7 @@ const done = async (req, res) => {
         postId,
       });
       await Post.updateOne(
-        { postId },
+        { postId:postid },
         {
           $set: {
             done: true,
@@ -323,7 +303,6 @@ const artPost = async (req, res) => {
       price,
       postSize,
     } = await postSchema.validateAsync(req.body);
-    console.log('body',req.body);
     //moment를 이용하여 한국시간으로 날짜생성
     const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
     //uuid를 사용하여 고유 값생성
@@ -375,7 +354,7 @@ const artUpdate = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     //수정할 파라미터 값
-    const { postId } = req.params;
+    const { postid } = req.params;
     //바디로 받을 데이터
     const {
       postTitle,
@@ -387,7 +366,7 @@ const artUpdate = async (req, res) => {
       postSize,
       imgDt,
     } = await postSchema.validateAsync(req.body);
-    const userPost = await Post.findOne({ postId, userId }).exec();
+    const userPost = await Post.findOne({ postId:postid, userId }).exec();
     if (userPost) {
       //moment를 이용하여 한국시간으로 날짜생성
       const createdAt = new moment().format("YYYY-MM-DD HH:mm:ss");
@@ -449,7 +428,7 @@ const artUpdate = async (req, res) => {
         );
       } else if (imgDt || req.files) {
         if (Array.isArray(imgDt) === false && imgDt) {
-          await postImg.deleteOne({ postId, imageUrl: imgDt });
+          await postImg.deleteOne({ postId:postid, imageUrl: imgDt });
         } else if (Array.isArray(imgDt)) {
           for (let i = 0; i < imgDt.length; i++) {
             await postImg.deleteOne({ imageUrl: imgDt[i] });
@@ -457,7 +436,7 @@ const artUpdate = async (req, res) => {
         }
         if (req.files) {
           const max = await postImg
-            .findOne({ postId })
+            .findOne({ postId:postid })
             .sort("-imageNumber")
             .exec();
           let num = 0;
@@ -476,7 +455,7 @@ const artUpdate = async (req, res) => {
       }
       //업데이트
       await Post.updateOne(
-        { postId },
+        { postId:postid },
         {
           $set: {
             postTitle,
@@ -510,12 +489,12 @@ const artdelete = async (req, res) => {
   try {
     const { userId } = res.locals.user;
     //수정할 파라미터 값
-    const { postId } = req.params;
+    const { postid } = req.params;
     //해당 유저 비교 조건 변수
-    const postUser = await Post.findOne({ userId, postId }).exec();
+    const postUser = await Post.findOne({ userId, postId:postid }).exec();
     if (postUser) {
       //이미지 URL 가져오기 위한 로직
-      const image = await postImg.find({ postId });
+      const image = await postImg.find({ postId:postid });
       // 복수의 이미지를 삭제 변수(array)
       let deleteItems = [];
       //imageUrl이 array이 때문에 접근하기 위한 for문
@@ -540,9 +519,9 @@ const artdelete = async (req, res) => {
         else console.log("Successfully deleted myBucket/myKey");
       });
       //delete
-      await Post.deleteOne({ postId, userId });
-      await postImg.deleteMany({ postId });
-      await User.updateOne({ userId }, { $pull: { myPost: postId } });
+      await Post.deleteOne({ postId:postid, userId });
+      await postImg.deleteMany({ postId:postid });
+      await User.updateOne({ userId }, { $pull: { myPost: postid } });
       res.status(200).send({
         respons: "success",
         msg: "삭제 완료",
@@ -560,16 +539,16 @@ const artdelete = async (req, res) => {
 // 찜기능
 const markupCnt = async (req, res) => {
   try {
-    const { postId } = req.params;
+    const { postid } = req.params;
     const { userId } = res.locals.user;
-    const userPost = await Post.findOne({ postId }).exec();
-    if (userId !== userPost.uesr) {
+    const userPost = await Post.findOne({ postId:postid }).exec();
+    if (userid !== userPost.uesr) {
       // 갇은 post에 찜했는 지 확인
-      const Cnt = await MarkUp.findOne({ userId, postId });
+      const Cnt = await MarkUp.findOne({ userId, postId:postid });
       if (Cnt === null) {
         // 생성 로직
-        await MarkUp.create({ userId, postId });
-        await Post.findOneAndUpdate({ postId }, { $inc: { markupCnt: +1 } });
+        await MarkUp.create({ userId, postId:postid });
+        await Post.findOneAndUpdate({ postId:postid }, { $inc: { markupCnt: +1 } });
         // 해당 post 에 찜개수
         res.status(200).json({
           respons: "success",
@@ -577,8 +556,8 @@ const markupCnt = async (req, res) => {
         });
       } else {
         // 있을 시 삭제
-        await MarkUp.deleteOne({ userId, postId });
-        await Post.updateOne({ postId }, { $inc: { markupCnt: -1 } });
+        await MarkUp.deleteOne({ userId, postId:postid });
+        await Post.updateOne({ postId:postid }, { $inc: { markupCnt: -1 } });
         //개수
         res.status(200).json({
           respons: "success",
@@ -600,10 +579,10 @@ const markupList = async (req, res) => {
   try {
     //유저 정보가 있는지 확인
     const { user } = res.locals; //ok
-    const { userId } = user; //ok
+    const { userid } = user; //ok
     // 유저정보가 유효한지 확인
-    if (userId > 0) {
-      const markUp = await MarkUp.find({ userId }, "postId");
+    if (userid > 0) {
+      const markUp = await MarkUp.find({ userId:userid }, "postId");
       const markUpList = [];
       for (let i = 0; i < markUp.length; i++) {
         markUpList.push(markUp[i].postId);

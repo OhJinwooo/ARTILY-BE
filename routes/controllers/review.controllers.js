@@ -320,7 +320,7 @@ const review_delete = async (req, res) => {
       return res.status(400).send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (error) {
-    logger.error('reviews')
+    logger.error('reviews');
     res.status(400).send({
       respons: "fail",
       msg: "삭제 실패",
