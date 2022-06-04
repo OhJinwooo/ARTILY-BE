@@ -11,14 +11,14 @@ const {
 } = require("./controllers/review.controllers");
 
 //리뷰조회
-router.get("/review", review);
+router.get("/reviews", review);
 
 //리뷰상세조회
-router.get("/review/detail/:reviewId", review_detail);
+router.get("/reviews/:reviewid", review_detail);
 
 //리뷰작성
 router.post(
-  "/review/:postId",
+  "/reviews/:postid",
   middleswares,
   upload.array("imageUrl", 10),
   review_write
@@ -26,13 +26,13 @@ router.post(
 
 //리뷰수정
 router.patch(
-  "/review/:reviewId",
+  "/reviews/:reviewid",
   middleswares,
   upload.array("imageUrl", 10),
   review_modify
 );
 
 //리뷰삭제
-router.delete("/review/:reviewId", middleswares, review_delete);
+router.delete("/reviews/:reviewid", middleswares, review_delete);
 
 module.exports = router;

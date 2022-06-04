@@ -6,17 +6,19 @@ const postImg = require("../../schemas/postImage.schemas");
 const reviewImg = require("../../schemas/reviewImage.schemas");
 const MarkUp = require("../../schemas/markUp.schemas");
 const buyPost = require("../../schemas/buy.schemas");
+const {logger,stream}  =require('../../middleware/logger');
 const Joi = require("joi");
 const postSchema = Joi.object({
       postTitle:Joi.string().required(),
       postContent:Joi.string().min(3).max(300).required(),
       category:Joi.string().max(7).required(),
       transaction:Joi.string().max(10).required(),
-      changeAddress:Joi.string().max(10),
+      changeAddress:Joi.string(),
       price:Joi.number().max(9999999).required(),
       postSize:Joi.string().max(40),
       imgDt:Joi.string()
 });
+
 const s3 = require("../config/s3");
 const moment = require("moment");
 require("moment-timezone");
@@ -83,6 +85,7 @@ const getHome = async (req, res) => {
       data: { bestPost, bestWriter, bestReview },
     });
   } catch (error) {
+    logger.error('post')
     res.status(400).json({
       respons: "file",
       msg: "전체조회 실패",
@@ -202,6 +205,7 @@ const artStore = async (req, res) => {
       }
     }
   } catch (error) {
+    logger.error('post')
     res.status(400).json({
       respons: "fail",
       msg: "store조회 실패",
@@ -248,6 +252,7 @@ const artDetail = async (req, res) => {
       });
     }
   } catch (error) {
+    logger.error('post')
     res.status(400).json({
       respons: "fail",
       msg: "상세페이지 조회 실패",
@@ -296,6 +301,7 @@ const done = async (req, res) => {
       });
     }
   } catch (error) {
+    logger.error('post')
     res.status(400).json({
       respons: "fail",
       msg: "데이터를 찾을 수 없음",
@@ -356,6 +362,7 @@ const artPost = async (req, res) => {
       });
     }
   } catch (error) {
+    logger.error('post')
     res.status(400).json({
       respons: "fail",
       msg: "판매글 생성 실패",
@@ -490,6 +497,7 @@ const artUpdate = async (req, res) => {
     }
     throw error;
   } catch (error) {
+    logger.error('post')
     res.status(400).send({
       respons: "fail",
       msg: "수정 실패",
@@ -541,6 +549,7 @@ const artdelete = async (req, res) => {
       });
     }
   } catch (error) {
+    logger.error('post')
     res.status(400).send({
       respons: "fail",
       msg: "삭제 실패",
@@ -578,6 +587,7 @@ const markupCnt = async (req, res) => {
       }
     }
   } catch (error) {
+    logger.error('markupCnt')
     res.status(400).send({
       respons: "fail",
       msg: "실패",
@@ -605,6 +615,7 @@ const markupList = async (req, res) => {
       msg: "유효하지 않은 토큰입니다",
     });
   } catch (error) {
+    logger.error('markupList')
     res.status(400).json({
       response: "fail",
       msg: "알수 없는 오류가 발생했습니다.",

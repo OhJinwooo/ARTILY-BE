@@ -2,7 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const httpPort = process.env.PORT;
-
+const morgan = require("morgan");
+const { logger, stream } = require("./middleware/logger");
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
 const naverRouter = require("./naver-auth/naver/naver");
@@ -14,7 +15,6 @@ const userRouter = require("./routes/user.router");
 const reviewRouter = require("./routes/review.router");
 const mypageRouter = require("./routes/mypage.router");
 const likeRouter = require("./routes/like.router");
-const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
 const chatRouter = require("./routes/chat.router");
 const cors = require("cors");
@@ -42,13 +42,13 @@ connect();
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
+app.use(morgan("combined", { stream }));
 app.use("/oauth", [kakaoRouter, naverRouter]);
-app.use("/api", [
+app.use("/", [
   userRouter,
   reviewRouter,
   mypageRouter,
   likeRouter,
-  blackListRouter,
   postRouter,
   followRouter,
   chatRouter,
