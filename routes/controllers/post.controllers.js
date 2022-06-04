@@ -541,6 +541,7 @@ const markupCnt = async (req, res) => {
   try {
     const { postid } = req.params;
     const { userId } = res.locals.user;
+    console.log(postid)
     const userPost = await Post.findOne({ postId:postid }).exec();
     if (userId !== userPost.uesr) {
       // 갇은 post에 찜했는 지 확인

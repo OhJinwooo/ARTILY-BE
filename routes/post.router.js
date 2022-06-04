@@ -37,9 +37,9 @@ router.patch("/sale/:postid", middleware, done);
 router.delete("/posts/:postid", middleware, artdelete);
 
 //작품 찜하기
-router.post("/likes/:postid", middleware, markupCnt);
+router.post("/markup/:postid", middleware, markupCnt);
 
 //찜한 목록 불러오기
-router.get("/posts/likes", middleware, markupList);
+router.get("/markup", middleware, markupList);
 
 module.exports = router;
