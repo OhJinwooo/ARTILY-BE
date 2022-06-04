@@ -542,7 +542,7 @@ const markupCnt = async (req, res) => {
     const { postid } = req.params;
     const { userId } = res.locals.user;
     const userPost = await Post.findOne({ postId:postid }).exec();
-    if (userid !== userPost.uesr) {
+    if (userId !== userPost.uesr) {
       // 갇은 post에 찜했는 지 확인
       const Cnt = await MarkUp.findOne({ userId, postId:postid });
       if (Cnt === null) {
@@ -579,10 +579,10 @@ const markupList = async (req, res) => {
   try {
     //유저 정보가 있는지 확인
     const { user } = res.locals; //ok
-    const { userid } = user; //ok
+    const { userId } = user; //ok
     // 유저정보가 유효한지 확인
-    if (userid > 0) {
-      const markUp = await MarkUp.find({ userId:userid }, "postId");
+    if (userId > 0) {
+      const markUp = await MarkUp.find({ userId }, "postId");
       const markUpList = [];
       for (let i = 0; i < markUp.length; i++) {
         markUpList.push(markUp[i].postId);
