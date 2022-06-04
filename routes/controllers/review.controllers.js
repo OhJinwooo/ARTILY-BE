@@ -323,11 +323,7 @@ const review_delete = async (req, res) => {
       return res.status(400).send({ msg: "해당 게시글이 없습니다." });
     }
   } catch (error) {
-<<<<<<< HEAD
-    logger.error('reviews');
-=======
     logger.error("reviews");
->>>>>>> f44cca50332207759e283c5e03cd0669f7381ce4
     res.status(400).send({
       respons: "fail",
       msg: "삭제 실패",
