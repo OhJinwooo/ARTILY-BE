@@ -2,12 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const httpPort = process.env.PORT;
-const morgan = require('morgan')
-const {logger,stream} = require('./middleware/logger')
+
+const morgan = require("morgan");
+const { stream } = require("./middleware/logger");
 const kakaoRouter = require("./kakao-auth/kakao/kakao");
 const passportKakao = require("./kakao-auth");
-const naverRouter = require("./naver-auth/naver/naver");
-const passportNaver = require("./naver-auth/login");
 const { swaggerUi, specs } = require("./swagger/swagger");
 const connect = require("./schemas/index.schemas");
 const postRouter = require("./routes/post.router");
@@ -19,6 +18,7 @@ const blackListRouter = require("./routes/blackList.router");
 const followRouter = require("./routes/follow.router");
 const chatRouter = require("./routes/chat.router");
 const cors = require("cors");
+
 //접속로그 남기기
 const requestMiddleware = (req, res, next) => {
   console.log(
@@ -36,16 +36,15 @@ const requestMiddleware = (req, res, next) => {
   next();
 };
 
-passportNaver();
 passportKakao();
 connect();
 
 app.use(cors());
 app.use(express.json());
 app.use(requestMiddleware);
-app.use(morgan('combined', {stream}))
-app.use("/oauth", [kakaoRouter, naverRouter]);
-app.use("/api", [
+app.use(morgan("combined", { stream }));
+app.use("/oauth", kakaoRouter);
+app.use("/", [
   userRouter,
   reviewRouter,
   mypageRouter,
@@ -56,6 +55,8 @@ app.use("/api", [
   chatRouter,
 ]);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+//로드밸런서 헬스체크
 app.get("/", (req, res) => {
   return res.send("good");
 });
