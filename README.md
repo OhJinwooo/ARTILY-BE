@@ -31,7 +31,7 @@
 ## ✨ ERD
 <br>
 
-<a><img src="https://s3-us-west-2.amazonaws.com/secure.notion-static.com/35cfba05-1683-456d-a9a3-994943a3b4ad/Untitled.png"><a/>
+<a><img src="https://www.notion.so/ERD-6e4cfc202b7049ffba3e036a6b4eae29#e12a6ed89d574a1c89d9ba8e94a529f8"><a/>
 
 <br>
 
