@@ -28,7 +28,7 @@
 
 <br>
 
-## ✨ ERD
+## 🪧 ERD
 <br>
 
 <a><img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/35cfba05-1683-456d-a9a3-994943a3b4ad/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220610%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220610T115643Z&X-Amz-Expires=86400&X-Amz-Signature=fc96dc4e38de67bc6a5caeba8f45ecc903c82ace167dcd30e3148973650547cf&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled.png%22&x-id=GetObject"><a/>
