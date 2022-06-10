@@ -31,7 +31,7 @@
 ## 🪧 ERD
 <br>
 
-<a><img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/46e2c9cc-8224-4ed6-8b66-2fea460fbfe0/ERD_%281%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220610%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220610T120216Z&X-Amz-Expires=86400&X-Amz-Signature=22b7c9adf38a7887ce79997f38ddbcf058331d581da54b09a205e1a2490f8869&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22ERD%2520%281%29.png%22&x-id=GetObject"><a/>
+<a><img src="https://s3.us-west-2.amazonaws.com/secure.notion-static.com/ef0d1930-28d1-4160-9c0d-331aa1372aa4/ERD_%282%29.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20220610%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220610T120458Z&X-Amz-Expires=86400&X-Amz-Signature=3d796411b53ea7588d3a891689e8e5cf355366e393f77ac141d76a0d4828fcd6&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22ERD%2520%282%29.png%22&x-id=GetObject"><a/>
 
 <br>
 
